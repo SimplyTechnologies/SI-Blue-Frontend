@@ -1,0 +1,17 @@
+# Node
+node_modules/
+
+# Build output
+dist/
+build/
+coverage/
+
+# Lock files
+package-lock.json
+
+# Logs
+*.log
+logs/
+
+# Environment files
+.env*
