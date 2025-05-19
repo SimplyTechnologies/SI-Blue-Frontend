@@ -24,7 +24,7 @@ export function NavMain({
       <SidebarMenu>
         {items.map(item => (
           <NavLink to={item.url} key={item.title} className={({ isActive }) => (isActive ? 'active' : '')}>
-            <SidebarMenuItem>
+            <SidebarMenuItem className='dd-sidebar-menu-item'>
               <SidebarMenuButton tooltip={item.title}>
                 {item.icon && <item.icon />}
                 <span>{item.title}</span>

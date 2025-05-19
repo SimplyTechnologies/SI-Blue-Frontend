@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CarIcon, HomeIcon, UserPlusIcon, UsersIcon } from 'lucide-react';
+import { CarFrontIcon, HomeIcon, UserPlusIcon, UsersIcon } from 'lucide-react';
 
 import { NavMain } from '@/components/nav-main';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail, SidebarTrigger } from '@/components/ui/sidebar';
@@ -16,7 +16,7 @@ const data = {
     {
       title: 'Vehicles',
       url: '/vehicles',
-      icon: CarIcon,
+      icon: CarFrontIcon,
       isActive: true,
     },
     {
