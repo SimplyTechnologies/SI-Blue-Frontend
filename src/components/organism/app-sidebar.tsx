@@ -3,7 +3,7 @@ import { CarFrontIcon, HomeIcon, UserPlusIcon, UsersIcon } from 'lucide-react';
 
 import { NavMain } from '@/components/molecule/nav-main';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarRail, SidebarTrigger } from '@/components/atom/sidebar';
-import logo from '../assets/favicon.png';
+import logo from '@/assets/favicon.png';
 
 const data = {
   navMain: [
