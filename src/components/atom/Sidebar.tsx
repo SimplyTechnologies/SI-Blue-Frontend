@@ -9,10 +9,10 @@ import { useIsMobile } from '@/hooks/useMobile';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
-import { Separator } from '@/components/atom/separator';
-import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/atom/sheet';
-import { Skeleton } from '@/components/atom/skeleton';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atom/tooltip';
+import { Separator } from '@/components/atom/Separator';
+import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/atom/Sheet';
+import { Skeleton } from '@/components/atom/Skeleton';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atom/Tooltip';
 
 const SIDEBAR_COOKIE_NAME = 'sidebar_state';
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;

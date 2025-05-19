@@ -1,10 +1,10 @@
-import { AppSidebar } from '@/components/organism/app-sidebar';
-import { SidebarInset, SidebarProvider } from '@/components/atom/sidebar';
+import { AppSidebar } from '@/components/organism/AppSidebar';
+import { SidebarInset, SidebarProvider } from '@/components/atom/Sidebar';
 import { useLocation } from 'react-router';
 import { pathTitles } from '@/utils/pageTitles';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import { DropdownMenu, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
-import { DropdownMenuContent, DropdownMenuTrigger } from '@/components/atom/dropdown-menu';
+import { DropdownMenuContent, DropdownMenuTrigger } from '@/components/atom/DropdownMenu';
 import { LogOutIcon, UserIcon } from 'lucide-react';
 
 function DashboardLayout() {
