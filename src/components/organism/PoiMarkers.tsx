@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from "react";
-import { AdvancedMarker, useMap } from "@vis.gl/react-google-maps";
-import type { Poi } from "@/types/Poi";
-import carMarker from "@/assets/carMarker.svg";
-import { MarkerClusterer, type Marker } from "@googlemaps/markerclusterer";
+import { useEffect, useRef, useState } from 'react';
+import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
+import type { Poi } from '@/types/Poi';
+import carMarker from '@/assets/carMarker.svg';
+import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer';
 
 const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
   const map = useMap();
@@ -27,7 +27,7 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
     if (marker && markers[key]) return;
     if (!marker && !markers[key]) return;
 
-    setMarkers((prev) => {
+    setMarkers(prev => {
       if (marker) {
         return { ...prev, [key]: marker };
       } else {
@@ -40,12 +40,8 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
   return (
     <>
       {pois.map((poi: Poi) => (
-        <AdvancedMarker
-          key={poi.key}
-          position={poi.location}
-          ref={(marker) => setMarkerRef(marker, poi.key)}
-        >
-          <div className="w-[47.05px] h-[47px] flex items-center justify-center rounded-[40px] bg-[rgba(64, 60, 137, 0.2)]">
+        <AdvancedMarker key={poi.key} position={poi.location} ref={marker => setMarkerRef(marker, poi.key)}>
+          <div className="w-[47.05px] h-[47px] flex items-center justify-center rounded-[40px] bg-[#403C89]/20">
             <div className="w-[31.87px] h-[31.84px] flex justify-center items-center rounded-[30px] bg-[var(--color-primary-3)]">
               <img src={carMarker} alt="carMarker" />
             </div>

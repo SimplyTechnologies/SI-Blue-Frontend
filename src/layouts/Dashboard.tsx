@@ -1,6 +1,6 @@
 import { AppSidebar } from '@/components/organism/AppSidebar';
 import { SidebarInset, SidebarProvider } from '@/components/atom/Sidebar';
-import { useLocation } from 'react-router';
+import { Outlet, useLocation } from 'react-router';
 import { pathTitles } from '@/utils/pageTitles';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import { DropdownMenu, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
@@ -37,6 +37,7 @@ function DashboardLayout() {
             </DropdownMenuContent>
           </DropdownMenu>
         </header>
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
   );
