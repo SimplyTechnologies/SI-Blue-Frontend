@@ -1,9 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router";
 import { cn } from "@/utils/cn";
-import { Button } from "@/components/shared/Button";
-import { Input } from "@/components/shared/Input";
-import { Label } from "@/components/shared/Label";
+import { Button } from "@/components/atom/Button";
+import { Input } from "@/components/atom/Input";
+import { Label } from "@/components/atom/Label";
 import carBg from "@/assets/carBackground.svg";
 import carlifeLogo from "@/assets/carlifeLogo.svg";
 

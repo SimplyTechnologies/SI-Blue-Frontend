@@ -3,7 +3,7 @@
 import { type LucideIcon } from 'lucide-react';
 import { NavLink } from 'react-router';
 
-import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/ui/sidebar';
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/atom/sidebar';
 
 export function NavMain({
   items,

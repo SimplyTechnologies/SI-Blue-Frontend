@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { CarFrontIcon, HomeIcon, UserPlusIcon, UsersIcon } from 'lucide-react';
 
-import { NavMain } from '@/components/nav-main';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarRail, SidebarTrigger } from '@/components/ui/sidebar';
+import { NavMain } from '@/components/molecule/nav-main';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarRail, SidebarTrigger } from '@/components/atom/sidebar';
 import logo from '../assets/favicon.png';
 
 const data = {

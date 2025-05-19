@@ -1,8 +1,8 @@
 import { cn } from "@/utils/cn";
-import { Button } from "@/components/shared/Button";
-import { Input } from "@/components/shared/Input";
-import { Label } from "@/components/shared/Label";
-import { Checkbox } from "@/components/shared/Checkbox";
+import { Button } from "@/components/atom/Button";
+import { Input } from "@/components/atom/Input";
+import { Label } from "@/components/atom/Label";
+import { Checkbox } from "@/components/atom/Checkbox";
 import carBg from "@/assets/carBackground.svg";
 import carlifeLogo from "@/assets/carlifeLogo.svg";
 

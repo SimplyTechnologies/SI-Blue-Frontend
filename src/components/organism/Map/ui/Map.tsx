@@ -1,5 +1,5 @@
 import { Map as GoogleMap } from "@vis.gl/react-google-maps";
-import PoiMarkers from "@/components/shared/PoiMarkers";
+import PoiMarkers from "@/components/organism/PoiMarkers";
 import type { Poi } from "@/types/Poi";
 
 const locations: Poi[] = [

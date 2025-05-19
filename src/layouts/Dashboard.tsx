@@ -1,13 +1,13 @@
-import { AppSidebar } from '@/components/app-sidebar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
+import { AppSidebar } from '@/components/organism/app-sidebar';
+import { SidebarInset, SidebarProvider } from '@/components/atom/sidebar';
 import { useLocation } from 'react-router';
 import { pathTitles } from '@/utils/pageTitles';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/avatar';
 import { DropdownMenu, DropdownMenuItem } from '@radix-ui/react-dropdown-menu';
-import { DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
+import { DropdownMenuContent, DropdownMenuTrigger } from '@/components/atom/dropdown-menu';
 import { LogOutIcon, UserIcon } from 'lucide-react';
 
-function Layout() {
+function DashboardLayout() {
   const location = useLocation();
 
   const pageTitle = pathTitles[location.pathname] || '';
@@ -42,4 +42,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default DashboardLayout;
