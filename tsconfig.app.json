@@ -22,12 +22,14 @@
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true,
     "noUncheckedSideEffectImports": true,
+    "allowSyntheticDefaultImports": true,
+
+    /* Path alias for absolute imports */
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["src/*"]
     }
   },
-  "include": ["src", "tailwind.config.js"]
+  "include": ["src"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

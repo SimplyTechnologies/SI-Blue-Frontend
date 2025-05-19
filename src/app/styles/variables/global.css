@@ -1,0 +1,33 @@
+:root {
+    --font-lato: 'Lato', sans-serif;
+
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-semibold: 600;
+    --fw-bold: 700;
+
+    --xs-text: 0.875rem; /* 14px */
+    --sm-text: 1rem;
+    --base-text: 1.25rem; /* 20px */
+    --md-text: 1.5rem; /* 24px */
+    --lg-text: 2rem;
+    --xl-text: 2.25rem; /* 36px */
+
+    --color-primary-1: #423A8E;
+    --color-primary-2: #00CCCD;
+    --color-primary-3: #403C89;
+    --color-primary-4: #3652E0;
+
+    --color-support-1: #FFC107;
+    --color-support-2: #DC3545;
+    --color-support-3: #198754;
+    --color-support-4: #0D6EFD;
+    --color-support-5: #636777;
+    --color-support-6: #192252;
+    --color-support-7: #858C98;
+    --color-support-8: #DBDDE1;
+    --color-support-9: #0DCF89;
+
+    --color-white: #FFFFFF;
+
+}
