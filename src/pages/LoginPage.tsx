@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
@@ -8,16 +10,37 @@ import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
 
+const passwordSchema = z
+  .string()
+  .min(8, 'Password must be at least 8 characters long')
+  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
+  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
+  .regex(/[0-9]/, 'Password must contain at least one number')
+  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
+
+const schema = z.object({
+  email: z.string().email({
+    message: 'Invalid email address.',
+  }),
+  password: passwordSchema,
+});
+
+type FormData = z.infer<typeof schema>;
+
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const login = useLogin();
 
-  type FormData = {
-    email: string;
-    password: string;
-  };
-
-  const { register, handleSubmit } = useForm<FormData>();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    trigger,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    mode: 'onChange',
+    reValidateMode: 'onBlur',
+  });
   const [serverError, setServerError] = useState('');
 
   const onSubmit = (data: FormData) => {
@@ -53,9 +76,14 @@ const LoginPage: React.FC = () => {
               type="email"
               placeholder="m@example.com"
               {...register('email')}
+              onBlur={() => trigger('email')}
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
-              required
             />
+            {errors.email && (
+              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+                {errors.email.message}
+              </p>
+            )}
           </div>
           <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
             <Label
@@ -69,9 +97,14 @@ const LoginPage: React.FC = () => {
               type="password"
               placeholder="Enter Password"
               {...register('password')}
+              onBlur={() => trigger('password')}
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
-              required
             />
+            {errors.password && (
+              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+                {errors.password.message}
+              </p>
+            )}
           </div>
 
           {serverError && (
