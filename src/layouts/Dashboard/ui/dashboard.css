@@ -1,0 +1,17 @@
+.dd-collapsed {
+  .sidebar-icon-light-stroke {
+    stroke: #fff;
+  }
+
+  .sidebar-icon-light-fill {
+    fill: #fff;
+  }
+
+  .sidebar-icon-dark-stroke {
+    stroke: var(--sidebar-accent-collapsed);
+  }
+}
+
+.stroke-primary {
+  stroke: #403c89;
+}

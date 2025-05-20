@@ -17,6 +17,7 @@
     --color-primary-2: #00CCCD;
     --color-primary-3: #403C89;
     --color-primary-4: #3652E0;
+    --color-primary-5: #EDF1FE;
 
     --color-support-1: #FFC107;
     --color-support-2: #DC3545;
@@ -27,6 +28,11 @@
     --color-support-7: #858C98;
     --color-support-8: #DBDDE1;
     --color-support-9: #0DCF89;
+    --color-support-10: #FEEDED;
+
+    --color-success-1: #E5FAF5;
+
+    --color-bg-1: #F8F9F9;
 
     --color-white: #FFFFFF;
 

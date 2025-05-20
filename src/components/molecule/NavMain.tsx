@@ -1,9 +1,9 @@
 'use client';
 
-import { type LucideIcon } from 'lucide-react';
 import { NavLink } from 'react-router';
 
-import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem } from '@/components/atom/Sidebar';
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/atom/Sidebar';
+import type { ReactElement } from 'react';
 
 export function NavMain({
   items,
@@ -11,7 +11,8 @@ export function NavMain({
   items: {
     title: string;
     url: string;
-    icon?: LucideIcon;
+    icon?: ReactElement;
+    iconActive?: ReactElement;
     isActive?: boolean;
     items?: {
       title: string;
@@ -19,20 +20,29 @@ export function NavMain({
     }[];
   }[];
 }) {
+  const { state } = useSidebar();
+
   return (
     <SidebarGroup>
       <SidebarMenu>
         {items.map(item => (
-          <NavLink to={item.url} key={item.title} className={({ isActive }) => (isActive ? 'active' : '')}>
-            <SidebarMenuItem className='dd-sidebar-menu-item'>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
+          <NavLink to={item.url} key={item.title}>
+            {({ isActive }) => (
+              <SidebarMenuItem>
+                <SidebarMenuButton
+                  tooltip={item.title}
+                  isActive={isActive}
+                  className={state === 'collapsed' ? 'dd-collapsed' : ''}
+                >
+                  {isActive ? item.iconActive : item.icon}
+                  <span className={state === 'collapsed' ? 'hidden' : ''}>{item.title}</span>
+                </SidebarMenuButton>
+              </SidebarMenuItem>
+            )}
           </NavLink>
         ))}
       </SidebarMenu>
     </SidebarGroup>
   );
 }
+

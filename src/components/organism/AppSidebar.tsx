@@ -1,54 +1,77 @@
 import * as React from 'react';
-import { CarFrontIcon, HomeIcon, UserPlusIcon, UsersIcon } from 'lucide-react';
+import { Link } from 'react-router';
 
 import { NavMain } from '@/components/molecule/NavMain';
-import { Sidebar, SidebarContent, SidebarHeader, SidebarRail, SidebarTrigger } from '@/components/atom/Sidebar';
-import logo from '@/assets/favicon.png';
+import {
+  Sidebar,
+  SidebarContent,
+  SidebarHeader,
+  SidebarRail,
+  SidebarTrigger,
+  useSidebar,
+} from '@/components/atom/Sidebar';
+import logo from '@/assets/favicon.svg';
+import logoLight from '@/assets/faviconLight.svg';
+
+import { DashboardIcon } from '@/assets/svgIconComponents/DashboardIcon';
+import { VehiclesIcon } from '@/assets/svgIconComponents/VehiclesIcon';
+import { CustomersIcon } from '@/assets/svgIconComponents/CustomersIcon';
+import { UsersIcon } from '@/assets/svgIconComponents/UsersIcon';
+import { VehiclesIconActive } from '@/assets/svgIconComponents/VehiclesIconActive';
+import { UsersIconActive } from '@/assets/svgIconComponents/UsersIconActive';
+import { CustomersIconActive } from '@/assets/svgIconComponents/CustomersIconActive';
+import { DashboardIconActive } from '@/assets/svgIconComponents/DashboardIconActive';
 
 const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '/',
-      icon: HomeIcon,
+      url: '/dashboard',
+      icon: <DashboardIcon />,
+      iconActive: <DashboardIconActive />,
       isActive: true,
     },
     {
       title: 'Vehicles',
       url: '/vehicles',
-      icon: CarFrontIcon,
+      icon: <VehiclesIcon />,
+      iconActive: <VehiclesIconActive />,
       isActive: true,
     },
     {
       title: 'Users',
       url: '/users',
-      icon: UsersIcon,
+      icon: <UsersIcon />,
+      iconActive: <UsersIconActive />,
       isActive: true,
     },
     {
       title: 'Customers',
       url: '/customers',
-      icon: UserPlusIcon,
+      icon: <CustomersIcon />,
+      iconActive: <CustomersIconActive />,
       isActive: true,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { state } = useSidebar();
+
   return (
     <Sidebar collapsible="icon" {...props}>
-      <SidebarHeader>
-        <div className="bg-sidebar-primary text-sidebar-primary-foreground flex aspect-square size-8 items-center justify-center rounded-lg">
-          <img src={logo} alt="logo" />
-        </div>
+      <SidebarHeader className="h-[78px] relative">
+        <Link to="/dashboard" className="">
+          <img src={state === 'collapsed' ? logoLight : logo} alt="logo" className="w-[42px] h-[42px]" />
+        </Link>
         <div className="flex items-center">
-          <SidebarTrigger className="-ml-1" />
+          <SidebarTrigger className="ml-1" />
         </div>
       </SidebarHeader>
       <SidebarContent>
         <NavMain items={data.navMain} />
       </SidebarContent>
-      <SidebarRail />
     </Sidebar>
   );
 }
+
