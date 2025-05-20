@@ -56,13 +56,13 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="h-[78px] relative">
         <Link to="/dashboard" className="">
-          <img src={state === 'collapsed' ? logoLight : logo} alt="logo" className="w-[42px] h-[42px]" />
+          <img src={state === 'collapsed' && !isMobile ? logoLight : logo} alt="logo" className="w-[42px] h-[42px]" />
         </Link>
         <div className="flex items-center">
           <SidebarTrigger className="ml-1" />

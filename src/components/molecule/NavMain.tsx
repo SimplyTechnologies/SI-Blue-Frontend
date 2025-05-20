@@ -20,7 +20,7 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -32,10 +32,10 @@ export function NavMain({
                 <SidebarMenuButton
                   tooltip={item.title}
                   isActive={isActive}
-                  className={state === 'collapsed' ? 'dd-collapsed' : ''}
+                  className={state === 'collapsed' && !isMobile ? 'dd-collapsed' : ''}
                 >
                   {isActive ? item.iconActive : item.icon}
-                  <span className={state === 'collapsed' ? 'hidden' : ''}>{item.title}</span>
+                  <span className={state === 'collapsed' && !isMobile ? 'hidden' : ''}>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )}

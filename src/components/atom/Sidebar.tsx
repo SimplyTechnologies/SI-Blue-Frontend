@@ -191,7 +191,7 @@ function Sidebar({
     <div
       className="group peer text-sidebar-foreground hidden md:block"
       data-state={state}
-      data-collapsible={state === 'collapsed' ? collapsible : ''}
+      data-collapsible={state === 'collapsed' && !isMobile ? collapsible : ''}
       data-variant={variant}
       data-side={side}
       data-slot="sidebar"
@@ -212,7 +212,7 @@ function Sidebar({
         data-slot="sidebar-container"
         className={cn(
           `fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex
-           ${state === 'collapsed' ? 'border-[var(--sidebar-border-collapsed)]' : 'border-[var(--sidebar-border)]'}`,
+           ${state === 'collapsed' && !isMobile ? 'border-[var(--sidebar-border-collapsed)]' : 'border-[var(--sidebar-border)]'}`,
           side === 'left'
             ? 'left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]'
             : 'right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]',
@@ -227,7 +227,7 @@ function Sidebar({
         <div
           data-sidebar="sidebar"
           data-slot="sidebar-inner"
-          className={`${state === 'collapsed' ? 'bg-[var(--sidebar-collapsed)]' : 'bg-sidebar'} transition-[background-color] duration-400 ease-in-out group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm`}
+          className={`${state === 'collapsed' && !isMobile ? 'bg-[var(--sidebar-collapsed)]' : 'bg-sidebar'} transition-[background-color] duration-400 ease-in-out group-data-[variant=floating]:border-sidebar-border flex h-full w-full flex-col group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:shadow-sm`}
         >
           {children}
         </div>
@@ -237,7 +237,7 @@ function Sidebar({
 }
 
 function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<typeof Button>) {
-  const { toggleSidebar, state } = useSidebar();
+  const { toggleSidebar, state, isMobile } = useSidebar();
 
   return (
     <Button
@@ -246,7 +246,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       variant="ghost"
       size="icon"
       className={cn(
-        `size-7 flex justify-center items-center rounded-lg w-[14px] h-[22px] ${state === 'collapsed' ? 'border-1 border-[#EDF1FE] absolute right-[-6px] top-[50%] translate-y-[-50%] bg-[var(--sidebar-accent-collapsed)]' : 'bg-[var(--sidebar-accent)]'}`,
+        `size-7 flex justify-center items-center rounded-lg w-[14px] h-[22px] ${state === 'collapsed' && !isMobile ? 'border-1 border-[#EDF1FE] absolute right-[-6px] top-[50%] translate-y-[-50%] bg-[var(--sidebar-accent-collapsed)]' : 'bg-[var(--sidebar-accent)]'}`,
         className,
       )}
       onClick={event => {
@@ -255,7 +255,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       }}
       {...props}
     >
-      <ChevronLeftIcon isCollapsed={state === 'collapsed'} />
+      <ChevronLeftIcon isCollapsed={state === 'collapsed' && !isMobile} />
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
   );
@@ -332,13 +332,13 @@ function SidebarInput({ className, ...props }: React.ComponentProps<typeof Input
 }
 
 function SidebarHeader({ className, ...props }: React.ComponentProps<'div'>) {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
   return (
     <div
       data-slot="sidebar-header"
       data-sidebar="header"
       className={cn(
-        `flex justify-between gap-2 py-[18px] pl-[24px] pr-[6px] border-b-1 ${state === 'collapsed' ? 'border-[var(--sidebar-border-collapsed)]' : 'border-[var(--sidebar-border)]'}`,
+        `flex justify-between gap-2 py-[18px] pl-[24px] pr-[6px] border-b-1 ${state === 'collapsed' && !isMobile ? 'border-[var(--sidebar-border-collapsed)]' : 'border-[var(--sidebar-border)]'}`,
         className,
       )}
       {...props}
