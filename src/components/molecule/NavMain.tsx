@@ -19,7 +19,7 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const { state, isMobile } = useSidebar();
+  const { state, isMobile, setOpenMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -32,6 +32,11 @@ export function NavMain({
                   tooltip={item.title}
                   isActive={isActive}
                   className={state === 'collapsed' && !isMobile ? 'dd-collapsed' : ''}
+                  onClick={() => {
+                    if (isMobile) {
+                      setOpenMobile(false);
+                    }
+                  }}
                 >
                   {isActive ? item.iconActive : item.icon}
                   <span className={state === 'collapsed' && !isMobile ? 'hidden' : ''}>{item.title}</span>

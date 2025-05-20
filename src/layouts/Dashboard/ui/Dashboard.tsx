@@ -47,6 +47,7 @@ function DashboardLayout() {
               </Avatar>
             }
             items={profileDropdownItems}
+            menuClassName="w-[220px] text-[#636777]"
           />
         </header>
         <Outlet />

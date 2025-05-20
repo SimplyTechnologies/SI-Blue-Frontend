@@ -26,10 +26,10 @@ const LoginPage: React.FC = () => {
       onSuccess: () => {
         navigate('/dashboard');
       },
-      onError: (error) => {
+      onError: error => {
         setServerError(error.message);
       },
-    })
+    });
   };
 
   return (
@@ -73,6 +73,13 @@ const LoginPage: React.FC = () => {
               required
             />
           </div>
+
+          {serverError && (
+            <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+              {serverError}
+            </p>
+          )}
+
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
               <Checkbox
