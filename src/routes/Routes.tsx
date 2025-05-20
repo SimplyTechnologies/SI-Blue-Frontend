@@ -6,7 +6,7 @@ import MyProfile from '@/pages/MyProfile';
 import Vehicles from '@/pages/Vehicles';
 import { Users } from 'lucide-react';
 import React, { Suspense, lazy } from 'react';
-import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
+import { Route, Routes, BrowserRouter, type BrowserRouterProps } from 'react-router';
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
