@@ -74,7 +74,7 @@ function SidebarProvider({
   // Helper to toggle the sidebar.
   const toggleSidebar = React.useCallback(() => {
     // This sets the local storage to keep the sidebar state.
-    if (isMobile) {
+    if (!isMobile) {
       localStorage.setItem(SIDEBAR_STORAGE_NAME, String(!open));
     }
     return isMobile ? setOpenMobile(open => !open) : setOpen(open => !open);
@@ -247,7 +247,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      variant="default"
+      variant="text"
       className={cn(
         `size-7 flex justify-center items-center rounded-lg w-[14px] h-[22px] ${state === 'collapsed' && !isMobile ? 'border-1 border-[#EDF1FE] absolute right-[-6px] top-[50%] translate-y-[-50%] bg-[var(--sidebar-accent-collapsed)]' : 'bg-[var(--sidebar-accent)]'}`,
         className,
@@ -270,7 +270,7 @@ function SidebarTriggerMobile({ className, onClick, ...props }: React.ComponentP
     <Button
       data-sidebar="trigger"
       data-slot="sidebar-trigger"
-      variant="default"
+      variant="text"
       className={cn('size-7', className)}
       onClick={event => {
         onClick?.(event);

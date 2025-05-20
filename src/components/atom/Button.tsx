@@ -6,6 +6,7 @@ const buttonVariants = cva('w-full rounded-[0.5rem] font-[var(--fw-bold)] text-[
     variant: {
       default: 'bg-[var(--color-primary-3)] text-[var(--color-white)]',
       outline: 'bg-[transparent] border-[2px] border-[var(--color-primary-3)] text-[var(--color-primary-4)]',
+      text: 'bg-[transparent]',
     },
   },
 });
