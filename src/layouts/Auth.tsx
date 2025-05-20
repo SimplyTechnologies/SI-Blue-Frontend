@@ -1,3 +1,4 @@
+import { Outlet } from 'react-router';
 import carBg from '@/assets/carBackground.svg';
 
 const Auth: React.FC = () => {
@@ -6,7 +7,7 @@ const Auth: React.FC = () => {
       <div className="flex flex-col gap-4 ">
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-[450px]">
-            
+            <Outlet />
           </div>
         </div>
       </div>
