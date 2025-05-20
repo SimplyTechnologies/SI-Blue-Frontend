@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -6,7 +7,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/atom/DropdownMenu';
-import type { ReactNode } from 'react';
 
 interface DropdownProps {
   trigger: ReactNode;
@@ -41,3 +41,4 @@ export default function CustomDropdown({ trigger, items, label }: DropdownProps)
     </DropdownMenu>
   );
 }
+

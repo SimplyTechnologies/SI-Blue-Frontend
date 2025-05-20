@@ -1,10 +1,10 @@
 import { AppSidebar } from '@/components/organism/AppSidebar';
 import { SidebarInset, SidebarProvider, SidebarTriggerMobile } from '@/components/atom/Sidebar';
 import { Outlet, useLocation, useNavigate } from 'react-router';
-import { pathTitles } from '@/utils/pageTitles';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
-import { generateStringToColor } from '@/utils/general';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
+import { pathTitles } from '@/utils/pageTitles';
+import { generateStringToColor } from '@/utils/general';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
 import './dashboard.css';
