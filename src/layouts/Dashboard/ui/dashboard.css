@@ -12,6 +12,14 @@
   }
 }
 
-.stroke-primary {
-  stroke: #403c89;
+.dd-dropdown-item {
+  .stroke-primary {
+    stroke: #afafaf;
+  }
+  &:hover {
+    .stroke-primary {
+      stroke: #192252;
+    }
+  }
 }
+
