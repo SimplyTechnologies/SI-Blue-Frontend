@@ -26,8 +26,8 @@ const Map: React.FC = () => {
     <GoogleMap
       mapId={mapID}
       style={{ width: '100%', height: '100%' }}
-      defaultCenter={{ lat: 22.54992, lng: 0 }}
-      defaultZoom={3}
+      defaultCenter={{ lat: -33.8636005, lng: 151.2092542 }}
+      defaultZoom={15}
       minZoom={4}
       // restriction={latLngBounds = {}}
       gestureHandling={'greedy'}

@@ -6,7 +6,7 @@ import MyProfile from '@/pages/MyProfile';
 import Vehicles from '@/pages/Vehicles';
 import { Users } from 'lucide-react';
 import React, { Suspense, lazy } from 'react';
-import { Route, Routes, BrowserRouter, type BrowserRouterProps } from 'react-router';
+import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
@@ -58,7 +58,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
         </Route>
         <Route path="/map" element={<Map />} />
         <Route element={<DashboardLayout />}>
-          {/* <Route path="/" index element={<Navigate to="/dashboard" replace />} /> */}
+          <Route path="/" index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="users" element={<Users />} />
