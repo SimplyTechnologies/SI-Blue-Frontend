@@ -1,10 +1,12 @@
+import Auth from '@/layouts/Auth';
+import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
 import Customers from '@/pages/Customers';
 import Dashboard from '@/pages/Dashboard';
 import MyProfile from '@/pages/MyProfile';
 import Vehicles from '@/pages/Vehicles';
 import { Users } from 'lucide-react';
 import React, { Suspense, lazy } from 'react';
-import { Route, Routes, BrowserRouter, type BrowserRouterProps } from 'react-router';
+import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
 
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
@@ -20,6 +22,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
   return (
     <Router>
       <Routes>
+        <Route element={<Auth />}>
           <Route
             path="/login"
             element={
@@ -52,16 +55,20 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
               </Suspense>
             }
           />
+        </Route>
         <Route path="/map" element={<Map />} />
-          {/* <Route path="/" index element={<Navigate to="/dashboard" replace />} /> */}
+        <Route element={<DashboardLayout />}>
+          <Route path="/" index element={<Navigate to="/dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="users" element={<Users />} />
           <Route path="customers" element={<Customers />} />
           <Route path="my-profile" element={<MyProfile />} />
+        </Route>
       </Routes>
     </Router>
   );
 };
 
 export default AppRoutes;
+

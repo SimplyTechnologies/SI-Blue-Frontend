@@ -1,15 +1,13 @@
 import carBg from '@/assets/carBackground.svg';
 
-type AuthProps = {
-  children: React.ReactNode;
-};
-
-const Auth: React.FC<AuthProps> = ({ children }) => {
+const Auth: React.FC = () => {
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <div className="flex flex-col gap-4 ">
         <div className="flex flex-1 items-center justify-center">
-          <div className="w-full max-w-[450px]">{children}</div>
+          <div className="w-full max-w-[450px]">
+            
+          </div>
         </div>
       </div>
       <div className="relative hidden bg-muted lg:block">
