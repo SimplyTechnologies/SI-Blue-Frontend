@@ -20,7 +20,7 @@ const Dashboard: React.FC = () => {
         <AnalyticCard title={'customers'} count={3656} />
         <AnalyticCard title={'vehiclesSold'} count={1276} />
       </div>
-      <div className='h-full max-h-[608px] mt-[2rem]'>
+      <div className='h-full max-h-[608px] max-[1024px]:min-h-[200px] max-[480px]:min-h-[400px] mt-[2rem]'>
         <Map />
       </div>
     </div>
