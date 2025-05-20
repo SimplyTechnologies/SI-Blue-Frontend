@@ -7,6 +7,7 @@ import { generateStringToColor } from '@/utils/general';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
+import './dashboard.css';
 
 function DashboardLayout() {
   const location = useLocation();
@@ -48,9 +49,7 @@ function DashboardLayout() {
             items={profileDropdownItems}
           />
         </header>
-        <div className="main-container">
-          <Outlet />
-        </div>
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
   );
