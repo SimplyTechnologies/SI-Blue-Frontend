@@ -38,6 +38,8 @@ function DashboardLayout() {
             <h1 className="text-2xl font-bold text-[var(--primary)]">{pageTitle}</h1>
           </div>
           <CustomDropdown
+            sideOffset={0}
+            align="end"
             trigger={
               <Avatar>
                 <AvatarImage src="" />
