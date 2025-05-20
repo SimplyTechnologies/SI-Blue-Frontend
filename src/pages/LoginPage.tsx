@@ -1,14 +1,39 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
+import { useLogin } from '@/hooks/useLogin';
 
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
+  const login = useLogin();
+
+  type FormData = {
+    email: string;
+    password: string;
+  };
+
+  const { register, handleSubmit } = useForm<FormData>();
+  const [serverError, setServerError] = useState('');
+
+  const onSubmit = (data: FormData) => {
+    setServerError('');
+    login.mutate(data, {
+      onSuccess: () => {
+        navigate('/dashboard');
+      },
+      onError: (error) => {
+        setServerError(error.message);
+      },
+    })
+  };
+
   return (
-    <form className={cn('flex flex-col gap-[3.25rem]')}>
+    <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div>
         <p className="text-[var(--color-support-6)] text-[length:var(--xl-text)] font-[var(--fw-bold)] leading-[120%]">
           Welcome Back!
@@ -27,6 +52,7 @@ const LoginPage: React.FC = () => {
               id="email"
               type="email"
               placeholder="m@example.com"
+              {...register('email')}
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
               required
             />
@@ -42,6 +68,7 @@ const LoginPage: React.FC = () => {
               id="password"
               type="password"
               placeholder="Enter Password"
+              {...register('password')}
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
               required
             />
@@ -68,11 +95,7 @@ const LoginPage: React.FC = () => {
             </a>
           </div>
         </div>
-        <Button
-          type="submit"
-          className="h-[56px] "
-          variant={'default'}
-        >
+        <Button type="submit" className="h-[56px] " variant={'default'}>
           Sign in
         </Button>
       </div>
