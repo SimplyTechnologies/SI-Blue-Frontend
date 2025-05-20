@@ -1,9 +1,8 @@
 'use client';
 
 import { NavLink } from 'react-router';
-
-import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/atom/Sidebar';
 import type { ReactElement } from 'react';
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/atom/Sidebar';
 
 export function NavMain({
   items,

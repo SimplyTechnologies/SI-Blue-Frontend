@@ -2,17 +2,9 @@ import * as React from 'react';
 import { Link } from 'react-router';
 
 import { NavMain } from '@/components/molecule/NavMain';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarRail,
-  SidebarTrigger,
-  useSidebar,
-} from '@/components/atom/Sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarTrigger, useSidebar } from '@/components/atom/Sidebar';
 import logo from '@/assets/favicon.svg';
 import logoLight from '@/assets/faviconLight.svg';
-
 import { DashboardIcon } from '@/assets/svgIconComponents/DashboardIcon';
 import { VehiclesIcon } from '@/assets/svgIconComponents/VehiclesIcon';
 import { CustomersIcon } from '@/assets/svgIconComponents/CustomersIcon';
