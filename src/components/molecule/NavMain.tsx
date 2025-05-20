@@ -1,9 +1,8 @@
 'use client';
 
 import { NavLink } from 'react-router';
-
-import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/atom/Sidebar';
 import type { ReactElement } from 'react';
+import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/atom/Sidebar';
 
 export function NavMain({
   items,
@@ -20,7 +19,7 @@ export function NavMain({
     }[];
   }[];
 }) {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   return (
     <SidebarGroup>
@@ -32,10 +31,10 @@ export function NavMain({
                 <SidebarMenuButton
                   tooltip={item.title}
                   isActive={isActive}
-                  className={state === 'collapsed' ? 'dd-collapsed' : ''}
+                  className={state === 'collapsed' && !isMobile ? 'dd-collapsed' : ''}
                 >
                   {isActive ? item.iconActive : item.icon}
-                  <span className={state === 'collapsed' ? 'hidden' : ''}>{item.title}</span>
+                  <span className={state === 'collapsed' && !isMobile ? 'hidden' : ''}>{item.title}</span>
                 </SidebarMenuButton>
               </SidebarMenuItem>
             )}
