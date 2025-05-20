@@ -58,7 +58,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
         </Route>
         <Route path="/map" element={<Map />} />
         <Route element={<DashboardLayout />}>
-          <Route path="/" index element={<Navigate to="/dashboard" replace />} />
+          {/* <Route path="/" index element={<Navigate to="/dashboard" replace />} /> */}
           <Route path="dashboard" element={<Dashboard />} />
           <Route path="vehicles" element={<Vehicles />} />
           <Route path="users" element={<Users />} />
