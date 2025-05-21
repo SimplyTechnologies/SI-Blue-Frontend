@@ -1,10 +1,5 @@
 import Auth from '@/layouts/Auth';
 import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
-import Customers from '@/pages/Customers';
-import Dashboard from '@/pages/Dashboard';
-import MyProfile from '@/pages/MyProfile';
-import Vehicles from '@/pages/Vehicles';
-import { Users } from 'lucide-react';
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
 
@@ -13,6 +8,11 @@ const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const AccountActivation = lazy(() => import('@/pages/AccountActivation'));
 const Map = lazy(() => import('@/components/organism/Map'));
+const Dashboard = lazy(() => import('@/pages/Dashboard'));
+const Vehicles = lazy(() => import('@/pages/Vehicles'));
+const Users = lazy(() => import('@/pages/Users'));
+const Customers = lazy(() => import('@/pages/Customers'));
+const MyProfile = lazy(() => import('@/pages/MyProfile'));
 
 interface AppRouterProps {
   Router?: React.ComponentType<BrowserRouterProps>;
@@ -59,11 +59,46 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
         <Route path="/map" element={<Map />} />
         <Route element={<DashboardLayout />}>
           <Route path="/" index element={<Navigate to="/dashboard" replace />} />
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="vehicles" element={<Vehicles />} />
-          <Route path="users" element={<Users />} />
-          <Route path="customers" element={<Customers />} />
-          <Route path="my-profile" element={<MyProfile />} />
+          <Route
+            path="dashboard"
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Dashboard />
+              </Suspense>
+            }
+          />
+          <Route
+            path="vehicles"
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Vehicles />
+              </Suspense>
+            }
+          />
+          <Route
+            path="users"
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Users />
+              </Suspense>
+            }
+          />
+          <Route
+            path="customers"
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <Customers />
+              </Suspense>
+            }
+          />
+          <Route
+            path="my-profile"
+            element={
+              <Suspense fallback={<div>Loading...</div>}>
+                <MyProfile />
+              </Suspense>
+            }
+          />
         </Route>
       </Routes>
     </Router>
