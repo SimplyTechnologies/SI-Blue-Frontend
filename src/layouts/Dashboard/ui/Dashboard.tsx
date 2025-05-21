@@ -31,6 +31,7 @@ function DashboardLayout() {
       },
       onError: error => {
         console.log('error', error);
+        navigate('/login');
       },
     });
   };
