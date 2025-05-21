@@ -1,4 +1,4 @@
-import type { Dispatch, SetStateAction, FC } from 'react';
+import { type Dispatch, type SetStateAction, type FC, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 
 import type { TAddress } from '@/types/Address';
@@ -19,9 +19,6 @@ import {
 } from './AddVehicle.data';
 
 const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>> }> = ({ open, onOpenChange }) => {
-  const currentYear = new Date().getFullYear();
-  const YEARS = Array.from({ length: 126 }, (_, i) => (currentYear - i).toString());
-
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
     defaultValues: {
@@ -44,6 +41,7 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
 
   const onSubmit = (values: CarFormValues) => {
     console.log(values);
+    onOpenChange(false);
   };
 
   const onAddressSelect = (address: TAddress) => {
@@ -53,8 +51,12 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
     form.setValue('state', address.state);
     form.setValue('country', address.country);
     form.setValue('zipCode', address.zip);
-    form.trigger();
+    form.trigger(['street', 'city', 'state', 'country', 'zipCode']);
   };
+
+  useEffect(() => {
+    form.reset();
+  }, [open, form]);
 
   return (
     <Modal

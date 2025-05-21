@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, type FC } from 'react';
 
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import AnalyticCard from '@/components/atom/AnalyticCard';
 import AddVehicle from '@/components/organism/AddVehicle';
 
-const Dashboard: React.FC = () => {
+const Dashboard: FC = () => {
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
 
   return (
@@ -26,7 +26,7 @@ const Dashboard: React.FC = () => {
       <div className="h-full max-h-[608px] max-[1024px]:min-h-[200px] max-[480px]:min-h-[400px] mt-[2rem]">
         <Map />
       </div>
-      {openAddVehicle && <AddVehicle open={openAddVehicle} onOpenChange={setOpenAddVehicle} />}
+      <AddVehicle open={openAddVehicle} onOpenChange={setOpenAddVehicle} />
     </div>
   );
 };
