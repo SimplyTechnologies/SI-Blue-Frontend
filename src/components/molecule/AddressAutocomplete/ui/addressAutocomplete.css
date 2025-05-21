@@ -1,0 +1,34 @@
+.google-autocomplete {
+    width: 100%;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 400;
+    border: 1px solid #DBDDE1;
+
+    padding: 12px 10px;
+    height: 46px;
+    box-sizing: border-box;
+
+    &:focus-visible {
+        outline: none;
+    }
+}
+
+.pac-container {
+    border-radius: 8px;
+    z-index: 99999;
+}
+
+.pac-item {
+    cursor: pointer;
+    pointer-events: auto;
+}
+
+.pac-container:after {
+    background-image: none !important;
+    height: 0;
+}
+
+.pac-icon.pac-icon-marker {
+    display: none;
+}

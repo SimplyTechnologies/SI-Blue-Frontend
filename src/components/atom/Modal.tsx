@@ -14,10 +14,16 @@ interface TModalProps extends Omit<ComponentPropsWithoutRef<typeof Content>, 'ti
   footerButtonProps: ComponentProps<'button'> & {
     text: string;
     onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
+    form?: string;
   };
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'auto';
   bodyClassName?: string;
+  closeOnOutsideClick?: boolean;
 }
+
+type RadixPointerDownOutsideEvent = Parameters<
+  NonNullable<ComponentPropsWithoutRef<typeof Content>['onPointerDownOutside']>
+>[0];
 
 const Modal = ({
   isOpen,
@@ -29,6 +35,7 @@ const Modal = ({
   size = 'md',
   className,
   bodyClassName,
+  closeOnOutsideClick = true,
   ...props
 }: TModalProps) => {
   const { text: footerButtonText, onClick: onFooterButtonClick, ...restFooterButtonProps } = footerButtonProps;
@@ -41,6 +48,17 @@ const Modal = ({
     xl: 'sm:max-w-4xl',
   };
 
+  const { onPointerDownOutside: userOnPointerDownOutside, ...restContentProps } = props;
+
+  const handlePointerDownOutside = (event: RadixPointerDownOutsideEvent) => {
+    if (!closeOnOutsideClick) {
+      event.preventDefault();
+    }
+    if (typeof userOnPointerDownOutside === 'function') {
+      userOnPointerDownOutside(event);
+    }
+  };
+
   return (
     <Root open={isOpen} onOpenChange={onOpenChange}>
       {trigger && <Trigger asChild>{trigger}</Trigger>}
@@ -48,6 +66,7 @@ const Modal = ({
         <Overlay className="fixed inset-0 z-50 bg-black/30 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0" />
         <Content
           onOpenAutoFocus={e => e.preventDefault()}
+          onPointerDownOutside={handlePointerDownOutside}
           className={cn(
             'fixed left-[50%] top-[50%] z-50 grid w-full translate-x-[-50%] translate-y-[-50%]',
             'border bg-background shadow-lg duration-200',
@@ -59,7 +78,7 @@ const Modal = ({
             sizeClasses[size],
             className,
           )}
-          {...props}
+          {...restContentProps}
         >
           <div className="flex flex-col h-full w-full p-8">
             <div className="relative flex-shrink-0">
@@ -82,7 +101,9 @@ const Modal = ({
                 {title}
               </Title>
             </div>
-            <div className={cn('flex-grow overflow-y-auto', bodyClassName)}>{children}</div>
+            <div className={cn('flex-grow overflow-y-auto scroll-smooth max-h-[calc(90vh_-_210px)]', bodyClassName)}>
+              {children}
+            </div>
             <div className="mt-auto flex-shrink-0 pt-6">
               <Button
                 variant="default"
