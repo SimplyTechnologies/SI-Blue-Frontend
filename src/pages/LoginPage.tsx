@@ -13,11 +13,6 @@ import { useLogin } from '@/hooks/useLogin';
 const passwordSchema = z
   .string()
   .min(1, 'Password is required')
-  .min(8, 'Password must be at least 8 characters long')
-  .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
-  .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
-  .regex(/[0-9]/, 'Password must contain at least one number')
-  .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character');
 
 const schema = z.object({
   email: z.string().min(1, 'Email address is required').email('Enter a valid email address.'),
@@ -37,8 +32,8 @@ const LoginPage: React.FC = () => {
     trigger,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: 'onChange',
-    reValidateMode: 'onBlur',
+    mode: 'all',
+    reValidateMode: 'onChange',
   });
   const [serverError, setServerError] = useState('');
 
