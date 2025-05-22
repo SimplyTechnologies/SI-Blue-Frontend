@@ -19,9 +19,9 @@ const Dashboard: FC = () => {
         Total analytics
       </p>
       <div className="flex flex-wrap justify-evenly items-end gap-[1rem]">
-        <AnalyticCard title={'vehicle'} count={3656} />
-        <AnalyticCard title={'customers'} count={3656} />
-        <AnalyticCard title={'vehiclesSold'} count={1276} />
+        <AnalyticCard title={'vehicle'} count={0} />
+        <AnalyticCard title={'customers'} count={0} />
+        <AnalyticCard title={'vehiclesSold'} count={0} />
       </div>
       <div className="h-full max-h-[608px] max-[1024px]:min-h-[200px] max-[480px]:min-h-[400px] mt-[2rem]">
         <Map />
