@@ -12,7 +12,6 @@ const AppRoutes = () => {
     <Suspense fallback={null}>
       <Routes>
         <Route element={isAuth ? <Layout /> : <AuthLayout />}>
-          {!isAuth && <Route path="/" element={<Navigate replace to={`/${RoutePaths.LOGIN}`} />} />}
           {(isAuth ? privateRoutes : publicRoutes).map(({ path, Component }) => (
             <Route
               key={path}
