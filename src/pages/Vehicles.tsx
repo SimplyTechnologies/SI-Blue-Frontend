@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { Input } from '@/components/atom/Input';
 import Map from '@/components/organism/Map';
-import filterIcon from '@/assets/filter.svg';
-import searchIcon from '@/assets/search.svg';
+import VehiclesHeader from '@/components/organism/VehiclesHeader';
 import downloadIcon from '@/assets/download.svg';
 import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
@@ -13,25 +11,7 @@ const Vehicles: React.FC = () => {
   return (
     <div className="w-full h-[calc(100vh-78px)] flex">
       <div className="h-full flex flex-col gap-[0.5rem] flex-[0_1_40%] bg-[var(--white-color)] px-[1.5rem] pt-[1.5rem] max-[768px]:px-[0.5rem] max-[768px]:pt-[0.5rem]">
-        <div className="flex item-start justify-between gap-[1rem] max-[1200px]:flex-col">
-          <div className="w-full max-w-[352px] h-[42px] flex items-center">
-            <div className="relative w-full">
-              <img src={searchIcon} alt="Search" className="absolute left-[1.5rem] top-1/2 -translate-y-1/2 " />
-              <Input
-                className="w-full  max-w-[308px] h-[42px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[3.5rem] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] placeholder:leading-[140%] placeholder:font-[var(--fw-regular)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
-                placeholder="Search..."
-              />
-            </div>
-            <div className="flex justify-end items-center w-[44px] h-[42px]">
-              <img src={filterIcon} alt="Filter" />
-            </div>
-          </div>
-          <div>
-            <Button variant={'default'} className="w-[132px] h-[56px] max-[1200px]:h-[42px]">
-              + Add
-            </Button>
-          </div>
-        </div>
+        <VehiclesHeader />
         <div className="h-full flex flex-col">
           <div className="w-full max-w-[352px] flex items-start gap-[6rem] border-b-[1px] border-[var(--color-support-8)] max-[1200px]:gap-[0] max-[1200px]:justify-between">
             <div className="flex gap-[1rem] max-[600px]:flex-col">
@@ -83,4 +63,3 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
-
