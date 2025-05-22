@@ -1,3 +1,4 @@
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, type VariantProps } from 'class-variance-authority';
 
@@ -6,11 +7,10 @@ import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle } from '@/components/atom/Sheet';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/atom/Tooltip';
-import { ChevronLeftIcon } from '@/assets/svgIconComponents/ChavronLeftIcon';
+import { ChevronLeftIcon } from '@/assets/svgIconComponents/ChevronLeftIcon';
 import { SidebarTriggerMobileIcon } from '@/assets/svgIconComponents/SidebarTriggerMobile';
-import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 
-const SIDEBAR_STORAGE_NAME = 'sidebar_open';
+const SIDEBAR_STORAGE_NAME = 'sidebarOpen';
 const SIDEBAR_WIDTH = '15.625rem';
 const SIDEBAR_WIDTH_MOBILE = '15.625rem';
 const SIDEBAR_WIDTH_ICON = '5.625rem';
