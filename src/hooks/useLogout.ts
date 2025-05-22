@@ -8,11 +8,11 @@ type LogoutResponse = {
 export const useLogout = () => {
   return useMutation<LogoutResponse, Error>({
     mutationFn: async () => {
-      const response = await fetch('/api/logout', {
+      const response = await fetch('/api/auth/logout', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-        }
+        },
       });
       return response.json();
     },
