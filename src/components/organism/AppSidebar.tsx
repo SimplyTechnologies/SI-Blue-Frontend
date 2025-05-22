@@ -13,33 +13,34 @@ import { VehiclesIconActive } from '@/assets/svgIconComponents/VehiclesIconActiv
 import { UsersIconActive } from '@/assets/svgIconComponents/UsersIconActive';
 import { CustomersIconActive } from '@/assets/svgIconComponents/CustomersIconActive';
 import { DashboardIconActive } from '@/assets/svgIconComponents/DashboardIconActive';
+import { RoutePaths } from '@/routes/Routes.types';
 
 const data = {
   navMain: [
     {
       title: 'Dashboard',
-      url: '/dashboard',
+      url: `/${RoutePaths.DASHBOARD}`,
       icon: <DashboardIcon />,
       iconActive: <DashboardIconActive />,
       isActive: true,
     },
     {
       title: 'Vehicles',
-      url: '/vehicles',
+      url: `/${RoutePaths.VEHICLES}`,
       icon: <VehiclesIcon />,
       iconActive: <VehiclesIconActive />,
       isActive: true,
     },
     {
       title: 'Users',
-      url: '/users',
+      url: `/${RoutePaths.USERS}`,
       icon: <UsersIcon />,
       iconActive: <UsersIconActive />,
       isActive: true,
     },
     {
       title: 'Customers',
-      url: '/customers',
+      url: `/${RoutePaths.CUSTOMERS}`,
       icon: <CustomersIcon />,
       iconActive: <CustomersIconActive />,
       isActive: true,

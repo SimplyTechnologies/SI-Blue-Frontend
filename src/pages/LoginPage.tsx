@@ -9,6 +9,7 @@ import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
+import { RoutePaths } from '@/routes/Routes.types';
 
 const passwordSchema = z
   .string()
@@ -41,7 +42,7 @@ const LoginPage: React.FC = () => {
     setServerError('');
     login.mutate(data, {
       onSuccess: () => {
-        navigate('/dashboard');
+        navigate(`/${RoutePaths.DASHBOARD}`);
       },
       onError: error => {
         setServerError(error.message);
@@ -120,9 +121,8 @@ const LoginPage: React.FC = () => {
               </label>
             </div>
             <a
-              href="#"
-              className="font-[var(--fw-medium)] text-[var(--color-primary-3)] text-[length:var(--xs-text)] leading-[140%]"
-              onClick={() => navigate('/forgot-password')}
+              className="font-[var(--fw-medium)] text-[var(--color-primary-3)] text-[length:var(--xs-text)] leading-[140%] cursor-pointer"
+              onClick={() => navigate(`/${RoutePaths.FORGOT_PASSWORD}`)}
             >
               Forgot password
             </a>

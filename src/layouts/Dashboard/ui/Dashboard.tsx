@@ -6,6 +6,7 @@ import CustomDropdown from '@/components/molecule/CustomDropdown';
 import { useLogout } from '@/hooks/useLogout';
 import { pathTitles } from '@/utils/pageTitles';
 import { generateStringToColor } from '@/utils/general';
+import { RoutePaths } from '@/routes/Routes.types';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
 import './dashboard.css';
@@ -19,7 +20,7 @@ function DashboardLayout() {
   const avatarBg = generateStringToColor('C' + 'N');
 
   const handleProfileNavigate = () => {
-    navigate('/my-profile');
+    navigate(`/${RoutePaths.MY_PROFILE}`);
   };
 
   const handleLogout = () => {
@@ -27,11 +28,11 @@ function DashboardLayout() {
       onSuccess: () => {
         // localStorage.removeItem('accessToken');
         //   setUser(null);
-        navigate('/login');
+        navigate(`/${RoutePaths.LOGIN}`);
       },
       onError: error => {
         console.log('error', error);
-        navigate('/login');
+        navigate(`/${RoutePaths.LOGIN}`);
       },
     });
   };

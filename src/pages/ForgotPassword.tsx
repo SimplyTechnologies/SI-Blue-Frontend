@@ -7,6 +7,7 @@ import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
+import { RoutePaths } from '@/routes/Routes.types';
 
 const schema = z.object({
   email: z.string().email({
@@ -31,7 +32,7 @@ const ForgotPassword: React.FC = () => {
   });
 
   const [success, setSuccess] = useState(false);
-  const [ email, setEmail ] = useState('');
+  const [email, setEmail] = useState('');
 
   const onSubmit = (data: FormData) => {
     setEmail(data.email);
@@ -87,7 +88,7 @@ const ForgotPassword: React.FC = () => {
           className="h-[56px]"
           variant={'default'}
           onClick={() => {
-            if (success) navigate('/login');
+            if (success) navigate(`/${RoutePaths.LOGIN}`);
           }}
         >
           {success ? 'Back to Sign In' : 'Send Reset Link'}
@@ -96,7 +97,11 @@ const ForgotPassword: React.FC = () => {
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />
           <span className="relative z-10 inline-block bg-background px-2 text-[var(--color-support-6)]">Or</span>
         </div>
-        <Button className={`${success ? 'hidden' : 'h-[56px]'}`} variant={'outline'} onClick={() => navigate('/login')}>
+        <Button
+          className={`${success ? 'hidden' : 'h-[56px]'}`}
+          variant={'outline'}
+          onClick={() => navigate(`/${RoutePaths.LOGIN}`)}
+        >
           Back to Sign In
         </Button>
       </div>
