@@ -1,12 +1,18 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router';
+import { ChevronLeftIcon } from 'lucide-react';
 import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
 import CustomSelect from '@/components/molecule/CustomSelect';
 import { Button } from '@/components/atom/Button';
-import { ChevronLeftIcon } from 'lucide-react';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@radix-ui/react-tooltip';
-import CustomTooltip from '../molecule/CustomTooltip';
+import CustomTooltip from '@/components/molecule/CustomTooltip';
 
-const VehiclesFilter: React.FC = () => {
+type VehiclesFilterTypes = {
+  handleBack: () => void;
+};
+
+const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+
   const makeOptions = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen'];
 
   const modelOptions: Record<string, { label: string; value: string }[]> = {
@@ -59,19 +65,16 @@ const VehiclesFilter: React.FC = () => {
   const [selectedMake, setSelectedMake] = useState('');
   const [selectedModels, setSelectedModels] = useState<string[]>([]);
   const [selectedAvailability, setSelectedAvailability] = useState('');
-  const [makeChanged, setMakeChanged] = useState(false);
 
   const handleMakeChange = (value: string) => {
     setSelectedMake(value);
     if (selectedModels.length) {
-      setMakeChanged(true);
       setSelectedModels([]);
     }
   };
 
   const handleModelsChange = (value: string[]) => {
     setSelectedModels(value);
-    setMakeChanged(false);
   };
 
   const handleAvailabilityChange = (value: string) => {
@@ -83,24 +86,61 @@ const VehiclesFilter: React.FC = () => {
     return count;
   };
 
-  const handleApplyFilters = async () => {
-    console.log({
-      selectedMake,
-      selectedAvailability,
-      selectedModels,
-    });
+  const handleApplyFilters = () => {
+    const queryParams = new URLSearchParams();
+    if (selectedMake) {
+      queryParams.append('make', selectedMake);
+    }
+    if (selectedModels.length) {
+      selectedModels.forEach(model => queryParams.append('model', model));
+    }
+    if (selectedAvailability) {
+      queryParams.append('availability', selectedAvailability);
+    }
+    handleBack();
+    setSearchParams(queryParams);
   };
 
-  const handleBack = () => {};
+  const handleClearFilters = () => {
+    setSelectedMake('');
+    setSelectedModels([]);
+    setSelectedAvailability('');
+  };
+
+  useEffect(() => {
+    const make = searchParams.get('make');
+    const availability = searchParams.get('availability');
+    const models = searchParams.getAll('model');
+
+    if (make) {
+      setSelectedMake(make);
+    }
+
+    if (models.length) {
+      setSelectedModels(models);
+    }
+
+    if (availability) {
+      setSelectedAvailability(availability);
+    }
+  }, [searchParams]);
 
   return (
     <div className="flex flex-col gap-[18px] w-full">
-      <div className="flex gap-2 items-center">
-        <div onClick={handleBack} className="cursor-pointer hover:opacity-80">
-          <ChevronLeftIcon color="#192252" className="h-[24px] w-[24px]" />
+      <div className="flex justify-between">
+        <div className="flex gap-2 items-center">
+          <div onClick={handleBack} className="cursor-pointer hover:opacity-80">
+            <ChevronLeftIcon color="#192252" className="h-[24px] w-[24px]" />
+          </div>
+          <div className="text-[#192252] text-[14px] font-bold">Filters</div>
         </div>
-        <div className="text-[#192252] text-[14px] font-bold">Filters</div>
+        <div>
+          <Button variant="text" className="text-xs text-[#858C98] hover:text-[#403C89]" onClick={handleClearFilters}>
+            Clear All
+          </Button>
+        </div>
       </div>
+
       <div>
         <CustomSelect
           label="Make"
@@ -117,17 +157,17 @@ const VehiclesFilter: React.FC = () => {
             <CustomMultiSelect
               options={modelOptions[selectedMake] || []}
               onValueChange={handleModelsChange}
-              defaultValue={selectedModels}
+              value={selectedModels}
               placeholder="Select Model"
               variant="inverted"
-              maxCount={4}
+              maxCount={2}
               label="Models"
               disabled={!selectedMake}
-              makeChanged={makeChanged}
             />
           }
           content="Select Make to enable Model"
           side="bottom"
+          hidden={!!selectedMake}
         />
       </div>
       <div>
@@ -140,13 +180,11 @@ const VehiclesFilter: React.FC = () => {
           className="bg-white"
         />
       </div>
-      <div>
-        <Button
-          disabled={!!getFiltersCount()}
-          variant="default"
-          className="w-full h-[40px] text-xs"
-          onClick={handleApplyFilters}
-        >
+      <div className="flex flex-col gap-2">
+        {/* <Button variant="outline" className="w-full h-[40px] text-xs" onClick={handleClearFilters}>
+          Clear All Filters
+        </Button> */}
+        <Button variant="default" className="w-full h-[40px] text-xs" onClick={handleApplyFilters}>
           Apply Filters ({getFiltersCount()})
         </Button>
       </div>

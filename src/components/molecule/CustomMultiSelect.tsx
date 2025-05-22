@@ -21,7 +21,7 @@ import { cn } from '@/utils/cn';
  * Variants for the multi-select component to handle different styles.
  * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
  */
-const multiSelectVariants = cva('m-1 bg-[#403C89] text-white rounded-[4px]', {
+const multiSelectVariants = cva('m-1 bg-[#403C89] text-white rounded-[4px] hover:bg-[#403C89] hover:opacity-90', {
   variants: {
     variant: {
       default: 'border-foreground/10 text-foreground bg-card hover:bg-card/80',
@@ -61,7 +61,7 @@ interface MultiSelectProps
   onValueChange: (value: string[]) => void;
 
   /** The default selected values when the component mounts. */
-  defaultValue?: string[];
+  value?: string[];
 
   /**
    * Placeholder text to be displayed when no values are selected.
@@ -98,60 +98,46 @@ interface MultiSelectProps
    * Label to add above the dropdown. Optional.
    */
   label?: string;
-  
+
   /**
    * Option to disable select. Optional
    */
   disabled?: boolean;
-
-  /**
-   * On make change clear the selected values
-   */
-  makeChanged?: boolean;
 }
 
 const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
-  (
-    {
-      options,
-      onValueChange,
-      variant,
-      defaultValue = [],
-      placeholder = 'Select options',
-      maxCount = 3,
-      modalPopover = false,
-      className,
-      label,
-      disabled,
-      makeChanged,
-      ...props
-    },
-    ref,
-  ) => {
-    const [selectedValues, setSelectedValues] = React.useState<string[]>(defaultValue);
+  ({
+    options,
+    onValueChange,
+    variant,
+    value = [],
+    placeholder = 'Select options',
+    maxCount = 3,
+    modalPopover = false,
+    className,
+    label,
+    disabled,
+    ...props
+  }) => {
+    const ref = React.useRef<HTMLButtonElement | null>(null);
     const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
     const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
       if (event.key === 'Enter') {
         setIsPopoverOpen(true);
       } else if (event.key === 'Backspace' && !event.currentTarget.value) {
-        const newSelectedValues = [...selectedValues];
+        const newSelectedValues = [...value];
         newSelectedValues.pop();
-        setSelectedValues(newSelectedValues);
         onValueChange(newSelectedValues);
       }
     };
 
     const toggleOption = (option: string) => {
-      const newSelectedValues = selectedValues.includes(option)
-        ? selectedValues.filter(value => value !== option)
-        : [...selectedValues, option];
-      setSelectedValues(newSelectedValues);
+      const newSelectedValues = value.includes(option) ? value.filter(val => val !== option) : [...value, option];
       onValueChange(newSelectedValues);
     };
 
     const handleClear = () => {
-      setSelectedValues([]);
       onValueChange([]);
     };
 
@@ -160,26 +146,18 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
     };
 
     const clearExtraOptions = () => {
-      const newSelectedValues = selectedValues.slice(0, maxCount);
-      setSelectedValues(newSelectedValues);
+      const newSelectedValues = value.slice(0, maxCount);
       onValueChange(newSelectedValues);
     };
 
     const toggleAll = () => {
-      if (selectedValues.length === options.length) {
+      if (value.length === options.length) {
         handleClear();
       } else {
         const allValues = options.map(option => option.value);
-        setSelectedValues(allValues);
         onValueChange(allValues);
       }
     };
-
-    React.useEffect(() => {
-      if (makeChanged) {
-        handleClear();
-      }
-    }, [makeChanged]);
 
     return (
       <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={modalPopover}>
@@ -195,10 +173,10 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
               className,
             )}
           >
-            {selectedValues.length > 0 ? (
+            {value.length > 0 ? (
               <div className="flex justify-between items-center w-full">
                 <div className="flex flex-wrap items-center">
-                  {selectedValues.slice(0, maxCount).map(value => {
+                  {value.slice(0, maxCount).map(value => {
                     const option = options.find(o => o.value === value);
                     const IconComponent = option?.icon;
                     return (
@@ -216,14 +194,14 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                       </Badge>
                     );
                   })}
-                  {selectedValues.length > maxCount && (
+                  {value.length > maxCount && (
                     <Badge
                       className={cn(
                         'bg-transparent text-foreground border-foreground/1 hover:bg-transparent',
                         multiSelectVariants({ variant }),
                       )}
                     >
-                      {`+ ${selectedValues.length - maxCount} more`}
+                      {`+ ${value.length - maxCount} more`}
                       <span
                         onClick={event => {
                           event.stopPropagation();
@@ -256,7 +234,12 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
             )}
           </Button>
         </PopoverTrigger>
-        <PopoverContent className="w-auto p-0" align="start" onEscapeKeyDown={() => setIsPopoverOpen(false)}>
+        <PopoverContent
+          style={{ width: ref?.current?.offsetWidth }}
+          className="w-full p-0"
+          align="start"
+          onEscapeKeyDown={() => setIsPopoverOpen(false)}
+        >
           <Command>
             <CommandInput placeholder="Search..." onKeyDown={handleInputKeyDown} />
             <CommandList>
@@ -266,9 +249,7 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                   <div
                     className={cn(
                       'mr-2 flex h-4 w-4 items-center justify-center rounded-[4px] border border-primary',
-                      selectedValues.length === options.length
-                        ? 'bg-[#403C89] text-white'
-                        : 'opacity-50 [&_svg]:invisible',
+                      value.length === options.length ? 'bg-[#403C89] text-white' : 'opacity-50 [&_svg]:invisible',
                     )}
                   >
                     <CheckIcon className="h-4 w-4" color="white" />
@@ -276,7 +257,7 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
                   <span>(Select All)</span>
                 </CommandItem>
                 {options.map(option => {
-                  const isSelected = selectedValues.includes(option.value);
+                  const isSelected = value.includes(option.value);
                   return (
                     <CommandItem
                       key={option.value}
@@ -300,7 +281,7 @@ const CustomMultiSelect = React.forwardRef<HTMLButtonElement, MultiSelectProps>(
               <CommandSeparator />
               <CommandGroup>
                 <div className="flex items-center justify-between">
-                  {selectedValues.length > 0 && (
+                  {value.length > 0 && (
                     <>
                       <CommandItem onSelect={handleClear} className="flex-1 justify-center cursor-pointer">
                         Clear
