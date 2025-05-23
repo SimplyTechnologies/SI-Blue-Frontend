@@ -1,10 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
+import { z } from 'zod';
 import { ChevronLeftIcon } from 'lucide-react';
 import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
 import CustomSelect from '@/components/molecule/CustomSelect';
 import { Button } from '@/components/atom/Button';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
+
+const filterSchema = z.object({
+  make: z.string().optional().default(''),
+  models: z.array(z.string()).optional().default([]),
+  availability: z.string().optional().default(''),
+});
+
+type FiltersType = z.infer<typeof filterSchema>;
 
 type VehiclesFilterTypes = {
   handleBack: () => void;
@@ -13,7 +22,8 @@ type VehiclesFilterTypes = {
 const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const makeOptions = ['Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen'];
+  const makeOptions = ['Select all', 'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen'];
+  
 
   const modelOptions: Record<string, { label: string; value: string }[]> = {
     Toyota: [
@@ -60,69 +70,70 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
     ],
   };
 
-  const availabilityOptions = ['In Stock', 'Sold'];
+  const availabilityOptions = ['Select all', 'In Stock', 'Sold'];
 
-  const [selectedMake, setSelectedMake] = useState('');
-  const [selectedModels, setSelectedModels] = useState<string[]>([]);
-  const [selectedAvailability, setSelectedAvailability] = useState('');
+  const [filters, setFilters] = useState<FiltersType>({
+    make: '',
+    models: [],
+    availability: '',
+  });
 
   const handleMakeChange = (value: string) => {
-    setSelectedMake(value);
-    if (selectedModels.length) {
-      setSelectedModels([]);
+    setFilters({ ...filters, make: value === 'Select all' ? '' : value });
+    if (filters.models.length) {
+      setFilters({ ...filters, models: [] });
     }
   };
 
   const handleModelsChange = (value: string[]) => {
-    setSelectedModels(value);
+    setFilters({ ...filters, models: value });
   };
 
   const handleAvailabilityChange = (value: string) => {
-    setSelectedAvailability(value);
+    setFilters({ ...filters, availability: value === 'Select all' ? '' : value });
   };
 
   const getFiltersCount = () => {
-    const count = [selectedAvailability, selectedMake, ...selectedModels].filter(Boolean).length;
+    const count = [filters.make, filters.availability, ...filters.models].filter(Boolean).length;
     return count;
   };
 
   const handleApplyFilters = () => {
     const queryParams = new URLSearchParams();
-    if (selectedMake) {
-      queryParams.append('make', selectedMake);
+    if (filters.make) {
+      queryParams.append('make', filters.make);
     }
-    if (selectedModels.length) {
-      selectedModels.forEach(model => queryParams.append('model', model));
+    if (filters.models.length) {
+      filters.models.forEach(model => queryParams.append('model', model));
     }
-    if (selectedAvailability) {
-      queryParams.append('availability', selectedAvailability);
+    if (filters.availability) {
+      queryParams.append('availability', filters.availability);
     }
-    handleBack();
     setSearchParams(queryParams);
+    handleBack();
   };
 
   const handleClearFilters = () => {
-    setSelectedMake('');
-    setSelectedModels([]);
-    setSelectedAvailability('');
+    setFilters({
+      make: '',
+      models: [],
+      availability: '',
+    });
   };
 
   useEffect(() => {
-    const make = searchParams.get('make');
-    const availability = searchParams.get('availability');
-    const models = searchParams.getAll('model');
+    const make = searchParams.get('make') || '';
+    const availability = searchParams.get('availability') || '';
+    const models = searchParams.getAll('model') || [];
 
-    if (make) {
-      setSelectedMake(make);
-    }
+    setFilters({
+      make,
+      models,
 
-    if (models.length) {
-      setSelectedModels(models);
-    }
 
-    if (availability) {
-      setSelectedAvailability(availability);
-    }
+      
+      availability,
+    });
   }, [searchParams]);
 
   return (
@@ -144,7 +155,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
       <div>
         <CustomSelect
           label="Make"
-          value={selectedMake}
+          value={filters.make}
           items={makeOptions}
           onChange={handleMakeChange}
           placeholder="Select Make"
@@ -155,25 +166,25 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
         <CustomTooltip
           trigger={
             <CustomMultiSelect
-              options={modelOptions[selectedMake] || []}
+              options={modelOptions[filters.make] || []}
               onValueChange={handleModelsChange}
-              value={selectedModels}
+              value={filters.models}
               placeholder="Select Model"
               variant="inverted"
               maxCount={2}
               label="Models"
-              disabled={!selectedMake}
+              disabled={!filters.make}
             />
           }
           content="Select Make to enable Model"
           side="bottom"
-          hidden={!!selectedMake}
+          hidden={!!filters.make}
         />
       </div>
       <div>
         <CustomSelect
           label="Availability"
-          value={selectedAvailability}
+          value={filters.availability}
           items={availabilityOptions}
           onChange={handleAvailabilityChange}
           placeholder="Select Availability"

@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
-import { useSearchParams } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import Map from '@/components/organism/Map';
-import VehiclesHeader from '@/components/organism/VehiclesHeader';
 import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
 import VehiclesFilter from '@/components/organism/VehiclesFilter';
-import { useDebounce } from '@/hooks/useDebounce';
-import downloadIcon from '@/assets/download.svg';
+import DebounceSearch from '@/components/molecule/DebounceSearch';
+import HeaderFilter from '@/components/organism/VehiclesHeader/HeaderFilter';
+import HeaderAddNew from '@/components/organism/VehiclesHeader/HeaderAddNew';
+import { DownloadIcon } from '@/assets/svgIconComponents/DownloadIcon';
 
 const Vehicles: React.FC = () => {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
   const [active, setActive] = useState<string>('vehicles');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [isFilterActive, setIsFilterActive] = useState(false);
 
-  const [inputValue, setInputValue] = useState('');
-  const { debounceValue } = useDebounce({ inputValue, delay: 300 });
+  const [debounceValue, setDebounceValue] = useState('');
 
   useEffect(() => {
     const make = searchParams.get('make');
@@ -30,22 +31,32 @@ const Vehicles: React.FC = () => {
     }
   }, [searchParams]);
 
+  const handleDebounceSearch = (value: string) => {
+    setDebounceValue(value);
+    if (isFilterActive) {
+      navigate('/vehicles');
+    }
+  };
+
   return (
     <div className="w-full h-[calc(100vh-78px)] flex">
       <div className="h-full flex flex-col gap-[0.5rem] flex-[0_1_40%] bg-[var(--white-color)] px-[1.5rem] pt-[1.5rem] max-[768px]:px-[0.5rem] max-[768px]:pt-[0.5rem]">
         {isFilterOpen ? null : (
-          <VehiclesHeader
-            onFilterClick={() => setIsFilterOpen(true)}
-            isFilterActive={isFilterActive}
-            onSearch={setInputValue}
-            inputValue={inputValue}
-          />
+          <div className="flex item-start justify-between gap-[1rem] max-[1200px]:flex-col min-h-[56px]">
+            <div className="w-full max-w-[352px] h-[42px] flex items-center">
+              <DebounceSearch setDebounceValue={handleDebounceSearch} />
+              {debounceValue ? null : (
+                <HeaderFilter onFilterClick={() => setIsFilterOpen(true)} isFilterActive={isFilterActive} />
+              )}
+            </div>
+            {debounceValue ? null : <HeaderAddNew />}
+          </div>
         )}
         {isFilterOpen ? (
           <VehiclesFilter handleBack={() => setIsFilterOpen(false)} />
         ) : (
           <div className="h-full flex flex-col">
-            <div className="w-full max-w-[352px] flex items-start gap-[6rem] border-b-[1px] border-[var(--color-support-8)] max-[1200px]:gap-[0] max-[1200px]:justify-between">
+            <div className="w-full max-w-[352px] flex items-start gap-[6rem] border-b-[1px] border-[var(--color-support-8)] max-[1200px]:gap-[0] justify-between">
               <div className="flex gap-[1rem] max-[600px]:flex-col">
                 <Button
                   onClick={() => setActive('vehicles')}
@@ -58,21 +69,25 @@ const Vehicles: React.FC = () => {
                     <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--color-primary-3)] rounded-t-[2px]" />
                   )}
                 </Button>
-                <Button
-                  onClick={() => setActive('favorites')}
-                  className={`relative w-[67px] h-[37px] pb-[1rem] rounded-[0]`}
-                >
-                  <p className="font-[var(--fw-bold)] text-[length:var(--sm-text)] text-[var(--color-primary-3)] leading-[140%]">
-                    Favorites
-                  </p>
-                  {active === 'favorites' && (
-                    <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--color-primary-3)] rounded-t-[2px]" />
-                  )}
-                </Button>
+                {debounceValue ? null : (
+                  <Button
+                    onClick={() => setActive('favorites')}
+                    className={`relative w-[67px] h-[37px] pb-[1rem] rounded-[0]`}
+                  >
+                    <p className="font-[var(--fw-bold)] text-[length:var(--sm-text)] text-[var(--color-primary-3)] leading-[140%]">
+                      Favorites
+                    </p>
+                    {active === 'favorites' && (
+                      <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--color-primary-3)] rounded-t-[2px]" />
+                    )}
+                  </Button>
+                )}
               </div>
-              <div className="flex w-[24px] h-[24px] items-center justify-center">
-                <img src={downloadIcon} alt="Download" />
-              </div>
+              {debounceValue ? null : (
+                <div className="flex w-[24px] h-[24px] items-center justify-center text-[#AFAFAF] hover:text-[#403c89] cursor-pointer">
+                  <DownloadIcon />
+                </div>
+              )}
             </div>
             <div
               className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[1200px]:max-h-[calc(100vh-16.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
