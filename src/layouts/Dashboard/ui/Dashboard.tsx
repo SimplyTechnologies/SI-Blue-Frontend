@@ -3,7 +3,6 @@ import { SidebarInset, SidebarProvider, SidebarTriggerMobile } from '@/component
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
-import { useLogout } from '@/hooks/useLogout';
 import { pathTitles } from '@/utils/pageTitles';
 import { generateStringToColor } from '@/utils/general';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
@@ -13,27 +12,12 @@ import './dashboard.css';
 function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const logout = useLogout();
 
   const pageTitle = pathTitles[location.pathname] || '';
   const avatarBg = generateStringToColor('C' + 'N');
 
   const handleProfileNavigate = () => {
     navigate('/my-profile');
-  };
-
-  const handleLogout = () => {
-    logout.mutate(undefined, {
-      onSuccess: () => {
-        // localStorage.removeItem('accessToken');
-        //   setUser(null);
-        navigate('/login');
-      },
-      onError: error => {
-        console.log('error', error);
-        navigate('/login');
-      },
-    });
   };
 
   const profileDropdownItems = [
