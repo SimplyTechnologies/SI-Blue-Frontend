@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/atom/Checkbox';
 
 const passwordSchema = z
   .string()
+  .min(1, 'Password is required')
   .min(8, 'Password must be at least 8 characters long')
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
   .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
@@ -21,8 +22,10 @@ const schema = z
     name: z.string().min(2, {
       message: 'Name must be at least 2 characters.',
     }),
-    email: z.string().email({
-      message: 'Invalid email address.',
+    email: z.string()
+    .min(1, 'Email address is required')
+    .email({
+      message: 'Enter a valid email address.',
     }),
     password: passwordSchema,
     confirmPassword: z.string(),
@@ -42,8 +45,8 @@ const AccountActivation: React.FC = () => {
     trigger,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
-    mode: 'onChange',
-    reValidateMode: 'onBlur',
+    mode: 'all',
+    reValidateMode: 'onChange',
   });
 
   const onSubmit = (data: FormData) => {

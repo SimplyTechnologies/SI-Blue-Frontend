@@ -19,7 +19,9 @@ const Vehicles: React.FC = () => {
                 onClick={() => setActive('vehicles')}
                 className={`relative w-[67px] h-[37px] rounded-[0] pb-[1rem]`}
               >
-                <p className="font-[var(--fw-bold)] text-[length:var(--sm-text)] text-[var(--color-primary-3)] leading-[140%]">
+                <p
+                  className={`font-[var(--fw-bold)] text-[length:var(--sm-text)] ${active === 'vehicles' ? 'text-[var(--color-primary-3)]' : 'text-[var(--color-support-7)]'}   leading-[140%]`}
+                >
                   Vehicles
                 </p>
                 {active === 'vehicles' && (
@@ -30,7 +32,9 @@ const Vehicles: React.FC = () => {
                 onClick={() => setActive('favorites')}
                 className={`relative w-[67px] h-[37px] pb-[1rem] rounded-[0]`}
               >
-                <p className="font-[var(--fw-bold)] text-[length:var(--sm-text)] text-[var(--color-primary-3)] leading-[140%]">
+                <p
+                  className={`font-[var(--fw-bold)] text-[length:var(--sm-text)] ${active === 'vehicles' ? 'text-[var(--color-support-7)]' : 'text-[var(--color-primary-3)]'}   leading-[140%]`}
+                >
                   Favorites
                 </p>
                 {active === 'favorites' && (

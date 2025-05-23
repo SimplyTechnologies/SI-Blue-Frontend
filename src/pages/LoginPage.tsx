@@ -9,10 +9,9 @@ import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
+import useAuthStore from '@/stores/authStore';
 
-const passwordSchema = z
-  .string()
-  .min(1, 'Password is required')
+const passwordSchema = z.string().min(1, 'Password is required');
 
 const schema = z.object({
   email: z.string().min(1, 'Email address is required').email('Enter a valid email address.'),
@@ -24,6 +23,7 @@ type FormData = z.infer<typeof schema>;
 const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const login = useLogin();
+  const { auth } = useAuthStore();
 
   const {
     register,
@@ -39,8 +39,13 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = (data: FormData) => {
     setServerError('');
+    console.log(data);
+
     login.mutate(data, {
-      onSuccess: () => {
+      onSuccess: response => {
+        console.log(response)
+        const { user, tokens } = response;
+        auth(user, tokens);
         navigate('/dashboard');
       },
       onError: error => {
