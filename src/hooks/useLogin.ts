@@ -1,4 +1,6 @@
+import type { User } from '@/types/User';
 import { useMutation } from '@tanstack/react-query';
+import axios, { AxiosError } from 'axios';
 
 type LoginPayload = {
   email: string;
@@ -6,20 +8,31 @@ type LoginPayload = {
 };
 
 type LoginResponse = {
-  token: string;
+  user: User;
+  tokens: {
+    accessToken: string;
+    refreshToken: string;
+  };
 };
+
+const apiUrl = import.meta.env.VITE_API_URL;
 
 export const useLogin = () => {
   return useMutation<LoginResponse, Error, LoginPayload>({
     mutationFn: async (data: LoginPayload) => {
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(data),
-      });
-      return response.json();
+      try {
+        const response = await axios.post(`${apiUrl}/auth/login`, data, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+        return response.data;
+      } catch (error) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        const message = axiosError.response?.data?.message || axiosError.message || 'Login failed';
+
+        throw new Error(message);
+      }
     },
   });
 };

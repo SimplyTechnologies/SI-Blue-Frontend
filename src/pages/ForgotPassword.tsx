@@ -94,7 +94,7 @@ const ForgotPassword: React.FC = () => {
         </Button>
         <div className={`${success ? 'hidden' : 'relative text-center text-[length:var(--sm-text)] h-[22px]'}`}>
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />
-          <span className="relative z-10 inline-block bg-background px-2 text-[var(--color-support-6)]">Or</span>
+          <span className="relative z-10 inline-block bg-[var(--color-bg-1)] px-2 text-[var(--color-support-6)]">Or</span> 
         </div>
         <Button className={`${success ? 'hidden' : 'h-[56px]'}`} variant={'outline'} onClick={() => navigate('/login')}>
           Back to Sign In

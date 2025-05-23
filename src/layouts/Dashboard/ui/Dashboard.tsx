@@ -3,42 +3,30 @@ import { SidebarInset, SidebarProvider, SidebarTriggerMobile } from '@/component
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
-import { useLogout } from '@/hooks/useLogout';
 import { pathTitles } from '@/utils/pageTitles';
 import { generateStringToColor } from '@/utils/general';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
 import './dashboard.css';
+import useAuthStore from '@/stores/authStore';
 
 function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
-  const logout = useLogout();
+
+  const { logout, user } = useAuthStore();
 
   const pageTitle = pathTitles[location.pathname] || '';
-  const avatarBg = generateStringToColor('C' + 'N');
+  const userCredentials = (user?.first_name[0] || '') + (user?.last_name[0] || '');
+  const avatarBg = generateStringToColor(userCredentials);
 
   const handleProfileNavigate = () => {
     navigate('/my-profile');
   };
 
-  const handleLogout = () => {
-    logout.mutate(undefined, {
-      onSuccess: () => {
-        // localStorage.removeItem('accessToken');
-        //   setUser(null);
-        navigate('/login');
-      },
-      onError: error => {
-        console.log('error', error);
-        navigate('/login');
-      },
-    });
-  };
-
   const profileDropdownItems = [
     { label: 'My Profile', onClick: handleProfileNavigate, icon: <AccountIcon /> },
-    { label: 'Log Out', onClick: handleLogout, icon: <LogOutIcon /> },
+    { label: 'Log Out', onClick: logout, icon: <LogOutIcon /> },
   ];
 
   return (
@@ -57,7 +45,7 @@ function DashboardLayout() {
               <Avatar>
                 <AvatarImage src="" />
                 <AvatarFallback className="text-[#403C89] font-medium" style={{ backgroundColor: avatarBg }}>
-                  CN
+                  {userCredentials}
                 </AvatarFallback>
               </Avatar>
             }
