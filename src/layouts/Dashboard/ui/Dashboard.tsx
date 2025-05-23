@@ -8,10 +8,13 @@ import { generateStringToColor } from '@/utils/general';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
 import './dashboard.css';
+import useAuthStore from '@/stores/authStore';
 
 function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { logout } = useAuthStore();
 
   const pageTitle = pathTitles[location.pathname] || '';
   const avatarBg = generateStringToColor('C' + 'N');
@@ -22,7 +25,7 @@ function DashboardLayout() {
 
   const profileDropdownItems = [
     { label: 'My Profile', onClick: handleProfileNavigate, icon: <AccountIcon /> },
-    { label: 'Log Out', onClick: handleLogout, icon: <LogOutIcon /> },
+    { label: 'Log Out', onClick: logout, icon: <LogOutIcon /> },
   ];
 
   return (
