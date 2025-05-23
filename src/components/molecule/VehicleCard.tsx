@@ -5,7 +5,7 @@ import favorite from '@/assets/favorite.svg';
 const VehicleCard: React.FC = () => {
   return (
     <div className="w-full py-[1.5rem] border-b-[1px] border-[#F5F5F7] flex">
-      <div className="w-[60px] flex justify-start items-start">
+      <div className="w-[60px] flex justify-start items-start cursor-pointer">
         <div className="w-[48px] h-[48px] flex justify-center items-center bg-[#F5F7FF] border-[2px] border-[var(--color-secondary-1)] rounded-[50%]">
           <div className="w-[24px] h-[24px] flex justify-center items-center">
             <img src={carMarker} alt="Vehicle" />
@@ -14,7 +14,7 @@ const VehicleCard: React.FC = () => {
       </div>
       <div className="w-full flex flex-col">
         <div className="flex justify-between items-center">
-          <div>
+          <div className="cursor-pointer">
             <p className="text-[var(--color-support-6)] text-[length:var(--xs-text)] font-[var(--fw-bold)] leading-[120%]">
               1FTEX1C85AKB67308
             </p>
@@ -28,7 +28,7 @@ const VehicleCard: React.FC = () => {
             </div>
           </div>
         </div>
-        <div className="flex flex-col gap-[0.25rem]">
+        <div className="flex flex-col gap-[0.25rem] cursor-pointer">
           <div>
             <p className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-regular)] leading-[140%]">
               Toyota Corolla 2022

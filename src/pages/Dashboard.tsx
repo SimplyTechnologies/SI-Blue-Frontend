@@ -1,11 +1,10 @@
-import { useState, type FC } from 'react';
-
+import { useState } from 'react';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import AnalyticCard from '@/components/atom/AnalyticCard';
 import AddVehicle from '@/components/organism/AddVehicle';
 
-const Dashboard: FC = () => {
+const Dashboard: React.FC = () => {
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
 
   return (
