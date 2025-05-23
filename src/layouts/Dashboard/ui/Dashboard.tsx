@@ -14,10 +14,11 @@ function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const { logout } = useAuthStore();
+  const { logout, user } = useAuthStore();
 
   const pageTitle = pathTitles[location.pathname] || '';
-  const avatarBg = generateStringToColor('C' + 'N');
+  const userCredentials = (user?.first_name[0] || '') + (user?.last_name[0] || '');
+  const avatarBg = generateStringToColor(userCredentials);
 
   const handleProfileNavigate = () => {
     navigate('/my-profile');
@@ -44,7 +45,7 @@ function DashboardLayout() {
               <Avatar>
                 <AvatarImage src="" />
                 <AvatarFallback className="text-[#403C89] font-medium" style={{ backgroundColor: avatarBg }}>
-                  CN
+                  {userCredentials}
                 </AvatarFallback>
               </Avatar>
             }
