@@ -6,14 +6,23 @@ import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
 import CustomSelect from '@/components/molecule/CustomSelect';
 import { Button } from '@/components/atom/Button';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
+import { useQuery } from '@tanstack/react-query';
+import { fetchMakes } from '@/requests/fetchMakes';
+import { fetchModelsByMake } from '@/requests/fetchModelsByMake';
 
-const filterSchema = z.object({
+export const filterSchema = z.object({
   make: z.string().optional().default(''),
   models: z.array(z.string()).optional().default([]),
   availability: z.string().optional().default(''),
 });
 
-type FiltersType = z.infer<typeof filterSchema>;
+export type FiltersType = z.infer<typeof filterSchema>;
+
+export type FilterParamsType = {
+  makeId?: number;
+  modelIds?: number[];
+  availability?: string;
+};
 
 type VehiclesFilterTypes = {
   handleBack: () => void;
@@ -22,61 +31,39 @@ type VehiclesFilterTypes = {
 const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   const [searchParams, setSearchParams] = useSearchParams();
 
-  const makeOptions = ['Select all', 'Toyota', 'Honda', 'Ford', 'BMW', 'Mercedes-Benz', 'Audi', 'Volkswagen'];
-  
+  const [makeOptions, setMakeOptions] = useState<{id: number, name: string}[]|[]>([]);
+  const [modelOptions, setModelOptions] = useState<{id: number, name: string}[]|[]>();
 
-  const modelOptions: Record<string, { label: string; value: string }[]> = {
-    Toyota: [
-      { label: 'Camry', value: 'Camry' },
-      { label: 'Corolla', value: 'Corolla' },
-      { label: 'RAV4', value: 'RAV4' },
-      { label: 'Highlander', value: 'Highlander' },
-    ],
-    Honda: [
-      { label: 'Civic', value: 'Civic' },
-      { label: 'Accord', value: 'Accord' },
-      { label: 'CR-V', value: 'CR-V' },
-      { label: 'Pilot', value: 'Pilot' },
-    ],
-    Ford: [
-      { label: 'F-150', value: 'F-150' },
-      { label: 'Explorer', value: 'Explorer' },
-      { label: 'Mustang', value: 'Mustang' },
-      { label: 'Escape', value: 'Escape' },
-    ],
-    BMW: [
-      { label: '3 Series', value: '3 Series' },
-      { label: '5 Series', value: '5 Series' },
-      { label: 'X3', value: 'X3' },
-      { label: 'X5', value: 'X5' },
-    ],
-    'Mercedes-Benz': [
-      { label: 'C-Class', value: 'C-Class' },
-      { label: 'E-Class', value: 'E-Class' },
-      { label: 'GLC', value: 'GLC' },
-      { label: 'GLE', value: 'GLE' },
-    ],
-    Audi: [
-      { label: 'A4', value: 'A4' },
-      { label: 'A6', value: 'A6' },
-      { label: 'Q5', value: 'Q5' },
-      { label: 'Q7', value: 'Q7' },
-    ],
-    Volkswagen: [
-      { label: 'Jetta', value: 'Jetta' },
-      { label: 'Passat', value: 'Passat' },
-      { label: 'Tiguan', value: 'Tiguan' },
-      { label: 'Atlas', value: 'Atlas' },
-    ],
-  };
+  const availabilityOptions = [
+    { name: 'Select all', id: undefined },
+    { name: 'In Stock', id: 'In Stock' },
+    { name: 'Sold', id: 'Sold' },
+  ];
 
-  const availabilityOptions = ['Select all', 'In Stock', 'Sold'];
+  const [filtersInitialState, setFiltersInitialState] = useState<FiltersType>({
+    make: '',
+    models: [],
+    availability: '',
+  });
 
   const [filters, setFilters] = useState<FiltersType>({
     make: '',
     models: [],
     availability: '',
   });
+
+  const { isPending: makePending, data: makeData } = useQuery({
+    queryKey: ['makes'],
+    queryFn: fetchMakes,
+  });
+
+  const { isPending: modelsPending, data: modelsData } = useQuery({
+    queryKey: ['models', filters.make],
+    queryFn: () => fetchModelsByMake(filters.make),
+    enabled: !!filters.make,
+  });
+
+  const filtersCount = [filters.make, filters.availability, ...filters.models].filter(Boolean).length;
 
   const handleMakeChange = (value: string) => {
     setFilters({ ...filters, make: value === 'Select all' ? '' : value });
@@ -93,18 +80,13 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
     setFilters({ ...filters, availability: value === 'Select all' ? '' : value });
   };
 
-  const getFiltersCount = () => {
-    const count = [filters.make, filters.availability, ...filters.models].filter(Boolean).length;
-    return count;
-  };
-
   const handleApplyFilters = () => {
     const queryParams = new URLSearchParams();
     if (filters.make) {
-      queryParams.append('make', filters.make);
+      queryParams.append('makeId', filters.make);
     }
     if (filters.models.length) {
-      filters.models.forEach(model => queryParams.append('model', model));
+      filters.models.forEach(model => queryParams.append('modelIds', model));
     }
     if (filters.availability) {
       queryParams.append('availability', filters.availability);
@@ -122,19 +104,36 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   };
 
   useEffect(() => {
-    const make = searchParams.get('make') || '';
+    const make = searchParams.get('makeId') || '';
     const availability = searchParams.get('availability') || '';
-    const models = searchParams.getAll('model') || [];
-
+    const models = searchParams.getAll('modelIds') || [];
+    setFiltersInitialState({
+      make,
+      models,
+      availability,
+    });
     setFilters({
       make,
       models,
-
-
-      
       availability,
     });
   }, [searchParams]);
+
+  useEffect(() => {
+    if (makeData) {
+      setMakeOptions([{ name: 'Select all', id: undefined }, ...makeData]);
+    } else {
+      setMakeOptions([])
+    }
+  }, [makeData]);
+
+  useEffect(() => {
+    if (modelsData) {
+      setModelOptions(modelsData);
+    } else {
+      setModelOptions([])
+    }
+  }, [modelsData]);
 
   return (
     <div className="flex flex-col gap-[18px] w-full">
@@ -151,22 +150,26 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
           </Button>
         </div>
       </div>
-
       <div>
         <CustomSelect
           label="Make"
           value={filters.make}
-          items={makeOptions}
+          items={makeOptions?.map((item) => {
+            return {id: item?.id?.toString(), name: item.name}
+          }) || []}
           onChange={handleMakeChange}
           placeholder="Select Make"
           className="bg-white"
+          disabled={!makeOptions?.length}
         />
       </div>
       <div>
         <CustomTooltip
           trigger={
             <CustomMultiSelect
-              options={modelOptions[filters.make] || []}
+              options={modelOptions?.map((item) => {
+                return {id: item?.id?.toString(), name: item.name}
+              }) || []}
               onValueChange={handleModelsChange}
               value={filters.models}
               placeholder="Select Model"
@@ -192,11 +195,13 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
         />
       </div>
       <div className="flex flex-col gap-2">
-        {/* <Button variant="outline" className="w-full h-[40px] text-xs" onClick={handleClearFilters}>
-          Clear All Filters
-        </Button> */}
-        <Button variant="default" className="w-full h-[40px] text-xs" onClick={handleApplyFilters}>
-          Apply Filters ({getFiltersCount()})
+        <Button
+          variant="default"
+          className="w-full h-[40px] text-xs"
+          onClick={handleApplyFilters}
+          disabled={JSON.stringify(filtersInitialState) === JSON.stringify(filters)}
+        >
+          Apply Filters ({filtersCount})
         </Button>
       </div>
     </div>

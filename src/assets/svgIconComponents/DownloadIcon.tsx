@@ -3,16 +3,16 @@ export const DownloadIcon = () => (
     <path
       d="M9 12.5L12 15.5M12 15.5L15 12.5M12 15.5L12 3.5"
       stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
     <path
       d="M7.5 9.5L7 9.5C4.79086 9.5 3 11.2909 3 13.5L3 17.5C3 19.7091 4.79086 21.5 7 21.5L17 21.5C19.2091 21.5 21 19.7091 21 17.5L21 13.5C21 11.2909 19.2091 9.5 17 9.5L16.5 9.5"
       stroke="currentColor"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
     />
   </svg>
 );

@@ -8,7 +8,7 @@ type HeaderFilterTypes = {
 const HeaderFilter = ({ onFilterClick, isFilterActive }: HeaderFilterTypes) => {
   return (
     <div
-      className="flex justify-end items-center w-[44px] h-[42px] relative cursor-pointer group text-[#AFAFAF] hover:text-[#403c89]"
+      className={`flex justify-end items-center w-[44px] h-[42px] relative cursor-pointer group ${isFilterActive ? 'text-[#403c89]' : 'text-[#AFAFAF]'} hover:text-[#403c89] hover:opacity-80`}
       onClick={onFilterClick}
     >
       <FilterIcon />
