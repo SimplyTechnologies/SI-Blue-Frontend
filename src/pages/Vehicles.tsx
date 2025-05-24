@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router';
 // import { toast } from 'sonner';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
@@ -51,6 +51,7 @@ const Vehicles: React.FC = () => {
   const [searchMode, setSearchMode] = useState(false);
   const [parsedFilters, setParsedFilters] = useState<FilterParamsType>({});
   const [vehiclesList, setVehiclesList] = useState<VehiclesType[] | []>([]);
+  const [totalPages, setTotalPages] = useState(1);
 
   const [page, setPage] = useState(1);
   const offset = 25;
@@ -66,9 +67,35 @@ const Vehicles: React.FC = () => {
   });
 
   const { isPending: vehiclesPending, data: vehiclesData } = useQuery({
-    queryKey: ['vehicles', debounceValue, parsedFilters],
+    queryKey: ['vehicles', debounceValue, parsedFilters, page],
     queryFn: () => fetchVehicles(parsedFilters, debounceValue, page, offset),
   });
+
+  const observer = useRef<IntersectionObserver | null>(null);
+
+  const lastLogRef = useCallback(
+    (node: Element | null) => {
+      if (vehiclesPending) return;
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      observer.current = new IntersectionObserver(
+        entries => {
+          const entry = entries[0];
+          if (entry.isIntersecting && page < totalPages) {
+            setPage(prevPage => prevPage + 1);
+          }
+        },
+        {
+          threshold: 0.5,
+        },
+      );
+
+      if (node) observer.current.observe(node);
+    },
+    [vehiclesPending, totalPages, page, setPage],
+  );
 
   useEffect(() => {
     const make = searchParams.get('makeId');
@@ -105,83 +132,71 @@ const Vehicles: React.FC = () => {
     }
   };
 
-  const handleCSVDownload = () => {
-    getCSV();
-  };
-
-  useEffect(() =>{
+  useEffect(() => {
     if (csvData) {
-      csvDownload(csvData)
+      csvDownload(csvData);
     }
-  }, [csvData])
+  }, [csvData]);
 
   useEffect(() => {
     if (vehiclesData?.vehicles && Array.isArray(vehiclesData?.vehicles)) {
-      setVehiclesList(vehiclesData.vehicles);
-    } else {
-      setVehiclesList([]);
+      setTotalPages(vehiclesData.totalPages);
+      setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
     }
   }, [vehiclesData]);
 
   return (
-    <div className="w-full h-[calc(100vh-78px)] flex">
-      <div className="h-full flex flex-col gap-[0.5rem] flex-[0_1_40%] bg-[var(--white-color)] px-[1.5rem] pt-[1.5rem] max-[768px]:px-[0.5rem] max-[768px]:pt-[0.5rem]">
-        {isFilterOpen ? null : (
-          <div className="flex item-start justify-between gap-[1rem] max-[1200px]:flex-col min-h-[56px]">
-            <div className={`gap-2 w-full ${searchMode ? '' : 'max-w-[352px]'}   h-[42px] flex items-center`}>
+    <div className="flex w-full h-[calc(100vh-78px)]">
+      <div className="flex flex-col gap-2 flex-[0_1_40%] h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2">
+        {!isFilterOpen && (
+          <div className="flex justify-between gap-4 min-h-[56px] items-start max-[1200px]:flex-col">
+            <div className={`flex items-center h-[42px] w-full gap-2 ${!searchMode ? 'max-w-[352px]' : ''}`}>
               <DebounceSearch setDebounceValue={handleDebounceSearch} searchMode={searchMode} />
-              {searchMode ? null : (
+              {!searchMode && (
                 <HeaderFilter onFilterClick={() => setIsFilterOpen(true)} isFilterActive={isFilterActive} />
               )}
             </div>
-            {searchMode ? null : <HeaderAddNew />}
+            {!searchMode && <HeaderAddNew />}
           </div>
         )}
+
         {isFilterOpen ? (
           <VehiclesFilter handleBack={() => setIsFilterOpen(false)} />
         ) : (
-          <div className="h-full flex flex-col">
+          <div className="flex flex-col h-full">
             <div
-              className={`w-full ${searchMode ? '' : 'max-w-[352px]'} flex items-start gap-[6rem] border-b-[1px] border-[var(--color-support-8)] max-[1200px]:gap-[0] justify-between`}
+              className={`flex justify-between items-start w-full border-b border-[var(--color-support-8)] gap-[6rem] max-[1200px]:gap-0 ${!searchMode ? 'max-w-[352px]' : ''}`}
             >
-              <div className="flex gap-[1rem] max-[600px]:flex-col">
-                <Button
-                  onClick={() => setActive('vehicles')}
-                  className={`relative w-[67px] h-[37px] rounded-[0] pb-[1rem]`}
-                >
-                  <p
-                    className={`font-[var(--fw-bold)] text-[length:var(--sm-text)] ${active === 'vehicles' ? 'text-[var(--color-primary-3)]' : 'text-[var(--color-support-7)]'}   leading-[140%]`}
-                  >
-                    Vehicles
-                  </p>
-                  {active === 'vehicles' && (
-                    <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--color-primary-3)] rounded-t-[2px]" />
-                  )}
-                </Button>
-
-                {searchMode ? null : (
-                  <Button
-                    onClick={() => setActive('favorites')}
-                    className={`relative w-[67px] h-[37px] pb-[1rem] rounded-[0]`}
-                  >
-                    <p
-                      className={`font-[var(--fw-bold)] text-[length:var(--sm-text)] ${active === 'vehicles' ? 'text-[var(--color-support-7)]' : 'text-[var(--color-primary-3)]'}   leading-[140%]`}
-                    >
-                      Favorites
-                    </p>
-                    {active === 'favorites' && (
-                      <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--color-primary-3)] rounded-t-[2px]" />
-                    )}
-                  </Button>
+              <div className="flex gap-4 max-[600px]:flex-col">
+                {['vehicles', 'favorites'].map(
+                  tab =>
+                    (!searchMode || tab === 'vehicles') && (
+                      <Button
+                        key={tab}
+                        onClick={() => setActive(tab)}
+                        className="relative w-[67px] h-[37px] pb-4 rounded-none"
+                      >
+                        <p
+                          className={`font-[var(--fw-bold)] text-[length:var(--sm-text)] leading-[140%] ${
+                            active === tab ? 'text-[var(--color-primary-3)]' : 'text-[var(--color-support-7)]'
+                          }`}
+                        >
+                          {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                        </p>
+                        {active === tab && (
+                          <span className="absolute bottom-0 left-0 w-full h-[3px] bg-[var(--color-primary-3)] rounded-t" />
+                        )}
+                      </Button>
+                    ),
                 )}
               </div>
-              {searchMode ? null : (
+              {!searchMode && (
                 <CustomTooltip
                   trigger={
                     <Button
                       variant="text"
-                      onClick={handleCSVDownload}
-                      className="flex w-[24px] h-[24px] items-center justify-center text-[#AFAFAF] hover:text-[#403c89] cursor-pointer"
+                      onClick={() => getCSV()}
+                      className="flex w-6 h-6 items-center justify-center text-[#AFAFAF] hover:text-[#403c89] cursor-pointer"
                       disabled={isDownloading}
                     >
                       <DownloadIcon />
@@ -192,23 +207,31 @@ const Vehicles: React.FC = () => {
                 />
               )}
             </div>
+
             <div
               className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[1200px]:max-h-[calc(100vh-16.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
-  [&::-webkit-scrollbar-track]:bg-transparent
-  [&::-webkit-scrollbar-track]:h-[1px]
-  [&::-webkit-scrollbar-thumb]:bg-[var(--color-support-8)]
-  [&::-webkit-scrollbar-thumb]:rounded-full
-"
+                [&::-webkit-scrollbar-track]:bg-transparent
+                [&::-webkit-scrollbar-track]:h-[1px]
+                [&::-webkit-scrollbar-thumb]:bg-[var(--color-support-8)]
+                [&::-webkit-scrollbar-thumb]:rounded-full
+              "
             >
-              {active === 'vehicles' && vehiclesList.map(item => <VehicleCard key={item.id} vehicle={item} />)}
-              {/* {active === 'favorites' && Array.from({ length: 10 }, (_, i) => <VehicleCard key={i} />)} */}
+              {vehiclesList.map((vehicle, index) => (
+                <VehicleCard
+                  key={vehicle.id}
+                  vehicle={vehicle}
+                  ref={index === vehiclesList.length - 1 ? lastLogRef : null}
+                />
+              ))}
             </div>
           </div>
         )}
       </div>
-      <div className="h-full flex-[1_1_60%]">
+
+      <div className="flex-[1_1_60%] h-full">
         <Map />
       </div>
+
       <Toaster richColors />
     </div>
   );

@@ -1,52 +1,59 @@
-import carMarker from '@/assets/carMarkerPrimary.svg';
-import favorite from '@/assets/favorite.svg';
+import React from 'react';
 import type { VehiclesType } from '@/pages/Vehicles';
+import { Button } from '@/components/atom/Button';
+import { FavoriteColor } from '@/assets/svgIconComponents/FavoriteIcon';
+import carMarker from '@/assets/carMarkerPrimary.svg';
 
-const VehicleCard: React.FC<{ vehicle: VehiclesType }> = ({ vehicle }) => {
+const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehiclesType }>(
+  ({ vehicle }, ref) => {
   return (
-    <div className="w-full py-[1.5rem] border-b-[1px] border-[#F5F5F7] flex">
-      <div className="w-[60px] flex justify-start items-start cursor-pointer">
-        <div className="w-[48px] h-[48px] flex justify-center items-center bg-[#F5F7FF] border-[2px] border-[var(--color-secondary-1)] rounded-[50%]">
-          <div className="w-[24px] h-[24px] flex justify-center items-center">
-            <img src={carMarker} alt="Vehicle" />
-          </div>
+    <div className="w-full py-6 border-b border-[#F5F5F7] flex" ref={ref}>
+      {/* Marker Circle */}
+      <div
+        className={`mr-3 w-12 h-12 flex justify-center items-center rounded-full bg-[#F5F7FF] border-2 ${
+          vehicle.sold ? 'border-[#23A1E9]' : 'border-[#0DCF89]'
+        }`}
+      >
+        <img src={carMarker} alt="Vehicle" className="w-6 h-6" />
+      </div>
+
+      {/* Vehicle Info */}
+      <div className="flex flex-col flex-1 w-full">
+        <div className="flex justify-between items-center">
+          <p className="text-[14px] cursor-pointer text-[var(--color-support-6)] text-xs font-bold leading-[120%]">
+            {vehicle.vin}
+          </p>
+        </div>
+
+        <div className="flex flex-col gap-1 cursor-pointer">
+          <p className="text-[14px] text-[var(--color-support-5)] text-xs font-regular leading-[140%]">
+            {vehicle.make.name} {vehicle.model.name} {vehicle.year}
+          </p>
+          <p className="text-[14px] text-[var(--color-support-5)] text-xs font-regular leading-[140%]">
+            Location:{' '}
+            <span className="text-[var(--color-support-6)] font-medium">
+              {vehicle.location.street} {vehicle.location.city}
+            </span>
+          </p>
         </div>
       </div>
-      <div className="w-full flex flex-col">
-        <div className="flex justify-between items-center">
-          <div className="cursor-pointer">
-            <p className="text-[var(--color-support-6)] text-[length:var(--xs-text)] font-[var(--fw-bold)] leading-[120%]">
-              {vehicle.vin}
-            </p>
-          </div>
-          <div className="flex gap-[2.5rem]">
-            <div className="h-[21px] py-[2px] px-[0.5rem] bg-[#23A1E9] rounded-[0.5rem]">
-              <p className="text-[var(--color-white)] text-[12px] font-[var(--fw-regular)] leading-[140%]">Sold</p>
-            </div>
-            <div className="w-[20px] h-[20px] flex justify-center items-center">
-              <img src={favorite} alt="Favorite" />
-            </div>
+
+      {/* Status & Favorite */}
+      <div className="flex items-start gap-5 ml-4">
+        <div className="w-[64px] flex justify-center">
+          <div
+            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.sold ? 'bg-[#23A1E9]' : 'bg-[#0DCF89]'}`}
+          >
+            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.sold ? 'Sold' : 'In Stock'}</p>
           </div>
         </div>
-        <div className="flex flex-col gap-[0.25rem] cursor-pointer">
-          <div>
-            <p className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-regular)] leading-[140%]">
-              {vehicle.make.name} {vehicle.model.name} {vehicle.year}
-            </p>
-          </div>
-          <div>
-            <p className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-regular)] leading-[140%]">
-              Location:{' '}
-              <span className="text-[var(--color-support-6)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
-                {vehicle.location.street} {vehicle.location.city}
-              </span>
-            </p>
-          </div>
-        </div>
+        <Button onClick={() => {}} variant="text" className="w-[20px] hover:opacity-80">
+          <FavoriteColor isFavorite={false} />
+        </Button>
       </div>
     </div>
   );
-};
+});
 
 export default VehicleCard;
 
