@@ -9,7 +9,7 @@ export const fetchVehicles = async (filters: FilterParamsType, search: string, p
       headers: {
         'Content-Type': 'application/json',
       },
-      params: { ...filters, page, offset, search: search || undefined },
+      params: { ...filters, page, offset, search: search || undefined, modelIds: filters.modelIds?.join(',') },
     });
     return response.data;
   } catch (error) {

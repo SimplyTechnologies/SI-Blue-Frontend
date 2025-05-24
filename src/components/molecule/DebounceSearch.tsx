@@ -49,13 +49,13 @@ const DebounceSearch = ({ setDebounceValue, searchMode }: DebounceSearchType) =>
   };
 
   return (
-    <div className="w-full flex gap-2 items-center">
+    <div className="w-full flex gap-2 items-center transition-all duration-300 ease-in-out">
       {searchMode ? (
         <Button variant="text" className="w-auto flex text-xs text-[#858C98] hover:text-[#403C89]" onClick={handleBack}>
           <ChevronLeft color="currentColor" className="h-[16px] w-[16px]" />
         </Button>
       ) : null}
-      <div className={`relative w-full ${searchMode ? '' : 'max-w-[308px]'}`}>
+      <div className={`relative w-full transition-all duration-300 ease-in-out ${searchMode ? 'max-w-full' : 'max-w-[308px]'}`}>
         <SearchIcon className="text-[#AFAFAF] absolute left-[1.5rem] top-1/2 -translate-y-1/2" />
         <Input
           className="bg-white pr-10 w-full h-[42px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[3.5rem] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] placeholder:leading-[140%] placeholder:font-[var(--fw-regular)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:caret-[var(--color-support-6)]"

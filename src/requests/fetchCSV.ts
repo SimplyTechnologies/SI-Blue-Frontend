@@ -9,7 +9,7 @@ export const fetchCSV = async (searchParams: FilterParamsType) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      params: searchParams,
+      params: {...searchParams,modelIds: searchParams.modelIds?.join(',')},
     });
     return response.data;
   } catch (error) {

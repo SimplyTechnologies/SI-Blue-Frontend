@@ -3,12 +3,13 @@ import { FilterIcon } from '@/assets/svgIconComponents/FilterIcon';
 type HeaderFilterTypes = {
   onFilterClick: () => void;
   isFilterActive: boolean;
+  searchMode: boolean;
 };
 
-const HeaderFilter = ({ onFilterClick, isFilterActive }: HeaderFilterTypes) => {
+const HeaderFilter = ({ onFilterClick, isFilterActive, searchMode }: HeaderFilterTypes) => {
   return (
     <div
-      className={`flex justify-end items-center w-[44px] h-[42px] relative cursor-pointer group ${isFilterActive ? 'text-[#403c89]' : 'text-[#AFAFAF]'} hover:text-[#403c89] hover:opacity-80`}
+      className={`${searchMode ? 'hidden' : 'flex'} flex transition-all duration-100 ease-in-out justify-end items-center w-[44px] h-[42px] relative cursor-pointer group ${isFilterActive ? 'text-[#403c89]' : 'text-[#AFAFAF]'} hover:text-[#403c89] hover:opacity-80`}
       onClick={onFilterClick}
     >
       <FilterIcon />

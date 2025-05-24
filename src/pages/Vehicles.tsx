@@ -98,25 +98,28 @@ const Vehicles: React.FC = () => {
   );
 
   useEffect(() => {
-    const make = searchParams.get('makeId');
+    const makeId = searchParams.get('makeId');
     const availability = searchParams.get('availability');
-    const models = searchParams.getAll('modelIds');
+    const modelIds = searchParams.getAll('modelIds');
 
     const searchMode = searchParams.get('search');
 
     const filters: FilterParamsType = {};
 
-    for (const [key, value] of searchParams.entries()) {
-      if (key === 'makeId' || key === 'modelIds' || key === 'availability') {
-        filters[key] = value;
-      }
-    }
-
     setParsedFilters(filters);
     setSearchMode(Boolean(searchMode));
 
-    if (make || availability || models.length) {
+    if (makeId || availability || modelIds.length) {
       setIsFilterActive(true);
+      if (makeId) {
+        filters.makeId = parseInt(makeId);
+      }
+      if (modelIds.length) {
+        filters.modelIds = modelIds.map(item => parseInt(item));
+      }
+      if (availability) {
+        filters.availability = availability;
+      }
     } else {
       setIsFilterActive(false);
     }
@@ -150,13 +153,17 @@ const Vehicles: React.FC = () => {
       <div className="flex flex-col gap-2 flex-[0_1_40%] h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2">
         {!isFilterOpen && (
           <div className="flex justify-between gap-4 min-h-[56px] items-start max-[1200px]:flex-col">
-            <div className={`flex items-center h-[42px] w-full gap-2 ${!searchMode ? 'max-w-[352px]' : ''}`}>
+            <div
+              className={`flex items-center h-[42px] w-full gap-2 transition-all duration-300 ease-in-out ${!searchMode ? 'max-w-[352px]' : 'max-w-full'}`}
+            >
               <DebounceSearch setDebounceValue={handleDebounceSearch} searchMode={searchMode} />
-              {!searchMode && (
-                <HeaderFilter onFilterClick={() => setIsFilterOpen(true)} isFilterActive={isFilterActive} />
-              )}
+              <HeaderFilter
+                onFilterClick={() => setIsFilterOpen(true)}
+                isFilterActive={isFilterActive}
+                searchMode={searchMode}
+              />
             </div>
-            {!searchMode && <HeaderAddNew />}
+            <HeaderAddNew searchMode={searchMode} />
           </div>
         )}
 
@@ -165,7 +172,7 @@ const Vehicles: React.FC = () => {
         ) : (
           <div className="flex flex-col h-full">
             <div
-              className={`flex justify-between items-start w-full border-b border-[var(--color-support-8)] gap-[6rem] max-[1200px]:gap-0 ${!searchMode ? 'max-w-[352px]' : ''}`}
+              className={`flex justify-between items-start w-full border-b border-[var(--color-support-8)] gap-[6rem] max-[1200px]:gap-0 transition-all duration-300 ease-in-out ${!searchMode ? 'max-w-[352px]' : 'max-w-full'}`}
             >
               <div className="flex gap-4 max-[600px]:flex-col">
                 {['vehicles', 'favorites'].map(

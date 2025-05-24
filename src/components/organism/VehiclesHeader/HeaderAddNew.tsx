@@ -2,11 +2,15 @@ import { useState } from 'react';
 import AddVehicle from '../AddVehicle';
 import { Button } from '@/components/atom/Button';
 
-const HeaderAddNew = () => {
+type HeaderAddNewType = {
+  searchMode: boolean;
+}
+
+const HeaderAddNew = ({searchMode}: HeaderAddNewType) => {
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
 
   return (
-    <div>
+    <div className={`${searchMode ? 'hidden' : 'flex'} transition-all duration-300 ease-in-out`}>
       <Button
         onClick={() => setOpenAddVehicle(true)}
         variant={'default'}
