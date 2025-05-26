@@ -14,7 +14,7 @@ export const fetchModelsByMake = async (makeId: string) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error fetching makes:', error);
+    console.error('Error fetching models:', error);
   }
 };
 

@@ -21,7 +21,7 @@ import { cn } from '@/utils/cn';
  * Variants for the multi-select component to handle different styles.
  * Uses class-variance-authority (cva) to define different styles based on "variant" prop.
  */
-const multiSelectVariants = cva('m-1 bg-[#403C89] text-white rounded-[4px] hover:bg-[#403C89] hover:opacity-90', {
+const multiSelectVariants = cva('m-1 bg-primary-3 text-white rounded-[4px] hover:bg-primary-3 hover:opacity-90', {
   variants: {
     variant: {
       default: 'border-foreground/10 text-foreground bg-card hover:bg-card/80',
@@ -47,7 +47,7 @@ interface MultiSelectProps
    */
   options: {
     /** The text to display for the option. */
-    id: string;
+    id: string | number;
     /** The unique value associated with the option. */
     name: string;
     /** Optional icon component to display alongside the option. */
@@ -118,6 +118,9 @@ const CustomMultiSelect: React.FC<MultiSelectProps> = ({
   disabled,
   ...props
 }) => {
+  const updatedOptions = options.map(item => {
+    return { ...item, id: item.id.toString() };
+  });
   const ref = React.useRef<HTMLButtonElement | null>(null);
   const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
 
@@ -150,20 +153,19 @@ const CustomMultiSelect: React.FC<MultiSelectProps> = ({
   };
 
   const toggleAll = () => {
-    if (value.length === options.length) {
+    if (value.length === updatedOptions.length) {
       handleClear();
     } else {
-      const allValues = options.map(option => option.id);
+      const allValues = updatedOptions.map(option => option.id);
       onValueChange(allValues);
     }
   };
 
   return (
     <Popover open={isPopoverOpen} onOpenChange={setIsPopoverOpen} modal={modalPopover}>
-      {label && <div className="text-[#636777] text-sm mb-[6px]">{label}</div>}
-      <PopoverTrigger asChild>
+      {label && <div className="text-support-5 text-sm mb-[6px]">{label}</div>}
+      <PopoverTrigger asChild ref={ref}>
         <Button
-          ref={ref}
           {...props}
           onClick={handleTogglePopover}
           disabled={disabled}
@@ -176,7 +178,7 @@ const CustomMultiSelect: React.FC<MultiSelectProps> = ({
             <div className="flex justify-between items-center w-full">
               <div className="flex flex-wrap items-center">
                 {value.slice(0, maxCount).map(value => {
-                  const option = options.find(o => o.id === value);
+                  const option = updatedOptions.find(o => o.id === value);
                   const IconComponent = option?.icon;
                   return (
                     <Badge key={value} className={cn(multiSelectVariants({ variant }))}>
@@ -248,25 +250,21 @@ const CustomMultiSelect: React.FC<MultiSelectProps> = ({
                 <div
                   className={cn(
                     'mr-2 flex h-4 w-4 items-center justify-center rounded-[4px] border border-primary',
-                    value.length === options.length ? 'bg-[#403C89] text-white' : 'opacity-50 [&_svg]:invisible',
+                    value.length === updatedOptions.length ? 'bg-primary-3 text-white' : 'opacity-50 [&_svg]:invisible',
                   )}
                 >
                   <CheckIcon className="h-4 w-4" color="white" />
                 </div>
-                <span>(Select All)</span>
+                <span>Select All</span>
               </CommandItem>
-              {options.map(option => {
+              {updatedOptions.map(option => {
                 const isSelected = value.includes(option.id);
                 return (
-                  <CommandItem
-                    key={option.id}
-                    onSelect={() => toggleOption(option.id)}
-                    className="cursor-pointer"
-                  >
+                  <CommandItem key={option.id} onSelect={() => toggleOption(option.id)} className="cursor-pointer">
                     <div
                       className={cn(
                         'mr-2 flex h-4 w-4 items-center justify-center rounded-[4px] border border-primary',
-                        isSelected ? 'bg-[#403C89] text-white' : 'opacity-50 [&_svg]:invisible',
+                        isSelected ? 'bg-primary-3 text-white' : 'opacity-50 [&_svg]:invisible',
                       )}
                     >
                       <CheckIcon className="h-4 w-4" color="#fff" />
