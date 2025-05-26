@@ -1,5 +1,5 @@
 import { Outlet } from 'react-router';
-import carBg from '@/assets/carBackground.svg';
+import carBg from '@/assets/carBackground.webp';
 
 const Auth: React.FC = () => {
   return (
