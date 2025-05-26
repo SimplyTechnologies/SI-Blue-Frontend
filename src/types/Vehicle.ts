@@ -26,13 +26,13 @@ export type VehicleType = {
 export type FilterRequest = {
   makeId?: string;
   modelIds?: string;
-  availability?: string;
+  availabilityId?: string;
 };
 
 export const filterSchema = z.object({
-  make: z.string().optional().default(''),
-  models: z.array(z.string()).optional().default([]),
-  availability: z.string().optional().default(''),
+  makeId: z.string().optional().default(''),
+  modelIds: z.array(z.string()).optional().default([]),
+  availabilityId: z.string().optional().default(''),
 });
 
 export type FilterState = z.infer<typeof filterSchema>;
@@ -51,59 +51,35 @@ export type OptionType = {
 export function createFilterSchema({
   validMakeIds,
   validModelIds,
-  validAvailabilityOptions,
+  validAvailabilityIds,
 }: {
   validMakeIds: string[];
   validModelIds: string[];
-  validAvailabilityOptions: string[];
+  validAvailabilityIds: string[];
 }) {
-  return z
-    .object({
-      makeId: z
-        .string()
-        .refine(id => validMakeIds.includes(id), {
-          message: 'Invalid makeId',
-        })
-        .optional(),
+  return z.object({
+    makeId: z
+      .string()
+      .refine(id => validMakeIds.includes(id), {
+        message: 'Invalid makeId',
+      })
+      .optional(),
 
-      availability: z
-        .string()
-        .refine(val => validAvailabilityOptions.includes(val), {
+    availabilityId: z
+      .string()
+      .refine(val => validAvailabilityIds.includes(val), {
+        message: 'Invalid availability',
+      })
+      .optional(),
+
+    modelIds: z
+      .array(z.string())
+      .refine(val => {
+        val.map(item => validModelIds.includes(item), {
           message: 'Invalid availability',
-        })
-        .optional(),
-
-      modelIds: z
-        .array(z.string())
-        .refine(val => {
-          val.map(item => validModelIds.includes(item), {
-            message: 'Invalid availability',
-          });
-        })
-        .optional(),
-    })
-    .strict()
-    .transform(data => {
-      const cleaned: {
-        makeId?: string;
-        modelIds?: string[];
-        availability?: string;
-      } = {};
-
-      if (data.makeId && validMakeIds.includes(data.makeId)) {
-        cleaned.makeId = data.makeId;
-
-        const filteredModels = (data.modelIds ?? []).filter(id => validModelIds.includes(id));
-
-        if (filteredModels.length > 0) {
-          cleaned.modelIds = filteredModels;
-        }
-      }
-      if (data.availability && validAvailabilityOptions.includes(data.availability)) {
-        cleaned.availability = data.availability;
-      }
-
-      return cleaned;
-    });
+        });
+      })
+      .optional(),
+  });
 }
 

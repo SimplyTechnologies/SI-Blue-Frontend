@@ -1,12 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate, useSearchParams } from 'react-router';
+import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { createFilterSchema, type FilterRequest, type OptionType, type VehicleType } from '@/types/Vehicle';
+import { type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
-// import { fetchMakes } from '@/requests/fetchMakes';
-// import { fetchModelsByMake } from '@/requests/fetchModelsByMake';
 import { fetchVehicles } from '@/requests/fetchVehicles';
-// import { availabilityOptions } from '@/utils/constants';
+import { useValidatedFilters } from '@/hooks/useValidatedFilters';
+import { isObjectEmpty } from '@/utils/general';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
@@ -38,14 +37,11 @@ const nothingToShowOptions = {
 
 const Vehicles: React.FC = () => {
   const navigate = useNavigate();
-  const [searchParams, setSearchParams] = useSearchParams();
   const { isSearchActive } = useSearchStore();
 
   const [active, setActive] = useState<'vehicles' | 'favorites'>('vehicles');
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [isFilterActive, setIsFilterActive] = useState(false);
   const [debounceValue, setDebounceValue] = useState('');
-  const [filterRequestParams, setFilterRequestParams] = useState<FilterRequest>({});
 
   const [vehiclesList, setVehiclesList] = useState<VehicleType[] | []>([]);
   const [totalPages, setTotalPages] = useState(1);
@@ -54,90 +50,17 @@ const Vehicles: React.FC = () => {
   const observerRef = useRef<IntersectionObserver | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
-  // const [makeId, setMakeId] = useState('');
-  // const [modelIds, setModelIds] = useState<string[]>([]);
-  // const [availability, setAvailability] = useState('');
+  const validatedFilters = useValidatedFilters();
 
-  // const { isLoading: makeLoading, data: makeData } = useQuery({
-  //   queryKey: ['makes', makeId],
-  //   queryFn: fetchMakes,
-  //   enabled: !!makeId,
-  // });
-
-  // const { isLoading: modelLoading, data: modelsData } = useQuery({
-  //   queryKey: ['models', makeId],
-  //   queryFn: () => fetchModelsByMake(makeId),
-  //   enabled: !!(makeId && modelIds),
-  // });
+  const validatedFiltersParams = {
+    ...validatedFilters,
+    modelIds: validatedFilters?.modelIds?.length ? validatedFilters?.modelIds.join(',') : undefined,
+  };
 
   const { isLoading: isVehiclesLoading, data: vehiclesData } = useQuery({
-    queryKey: ['vehicles', debounceValue, JSON.stringify(filterRequestParams), page],
-    queryFn: () => fetchVehicles({ ...filterRequestParams, search: debounceValue || undefined, page, offset }),
+    queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page],
+    queryFn: () => fetchVehicles({ ...validatedFiltersParams, search: debounceValue || undefined, page, offset }),
   });
-
-  useEffect(() => {
-    const makeId = searchParams.get('makeId');
-    const availability = searchParams.get('availability');
-    const modelIds = searchParams.getAll('modelIds');
-
-    const filters: FilterRequest = {};
-    if (makeId || availability || modelIds.length) {
-      // setMakeId(makeId || '');
-      // setModelIds(modelIds || []);
-      // setAvailability(availability || '');
-      setIsFilterActive(true);
-      if (makeId) {
-        filters.makeId = makeId;
-      }
-      if (modelIds.length) {
-        filters.modelIds = modelIds.join(',');
-      }
-      if (availability) {
-        filters.availability = availability;
-      }
-
-      // const result = schema.safeParse(filters);
-
-      // result?.error?.errors.forEach(err => {
-      //   if (err.path[0]) {
-      //     delete filters[err.path[0]];
-      //   }
-      // });
-      setSearchParams(filters);
-    } else {
-      setIsFilterActive(false);
-    }
-    setFilterRequestParams(filters);
-  }, [searchParams]);
-
-  // useEffect(() => {
-  //   let filters: FilterRequest = {};
-
-  //   const schema = createFilterSchema({
-  //     validMakeIds: (makeData || []).map((item: OptionType) => item.id.toString()),
-  //     validModelIds: (modelsData || []).map((item: OptionType) => item.id.toString()),
-  //     validAvailabilityOptions: availabilityOptions.map(item => item.id),
-  //   });
-
-  //   if (makeId && makeData) {
-  //     filters.makeId = makeId;
-  //   }
-  //   if (modelIds.length && modelsData) {
-  //     filters.modelIds = modelIds.join(',');
-  //   }
-  //   if (availability) {
-  //     filters.availability = availability;
-  //   }
-
-  //   const result = schema.safeParse(filters);
-
-  //   if (result?.error?.errors) {
-  //     filters = {};
-  //   }
-  //   setIsFilterActive(!!Object.keys(filters).length);
-  //   setSearchParams(filters);
-  //   setFilterRequestParams(filters);
-  // }, [makeData, modelsData, makeId, modelIds, availability, setSearchParams]);
 
   //Set vehicles list (add to the existing list starting from page 2)
   useEffect(() => {
@@ -157,13 +80,14 @@ const Vehicles: React.FC = () => {
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
-  }, [debounceValue, filterRequestParams]);
+  }, [debounceValue, validatedFilters]);
 
   const handleDebounceSearch = (value: string) => {
     if (value !== debounceValue) {
       setDebounceValue(value);
       setActive('vehicles');
-      if (isFilterActive) {
+
+      if (!isObjectEmpty(validatedFilters)) {
         navigate('/vehicles');
       }
     }
@@ -198,7 +122,10 @@ const Vehicles: React.FC = () => {
               className={`flex items-center h-[42px] w-full gap-2 transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
               <DebounceSearch setDebounceValue={handleDebounceSearch} />
-              <FilterButton onFilterClick={() => setIsFilterOpen(true)} isFilterActive={isFilterActive} />
+              <FilterButton
+                onFilterClick={() => setIsFilterOpen(true)}
+                isFilterActive={!isObjectEmpty(validatedFilters)}
+              />
             </div>
             <AddNewVehicleButton buttonName="+ Add" className="w-[132px] h-[56px] max-[1200px]:h-[42px]" />
           </div>
@@ -234,7 +161,7 @@ const Vehicles: React.FC = () => {
                     ),
                 )}
               </div>
-              <ExportCSVButton filters={filterRequestParams} disabled={!vehiclesList.length} />
+              <ExportCSVButton filters={validatedFiltersParams} disabled={!vehiclesList.length} />
             </div>
 
             <div

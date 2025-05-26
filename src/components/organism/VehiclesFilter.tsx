@@ -1,33 +1,39 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
-import { ChevronLeftIcon } from 'lucide-react';
-import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
-import CustomSelect from '@/components/molecule/CustomSelect';
-import { Button } from '@/components/atom/Button';
-import CustomTooltip from '@/components/molecule/CustomTooltip';
 import { useQuery } from '@tanstack/react-query';
+import { ChevronLeftIcon } from 'lucide-react';
 import { fetchMakes } from '@/requests/fetchMakes';
 import { fetchModelsByMake } from '@/requests/fetchModelsByMake';
 import type { FilterState, OptionType } from '@/types/Vehicle';
 import { availabilityOptions } from '@/utils/constants';
+import { useFilterOptionsStore } from '@/stores/useFilterOptionsStore';
+import { useValidatedFilters } from '@/hooks/useValidatedFilters';
+import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
+import CustomSelect from '@/components/molecule/CustomSelect';
+import { Button } from '@/components/atom/Button';
+import CustomTooltip from '@/components/molecule/CustomTooltip';
 
 type VehiclesFilterTypes = {
   handleBack: () => void;
 };
 
 const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [, setSearchParams] = useSearchParams();
+  const { setValidMakeIds, setValidModelIds } = useFilterOptionsStore();
+
   const [makeOptions, setMakeOptions] = useState<OptionType[] | []>([]);
   const [modelOptions, setModelOptions] = useState<OptionType[] | []>();
 
   const filtersEmptyStat = {
-    make: '',
-    models: [],
-    availability: '',
+    makeId: '',
+    modelIds: [],
+    availabilityId: '',
   };
 
   const [filtersInitialState, setFiltersInitialState] = useState<FilterState>(filtersEmptyStat);
   const [filters, setFilters] = useState<FilterState>(filtersEmptyStat);
+
+  const validatedFilters = useValidatedFilters();
 
   const { isLoading: makeLoading, data: makeData } = useQuery({
     queryKey: ['makes'],
@@ -36,72 +42,63 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   });
 
   const { isLoading: modelLoading, data: modelsData } = useQuery({
-    queryKey: ['models', filters.make],
-    queryFn: () => fetchModelsByMake(filters.make),
-    enabled: !!filters.make,
+    queryKey: ['models', filters.makeId],
+    queryFn: () => fetchModelsByMake(filters.makeId),
+    enabled: !!filters.makeId,
   });
 
-  const filtersCount = [filters.make, filters.availability, ...filters.models].filter(Boolean).length;
+  const filtersCount = [filters.makeId, filters.availabilityId, ...filters.modelIds].filter(Boolean).length;
 
   useEffect(() => {
-    const make = searchParams.get('makeId') || '';
-    const availability = searchParams.get('availability') || '';
-    const models = searchParams.getAll('modelIds') || [];
-
-    setFiltersInitialState({
-      make,
-      models,
-      availability,
-    });
-
-    setFilters({
-      make,
-      models,
-      availability,
-    });
-  }, [searchParams]);
+    setFiltersInitialState({ ...filtersEmptyStat, ...validatedFilters });
+    setFilters({ ...filtersEmptyStat, ...validatedFilters });
+  }, []);
 
   useEffect(() => {
     if (makeData) {
       setMakeOptions(makeData);
+      setValidMakeIds(makeData.map((item: OptionType) => item.id.toString()));
     } else {
       setMakeOptions([]);
+      setValidModelIds([]);
     }
   }, [makeData]);
 
   useEffect(() => {
     if (modelsData) {
       setModelOptions(modelsData);
+      setValidModelIds(modelsData.map((item: OptionType) => item.id.toString()));
     } else {
       setModelOptions([]);
+      setValidModelIds([]);
     }
   }, [modelsData]);
 
   const handleMakeChange = (value: string) => {
-    setFilters({ ...filters, make: value });
-    if (filters.models.length) {
-      setFilters({ ...filters, models: [] });
+    setFilters({ ...filters, makeId: value });
+    if (filters.modelIds.length) {
+      setFilters({ ...filters, modelIds: [] });
     }
   };
 
   const handleModelsChange = (value: string[]) => {
-    setFilters({ ...filters, models: value });
+    setFilters({ ...filters, modelIds: value });
   };
 
   const handleAvailabilityChange = (value: string) => {
-    setFilters({ ...filters, availability: value });
+    setFilters({ ...filters, availabilityId: value });
   };
 
   const handleApplyFilters = () => {
     const queryParams = new URLSearchParams();
-    if (filters.make) {
-      queryParams.append('makeId', filters.make);
+    if (filters.makeId) {
+      queryParams.append('makeId', filters.makeId);
     }
-    if (filters.models.length) {
-      filters.models.forEach(model => queryParams.append('modelIds', model));
+    if (filters.modelIds.length) {
+      filters.modelIds.forEach(model => queryParams.append('modelIds', model));
     }
-    if (filters.availability) {
-      queryParams.append('availability', filters.availability);
+    if (filters.availabilityId) {
+      queryParams.append('availability', filters.availabilityId);
     }
     setSearchParams(queryParams);
     handleBack();
@@ -129,7 +126,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
       <div>
         <CustomSelect
           label="Make"
-          value={filters.make}
+          value={filters.makeId}
           items={makeOptions || []}
           onChange={handleMakeChange}
           placeholder="Select Make"
@@ -144,23 +141,23 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
             <CustomMultiSelect
               options={modelOptions || []}
               onValueChange={handleModelsChange}
-              value={filters.models}
+              value={filters.modelIds}
               placeholder="Select Model"
               variant="inverted"
               maxCount={2}
               label="Models"
-              disabled={!filters.make || modelLoading}
+              disabled={!filters.makeId || modelLoading}
             />
           }
           content="Select Make to enable Model"
           side="bottom"
-          hidden={!!filters.make}
+          hidden={!!filters.makeId}
         />
       </div>
       <div>
         <CustomSelect
           label="Availability"
-          value={filters.availability}
+          value={filters.availabilityId}
           items={availabilityOptions}
           onChange={handleAvailabilityChange}
           placeholder="Select Availability"
