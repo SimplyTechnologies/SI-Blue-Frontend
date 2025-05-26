@@ -1,5 +1,6 @@
 import Auth from '@/layouts/Auth';
 import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
+import NotFound from '@/pages/NotFound';
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
 
@@ -106,6 +107,8 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
             />
           </Route>
         </Route>
+         {/* 404 fallback route */}
+         <Route path="*" element={<NotFound />} />
       </Routes>
     </Router>
   );
