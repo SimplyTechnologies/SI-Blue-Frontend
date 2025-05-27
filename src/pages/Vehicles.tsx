@@ -96,10 +96,10 @@ const Vehicles: React.FC = () => {
       observerRef.current = new IntersectionObserver(
         entries => {
           if (entries[0].isIntersecting && page < totalPages) {
-            setPage(prev => prev + 1);
+            setPage(prev => prev + 2);
           }
         },
-        { threshold: 0.5 },
+        { threshold: 1 },
       );
 
       observerRef.current.observe(node);
@@ -170,7 +170,7 @@ const Vehicles: React.FC = () => {
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
             >
-              {isVehiclesLoading ? (
+              {isVehiclesLoading && !vehiclesList.length ? (
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (
@@ -188,7 +188,7 @@ const Vehicles: React.FC = () => {
                 />
               )}
             </div>
-            <Toaster richColors visibleToasts={1}/>
+            <Toaster richColors visibleToasts={1} />
           </div>
         )}
       </div>
