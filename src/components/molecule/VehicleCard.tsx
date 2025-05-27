@@ -1,7 +1,9 @@
+import React from 'react';
 import type { Vehicle } from '@/types/Vehicle';
+import { Button } from '@/components/atom/Button';
 import carMarker from '@/assets/carMarkerPrimary.svg';
 import favorite from '@/assets/favorite.svg';
-import { Button } from '../atom/Button';
+import { FavoriteColor } from '@/assets/svgIconComponents/FavoriteIcon';
 // import favoritePrimary from "@/assets/favoritePrimary.svg";
 
 type VehicleCardProps = {
@@ -10,9 +12,9 @@ type VehicleCardProps = {
   details?: boolean;
 };
 
-const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, details }) => {
+const VehicleCard = React.forwardRef<HTMLDivElement, VehicleCardProps>(({ vehicle, onClick, details }, ref) => {
   return (
-    <div className={`flex flex-col ${details && 'pb-[1.5rem] border-b-[1px] border-[#F5F5F7]'}`}>
+    <div ref={ref} className={`flex flex-col ${details && 'pb-[1.5rem] border-b-[1px] border-[#F5F5F7]'}`}>
       <div className="w-full py-[1.5rem] border-b-[1px] border-[#F5F5F7] flex" onClick={onClick}>
         <div className="w-[60px] pr-[12px] flex justify-start items-start cursor-pointer">
           <div
@@ -69,6 +71,9 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, details }) 
             )}
           </div>
         </div>
+        <Button onClick={() => {}} variant="text" className="w-[20px] hover:opacity-80">
+          <FavoriteColor isFavorite={false} />
+        </Button>
       </div>
       {details && (
         <div>
@@ -79,6 +84,6 @@ const VehicleCard: React.FC<VehicleCardProps> = ({ vehicle, onClick, details }) 
       )}
     </div>
   );
-};
+});
 
 export default VehicleCard;

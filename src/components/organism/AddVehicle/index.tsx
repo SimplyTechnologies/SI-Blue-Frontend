@@ -70,7 +70,7 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
       }}
     >
       <Form {...form}>
-        <Label className="text-[var(--color-support-6)] font-bold text-lg mb-3">General</Label>
+        <Label className="text-support-6 font-bold text-lg mb-3">General</Label>
         <form id="add-vehicle-form" onSubmit={form.handleSubmit(onSubmit)} className="mt-3">
           <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2 mb-[10px]">
             <FormField

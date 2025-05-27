@@ -94,7 +94,7 @@ const Modal = ({
 
               <Title
                 className={cn(
-                  'text-center font-bold text-2xl leading-[1.3] text-[var(--color-support-6)]',
+                  'text-center font-bold text-2xl leading-[1.3] text-support-6',
                   'mt-2 mb-6',
                 )}
               >

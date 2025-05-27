@@ -13,12 +13,12 @@ type AnalyticCardProps = {
 const AnalyticCard: React.FC<AnalyticCardProps> = ({ title, count }) => {
   const bgColor =
     title === 'vehicle'
-      ? 'bg-[var(--color-primary-5)]'
+      ? 'bg-primary-5'
       : title === 'customers'
-        ? 'bg-[var(--color-support-10)]'
-        : 'bg-[var(--color-success-1)]';
+        ? 'bg-support-10'
+        : 'bg-success-1';
 
-  const iconBg = title === 'vehicle' ? 'bg-[var(--color-primary-3)]' : 'bg-[var(--color-support-9)]';
+  const iconBg = title === 'vehicle' ? 'bg-primary-3' : 'bg-support-9';
 
   const label = title === 'vehicle' ? 'Vehicles' : title === 'customers' ? 'Customers' : 'Vehicles Sold';
 
@@ -34,11 +34,11 @@ const AnalyticCard: React.FC<AnalyticCardProps> = ({ title, count }) => {
         <div className={cn('w-[32px] h-[32px] rounded-[50%] flex justify-center items-center', iconBg)}>
           <img src={icon} alt="Analytic Card Icon" />
         </div>
-        <p className="font-[var(--fw-regular)] text-[length:var(--sm-text)] text-[var(--color-support-6)] leading-[140%]">
+        <p className="font-[var(--fw-regular)] text-[length:var(--sm-text)] text-support-6 leading-[140%]">
           {label}
         </p>
       </div>
-      <span className="font-[var(--fw-bold)] text-[length:var(--md-text)] text-[--color-support-6]">{count}</span>
+      <span className="font-[var(--fw-bold)] text-[length:var(--md-text)] text-support-6">{count}</span>
     </div>
   );
 };
