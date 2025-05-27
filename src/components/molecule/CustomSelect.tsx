@@ -37,17 +37,17 @@ export default function CustomSelect({
       </SelectTrigger>
       <SelectContent>
         <SelectGroup>
-          {addNoSelect ? <SelectItem value="__none__">No selection</SelectItem> : null}
+          {addNoSelect ? (
+            <SelectItem value="__none__" onPointerDown={() => handleChange('__none__')}>
+              No selection
+            </SelectItem>
+          ) : null}
           {items.length ? (
             items.map(item => (
               <SelectItem
                 value={item.id.toString()}
                 key={item.id}
-                onPointerDown={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleChange(item.id.toString());
-                }}
+                onPointerDown={() => handleChange(item.id.toString())}
               >
                 {item.name}
               </SelectItem>

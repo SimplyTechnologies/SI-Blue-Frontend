@@ -8,7 +8,7 @@ export const useValidatedFilters = () => {
   const rawParams: Record<string, string | string[]> = {};
   for (const key of searchParams.keys()) {
     const values = searchParams.getAll(key);
-    rawParams[key] = values.length > 1 ? values : values[0];
+    rawParams[key] = key === 'modelIds' ? values : values[0];
   }
 
   const parsed = filterSchema.safeParse(rawParams);
