@@ -2,11 +2,9 @@ import { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeftIcon } from 'lucide-react';
-import { fetchMakes } from '@/requests/fetchMakes';
-import { fetchModelsByMake } from '@/requests/fetchModelsByMake';
+import { getMakes, getModelsByMakeId } from '@/api/vehicles';
 import type { FilterState, OptionType } from '@/types/Vehicle';
 import { availabilityOptions } from '@/utils/constants';
-import { useFilterOptionsStore } from '@/stores/useFilterOptionsStore';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
 import CustomSelect from '@/components/molecule/CustomSelect';
@@ -19,66 +17,49 @@ type VehiclesFilterTypes = {
 
 const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   const [, setSearchParams] = useSearchParams();
-  const { setValidMakeIds, setValidModelIds } = useFilterOptionsStore();
 
   const [makeOptions, setMakeOptions] = useState<OptionType[] | []>([]);
   const [modelOptions, setModelOptions] = useState<OptionType[] | []>();
-
-  const filtersEmptyStat = {
-    makeId: '',
-    modelIds: [],
-    availabilityId: '',
-  };
-
-  const [filtersInitialState, setFiltersInitialState] = useState<FilterState>(filtersEmptyStat);
-  const [filters, setFilters] = useState<FilterState>(filtersEmptyStat);
-
   const validatedFilters = useValidatedFilters();
+
+  const [filters, setFilters] = useState<FilterState>(validatedFilters);
 
   const { isLoading: makeLoading, data: makeData } = useQuery({
     queryKey: ['makes'],
-    queryFn: fetchMakes,
+    queryFn: getMakes,
     staleTime: 3600000,
   });
 
   const { isLoading: modelLoading, data: modelsData } = useQuery({
     queryKey: ['models', filters.makeId],
-    queryFn: () => fetchModelsByMake(filters.makeId),
+    queryFn: () => filters.makeId && getModelsByMakeId(filters.makeId),
     enabled: !!filters.makeId,
   });
 
-  const filtersCount = [filters.makeId, filters.availabilityId, ...filters.modelIds].filter(Boolean).length;
-
-  useEffect(() => {
-    setFiltersInitialState({ ...filtersEmptyStat, ...validatedFilters });
-    setFilters({ ...filtersEmptyStat, ...validatedFilters });
-  }, []);
+  const filtersCount = [filters.makeId, filters.availability, ...(filters.modelIds || [])].filter(Boolean).length;
 
   useEffect(() => {
     if (makeData) {
       setMakeOptions(makeData);
-      setValidMakeIds(makeData.map((item: OptionType) => item.id.toString()));
     } else {
       setMakeOptions([]);
-      setValidModelIds([]);
     }
   }, [makeData]);
 
   useEffect(() => {
     if (modelsData) {
       setModelOptions(modelsData);
-      setValidModelIds(modelsData.map((item: OptionType) => item.id.toString()));
     } else {
       setModelOptions([]);
-      setValidModelIds([]);
     }
   }, [modelsData]);
 
   const handleMakeChange = (value: string) => {
-    setFilters({ ...filters, makeId: value });
-    if (filters.modelIds.length) {
-      setFilters({ ...filters, modelIds: [] });
+    if (filters?.modelIds?.length) {
+      setFilters({ ...filters, modelIds: [], makeId: value });
+      return;
     }
+    setFilters({ ...filters, makeId: value });
   };
 
   const handleModelsChange = (value: string[]) => {
@@ -86,26 +67,26 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   };
 
   const handleAvailabilityChange = (value: string) => {
-    setFilters({ ...filters, availabilityId: value });
+    setFilters({ ...filters, availability: value });
   };
 
   const handleApplyFilters = () => {
     const queryParams = new URLSearchParams();
     if (filters.makeId) {
-      queryParams.append('makeId', filters.makeId);
+      queryParams.append('makeId', filters.makeId.toString());
     }
-    if (filters.modelIds.length) {
-      filters.modelIds.forEach(model => queryParams.append('modelIds', model));
+    if (filters?.modelIds?.length) {
+      filters.modelIds.forEach(model => queryParams.append('modelIds', model.toString()));
     }
-    if (filters.availabilityId) {
-      queryParams.append('availability', filters.availabilityId);
+    if (filters.availability) {
+      queryParams.append('availability', filters.availability);
     }
     setSearchParams(queryParams);
     handleBack();
   };
 
   const handleClearFilters = () => {
-    setFilters(filtersEmptyStat);
+    setFilters({});
   };
 
   return (
@@ -126,7 +107,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
       <div>
         <CustomSelect
           label="Make"
-          value={filters.makeId}
+          value={filters?.makeId || ''}
           items={makeOptions || []}
           onChange={handleMakeChange}
           placeholder="Select Make"
@@ -141,7 +122,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
             <CustomMultiSelect
               options={modelOptions || []}
               onValueChange={handleModelsChange}
-              value={filters.modelIds}
+              value={filters.modelIds || []}
               placeholder="Select Model"
               variant="inverted"
               maxCount={2}
@@ -157,7 +138,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
       <div>
         <CustomSelect
           label="Availability"
-          value={filters.availabilityId}
+          value={filters.availability || ''}
           items={availabilityOptions}
           onChange={handleAvailabilityChange}
           placeholder="Select Availability"
@@ -170,7 +151,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
           variant="default"
           className="w-full h-[40px] text-xs"
           onClick={handleApplyFilters}
-          disabled={JSON.stringify(filtersInitialState) === JSON.stringify(filters)}
+          disabled={JSON.stringify(validatedFilters) === JSON.stringify(filters)}
         >
           Apply Filters ({filtersCount})
         </Button>

@@ -4,8 +4,8 @@ import { Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/atom/Button';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
+import { getCSV } from '@/api/vehicles';
 import type { FilterRequest } from '@/types/Vehicle';
-import { fetchCSV } from '@/requests/fetchCSV';
 import { fileDownload } from '@/utils/fileDownload';
 import { ExportIcon } from '@/assets/svgIconComponents/ExportIcon';
 import { useSearchStore } from '@/stores/useSearchStore';
@@ -22,7 +22,7 @@ const ExportCSVButton: React.FC<ExportCSVButtonTypes> = ({ filters, disabled }: 
 
   const { isLoading, data, refetch, isError } = useQuery({
     queryKey: ['exportFile', filters],
-    queryFn: () => fetchCSV(filters),
+    queryFn: () => getCSV(filters),
     enabled: false,
     retry: false,
   });

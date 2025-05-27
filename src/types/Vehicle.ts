@@ -26,14 +26,22 @@ export type VehicleType = {
 export type FilterRequest = {
   makeId?: string;
   modelIds?: string;
-  availabilityId?: string;
+  availability?: string;
+  favorite?: number;
 };
 
-export const filterSchema = z.object({
-  makeId: z.string().optional().default(''),
-  modelIds: z.array(z.string()).optional().default([]),
-  availabilityId: z.string().optional().default(''),
-});
+export const filterSchema = z
+  .object({
+    makeId: z
+      .string()
+      .optional()
+      .refine(val => !val || !isNaN(parseInt(val)), { message: 'Invalid make ID' }),
+    modelIds: z
+      .array(z.string().refine(val => !val || !isNaN(parseInt(val)), { message: 'Invalid model ID' }))
+      .optional(),
+    availability: z.string().optional(),
+  })
+  .refine(({ makeId, modelIds }) => (modelIds?.length && makeId && !isNaN(parseInt(makeId)) || !modelIds?.length), { message: 'Invalid make ID' });
 
 export type FilterState = z.infer<typeof filterSchema>;
 
@@ -48,38 +56,5 @@ export type OptionType = {
   name: string;
 };
 
-export function createFilterSchema({
-  validMakeIds,
-  validModelIds,
-  validAvailabilityIds,
-}: {
-  validMakeIds: string[];
-  validModelIds: string[];
-  validAvailabilityIds: string[];
-}) {
-  return z.object({
-    makeId: z
-      .string()
-      .refine(id => validMakeIds.includes(id), {
-        message: 'Invalid makeId',
-      })
-      .optional(),
 
-    availabilityId: z
-      .string()
-      .refine(val => validAvailabilityIds.includes(val), {
-        message: 'Invalid availability',
-      })
-      .optional(),
-
-    modelIds: z
-      .array(z.string())
-      .refine(val => {
-        val.map(item => validModelIds.includes(item), {
-          message: 'Invalid availability',
-        });
-      })
-      .optional(),
-  });
-}
-
+export type VehicleTab = 'vehicles' | 'favorites';

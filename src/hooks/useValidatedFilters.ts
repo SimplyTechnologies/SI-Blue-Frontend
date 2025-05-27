@@ -1,10 +1,9 @@
 import { useSearchParams } from 'react-router';
-import { createFilterSchema } from '@/types/Vehicle';
-import { useFilterOptionsStore } from '@/stores/useFilterOptionsStore';
+import { toast } from 'sonner';
+import { filterSchema } from '@/types/Vehicle';
 
 export const useValidatedFilters = () => {
   const [searchParams] = useSearchParams();
-  const { validMakeIds, validModelIds, validAvailabilityIds } = useFilterOptionsStore();
 
   const rawParams: Record<string, string | string[]> = {};
   for (const key of searchParams.keys()) {
@@ -12,16 +11,11 @@ export const useValidatedFilters = () => {
     rawParams[key] = values.length > 1 ? values : values[0];
   }
 
-  const schema = createFilterSchema({
-    validMakeIds,
-    validModelIds,
-    validAvailabilityIds,
-  });
-
-  const parsed = schema.safeParse(rawParams);
+  const parsed = filterSchema.safeParse(rawParams);
 
   if (!parsed.success) {
     console.warn(parsed.error.format());
+    toast.error('Invalid filters');
     return {};
   }
 

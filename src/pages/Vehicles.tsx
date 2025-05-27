@@ -1,10 +1,11 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { type VehicleType } from '@/types/Vehicle';
+import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
-import { fetchVehicles } from '@/requests/fetchVehicles';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
+import { getVehicles } from '@/api/vehicles';
+import { nothingToShowOptions, vehicleTabs } from '@/utils/constants';
 import { isObjectEmpty } from '@/utils/general';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
@@ -17,29 +18,12 @@ import AddNewVehicleButton from '@/components/molecule/AddNewVehicleButton';
 import FilterButton from '@/components/molecule/FilterButton';
 import VehicleCardSkeleton from '@/components/molecule/VehicleCardSkeleton';
 import NothingToShow from '@/components/molecule/NothingToShow';
-import { NothingToShowCarIcon } from '@/assets/svgIconComponents/NothingToShowCarIcon';
-import { NothingToShowFavoriteIcon } from '@/assets/svgIconComponents/NothingToShowFavoriteIcon';
-
-const tabOptions: ['vehicles', 'favorites'] = ['vehicles', 'favorites'];
-
-const nothingToShowOptions = {
-  vehicles: {
-    title: 'There are no vehicles to display',
-    subtitle: 'You can add vehicles and set up specific zones to track their locations and statuses.',
-    icon: NothingToShowCarIcon,
-  },
-  favorites: {
-    title: 'There are no favorite vehicles',
-    subtitle: 'To quickly access more information about vehicles, consider adding them to your favorites.',
-    icon: NothingToShowFavoriteIcon,
-  },
-};
 
 const Vehicles: React.FC = () => {
   const navigate = useNavigate();
   const { isSearchActive } = useSearchStore();
 
-  const [active, setActive] = useState<'vehicles' | 'favorites'>('vehicles');
+  const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [debounceValue, setDebounceValue] = useState('');
 
@@ -47,6 +31,7 @@ const Vehicles: React.FC = () => {
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
   const offset = 25;
+
   const observerRef = useRef<IntersectionObserver | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
@@ -58,8 +43,15 @@ const Vehicles: React.FC = () => {
   };
 
   const { isLoading: isVehiclesLoading, data: vehiclesData } = useQuery({
-    queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page],
-    queryFn: () => fetchVehicles({ ...validatedFiltersParams, search: debounceValue || undefined, page, offset }),
+    queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page, active],
+    queryFn: () =>
+      getVehicles({
+        ...validatedFiltersParams,
+        search: debounceValue || undefined,
+        page,
+        offset,
+        favorite: active === 'favorites' ? 1 : undefined,
+      }),
   });
 
   //Set vehicles list (add to the existing list starting from page 2)
@@ -76,9 +68,11 @@ const Vehicles: React.FC = () => {
 
   // On search or filter scroll to the top of the vehicles list
   useEffect(() => {
-    setPage(1);
-    if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollTop = 0;
+    if (debounceValue || !isObjectEmpty(validatedFilters)) {
+      setPage(1);
+      if (scrollContainerRef.current) {
+        scrollContainerRef.current.scrollTop = 0;
+      }
     }
   }, [debounceValue, validatedFilters]);
 
@@ -139,7 +133,7 @@ const Vehicles: React.FC = () => {
               className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] max-[1200px]:gap-0 transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
               <div className="flex gap-4 max-[600px]:flex-col">
-                {tabOptions.map(
+                {vehicleTabs.map(
                   tab =>
                     (!isSearchActive || tab === 'vehicles') && (
                       <Button
@@ -161,7 +155,10 @@ const Vehicles: React.FC = () => {
                     ),
                 )}
               </div>
-              <ExportCSVButton filters={validatedFiltersParams} disabled={!vehiclesList.length} />
+              <ExportCSVButton
+                filters={{ ...validatedFiltersParams, favorite: active === 'favorites' ? 1 : undefined }}
+                disabled={!vehiclesList.length}
+              />
             </div>
 
             <div
@@ -191,6 +188,7 @@ const Vehicles: React.FC = () => {
                 />
               )}
             </div>
+            <Toaster richColors visibleToasts={1}/>
           </div>
         )}
       </div>
@@ -198,8 +196,6 @@ const Vehicles: React.FC = () => {
       <div className="flex-[1_1_60%] h-full">
         <Map />
       </div>
-
-      <Toaster richColors />
     </div>
   );
 };

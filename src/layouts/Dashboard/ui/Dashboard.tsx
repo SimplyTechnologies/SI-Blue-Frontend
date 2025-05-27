@@ -4,7 +4,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
 import useAuthStore from '@/stores/authStore';
-import { pathTitles } from '@/utils/pageTitles';
+import { pathTitles } from '@/utils/constants';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
 import './dashboard.css';
