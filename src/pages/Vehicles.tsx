@@ -115,10 +115,10 @@ const Vehicles: React.FC = () => {
       observerRef.current = new IntersectionObserver(
         entries => {
           if (entries[0].isIntersecting && page < totalPages) {
-            setPage(prev => prev + 1);
+            setPage(prev => prev + 2);
           }
         },
-        { threshold: 0.5 },
+        { threshold: 1 },
       );
 
       observerRef.current.observe(node);

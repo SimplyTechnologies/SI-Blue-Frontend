@@ -72,7 +72,7 @@ const VehicleCard = React.forwardRef<HTMLDivElement, VehicleCardProps>(({ vehicl
           </div>
         </div>
         <Button onClick={() => {}} variant="text" className="w-[20px] hover:opacity-80">
-          <FavoriteColor isFavorite={false} />
+          <FavoriteColor isFavorite={vehicle.favorite} />
         </Button>
       </div>
       {details && (
