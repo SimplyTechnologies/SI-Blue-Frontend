@@ -43,7 +43,6 @@ const LoginPage: React.FC = () => {
 
     login.mutate(data, {
       onSuccess: response => {
-        console.log(response)
         const { user, tokens } = response;
         auth(user, tokens);
         navigate('/dashboard');
