@@ -1,5 +1,6 @@
+import { toast } from 'sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
@@ -20,8 +21,10 @@ import VehicleCardSkeleton from '@/components/molecule/VehicleCardSkeleton';
 import NothingToShow from '@/components/molecule/NothingToShow';
 
 const Vehicles: React.FC = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { isSearchActive } = useSearchStore();
+  const { addedSuccessfully } = location.state || {};
 
   const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -42,7 +45,18 @@ const Vehicles: React.FC = () => {
     modelIds: validatedFilters?.modelIds?.length ? validatedFilters?.modelIds.join(',') : undefined,
   };
 
-  const { isLoading: isVehiclesLoading, data: vehiclesData } = useQuery({
+  const resetPageAndScrollToTop = () => {
+    setPage(1);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  };
+
+  const {
+    isLoading: isVehiclesLoading,
+    data: vehiclesData,
+    refetch,
+  } = useQuery({
     queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page, active],
     queryFn: () =>
       getVehicles({
@@ -53,6 +67,13 @@ const Vehicles: React.FC = () => {
         favorite: active === 'favorites' ? 1 : undefined,
       }),
   });
+
+  useEffect(() => {
+    if (addedSuccessfully) {
+      toast.success('Vehicle added successfully!');
+      location.state = {};
+    }
+  }, [addedSuccessfully, location]);
 
   //Set vehicles list (add to the existing list starting from page 2)
   useEffect(() => {
@@ -69,10 +90,7 @@ const Vehicles: React.FC = () => {
   // On search or filter scroll to the top of the vehicles list
   useEffect(() => {
     if (debounceValue || !isObjectEmpty(validatedFilters)) {
-      setPage(1);
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-      }
+      resetPageAndScrollToTop();
     }
   }, [debounceValue, validatedFilters]);
 
@@ -121,7 +139,15 @@ const Vehicles: React.FC = () => {
                 isFilterActive={!isObjectEmpty(validatedFilters)}
               />
             </div>
-            <AddNewVehicleButton buttonName="+ Add" className="w-[132px] h-[56px] max-[1200px]:h-[42px]" />
+            <AddNewVehicleButton
+              buttonName="+ Add"
+              className="w-[132px] h-[56px] max-[1200px]:h-[42px]"
+              onSuccess={() => {
+                toast.success('Vehicle added successfully!');
+                resetPageAndScrollToTop();
+                refetch();
+              }}
+            />
           </div>
         )}
 
@@ -201,4 +227,3 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
-

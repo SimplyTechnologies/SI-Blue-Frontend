@@ -1,19 +1,21 @@
 import api from './axios';
 import { toast } from 'sonner';
-import type { FilterRequest, VehicleRequest } from '@/types/Vehicle';
+import type { CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/Vehicle';
 
 export const getVehicles = async (params: VehicleRequest) => {
   try {
     const response = await api.get(`/vehicles`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
       params: params,
     });
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicles:', error);
   }
+};
+
+export const createVehicle = async (body: CreateVehicleRequest) => {
+  const response = await api.post(`/vehicles/vehicle`, body);
+  return response.data;
 };
 
 export const getMakes = async () => {
@@ -28,9 +30,6 @@ export const getMakes = async () => {
 export const getModelsByMakeId = async (makeId: string) => {
   try {
     const response = await api.get(`/vehicles/models`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
       params: {
         makeId,
       },
@@ -44,9 +43,6 @@ export const getModelsByMakeId = async (makeId: string) => {
 export const getCSV = async (params: FilterRequest) => {
   try {
     const response = await api.get(`/vehicles/export`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
       params,
     });
     return response.data;
@@ -55,4 +51,3 @@ export const getCSV = async (params: FilterRequest) => {
     toast.error('Failed to export. Please try again.');
   }
 };
-

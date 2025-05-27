@@ -16,7 +16,7 @@ function DashboardLayout() {
   const { logout, user } = useAuthStore();
 
   const pageTitle = pathTitles[location.pathname] || '';
-  const userCredentials = (user?.first_name[0] || '') + (user?.last_name[0] || '');
+  const userCredentials = (user?.firstName[0] || '') + (user?.lastName[0] || '');
 
   const handleProfileNavigate = () => {
     navigate('/my-profile');
@@ -42,9 +42,7 @@ function DashboardLayout() {
             trigger={
               <Avatar>
                 <AvatarImage src="" />
-                <AvatarFallback className="text-primary-3 font-medium bg-primary-5">
-                  {userCredentials}
-                </AvatarFallback>
+                <AvatarFallback className="text-primary-3 font-medium bg-primary-5">{userCredentials}</AvatarFallback>
               </Avatar>
             }
             items={profileDropdownItems}
@@ -58,4 +56,3 @@ function DashboardLayout() {
 }
 
 export default DashboardLayout;
-

@@ -1,17 +1,12 @@
 import { z } from 'zod';
+import type { TAddress } from './Address';
 
 export type VehicleType = {
   id: number;
   year: number;
   vin: string;
   favorite: boolean;
-  location: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zipcode: string;
-  };
+  location: TAddress;
   sold: boolean;
   userId: number;
   model: {
@@ -57,5 +52,11 @@ export type OptionType = {
   name: string;
 };
 
+export type CreateVehicleRequest = {
+  location: TAddress;
+  vin: string;
+  year: number;
+  modelId: number;
+};
 
 export type VehicleTab = 'vehicles' | 'favorites';
