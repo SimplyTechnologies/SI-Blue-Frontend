@@ -6,13 +6,13 @@ import type { User } from '@/types/User';
 interface AuthStore {
   isAuthenticated: boolean;
   user: User | null;
-  auth: (user: User, tokens:{accessToken: string, refreshToken: string}) => void;
+  auth: (user: User, tokens: { accessToken: string; refreshToken: string }) => void;
   logout: () => void;
 }
 
 const useAuthStore = create<AuthStore>()(
   persist(
-    (set) => ({
+    set => ({
       isAuthenticated: false,
       user: null,
       auth: (user, tokens) => {
@@ -29,9 +29,9 @@ const useAuthStore = create<AuthStore>()(
     {
       name: 'authStore',
       storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
-    }
-  )
+      partialize: state => ({ user: state.user, isAuthenticated: state.isAuthenticated }),
+    },
+  ),
 );
 
 export default useAuthStore;

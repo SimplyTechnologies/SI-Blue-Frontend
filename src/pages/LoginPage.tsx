@@ -39,11 +39,9 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = (data: FormData) => {
     setServerError('');
-    console.log(data);
 
     login.mutate(data, {
       onSuccess: response => {
-        console.log(response)
         const { user, tokens } = response;
         auth(user, tokens);
         navigate('/dashboard');

@@ -7,8 +7,8 @@ import { pathTitles } from '@/utils/pageTitles';
 import { generateStringToColor } from '@/utils/general';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
-import './dashboard.css';
 import useAuthStore from '@/stores/authStore';
+import './dashboard.css';
 
 function DashboardLayout() {
   const location = useLocation();

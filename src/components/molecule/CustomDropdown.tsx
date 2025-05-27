@@ -19,11 +19,12 @@ interface DropdownProps {
   }[];
   label?: string;
   menuClassName?: string;
+  itemClassName?: string;
   sideOffset?: number;
   align?: 'end' | 'center' | 'start';
 }
 
-export default function CustomDropdown({ trigger, items, label, menuClassName, sideOffset, align }: DropdownProps) {
+export default function CustomDropdown({ trigger, items, label, menuClassName, itemClassName, sideOffset, align }: DropdownProps) {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild className="cursor-pointer">
@@ -36,8 +37,8 @@ export default function CustomDropdown({ trigger, items, label, menuClassName, s
           item.separator ? (
             <DropdownMenuSeparator key={`sep-${index}`} />
           ) : (
-            <DropdownMenuItem key={index} onClick={item.onClick} disabled={item.disabled} className="dd-dropdown-item">
-              {item.icon && <span className="mr-2">{item.icon}</span>}
+            <DropdownMenuItem key={index} onClick={item.onClick} disabled={item.disabled} className={`dd-dropdown-item ${itemClassName}`}>
+              {item.icon && <span className='w-[23px] h-[23px] flex justify-center items-center'>{item.icon}</span>} 
               {item.label}
             </DropdownMenuItem>
           ),

@@ -1,5 +1,3 @@
-'use client';
-
 import { NavLink } from 'react-router';
 import type { ReactElement } from 'react';
 import { SidebarGroup, SidebarMenu, SidebarMenuButton, SidebarMenuItem, useSidebar } from '@/components/atom/Sidebar';

@@ -5,7 +5,7 @@ import { Button } from '@/components/atom/Button';
 
 const VehiclesHeader: React.FC = () => {
   return (
-        <div className="flex item-start justify-between gap-[1rem] max-[1200px]:flex-col">
+        <div className="w-full flex item-start justify-between gap-[1rem] max-[1200px]:flex-col">
           <div className="w-full max-w-[352px] h-[42px] flex items-center">
             <div className="relative w-full">
               <img src={searchIcon} alt="Search" className="absolute left-[1.5rem] top-1/2 -translate-y-1/2 " />

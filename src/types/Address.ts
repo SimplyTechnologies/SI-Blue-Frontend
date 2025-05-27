@@ -3,8 +3,8 @@ export type TAddress = {
   street:  string;
   city:  string;
   state:  string;
-  country:  string;
   zip: string;
+  country:  string;
   formatted_address: string;
   lat?: number;
   lng?: number;
