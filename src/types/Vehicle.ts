@@ -4,6 +4,7 @@ export type VehicleType = {
   id: number;
   year: number;
   vin: string;
+  favorite: boolean;
   location: {
     street: string;
     city: string;
