@@ -2,13 +2,15 @@ import { useState } from 'react';
 import { Button } from '@/components/atom/Button';
 import AddVehicle from '@/components/organism/AddVehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
+import { Toaster } from '@/components/atom/Toaster';
 
 type AddNewVehicleButton = {
   buttonName: string;
   className: string;
+  onSuccess?: () => void;
 };
 
-const AddNewVehicleButton = ({ buttonName, className }: AddNewVehicleButton) => {
+const AddNewVehicleButton = ({ buttonName, className, onSuccess }: AddNewVehicleButton) => {
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
   const { isSearchActive } = useSearchStore();
 
@@ -18,10 +20,10 @@ const AddNewVehicleButton = ({ buttonName, className }: AddNewVehicleButton) => 
         {buttonName}
       </Button>
 
-      <AddVehicle open={openAddVehicle} onOpenChange={setOpenAddVehicle} />
+      <AddVehicle open={openAddVehicle} onOpenChange={setOpenAddVehicle} onSuccess={onSuccess} />
+      <Toaster richColors visibleToasts={1} />
     </div>
   );
 };
 
 export default AddNewVehicleButton;
-

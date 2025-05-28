@@ -13,28 +13,40 @@ const AddressAutocomplete = ({
   handleChange,
   ...props
 }: TAddressAutocompleteProps) => {
-  const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
-
   const onSelect = (data: google.maps.places.PlaceResult) => {
-    const lat = data?.geometry?.location?.lat();
-    const lng = data?.geometry?.location?.lng();
-    const zip = data?.address_components?.find((addr: { types: string[] }) => addr.types?.includes('postal_code'));
-    const address = data.formatted_address?.split(',')[0] || '';
-    const street = data?.address_components?.find((addr: { types: string[] }) => addr.types?.includes('route'));
-    const city = data?.address_components?.find((addr: { types: string[] }) => addr.types?.includes('locality'));
+    const streetNumber = data?.address_components?.find((addr: { types: string[] }) => {
+      return addr.types?.includes('street_number');
+    });
+
+    const street = data?.address_components?.find((addr: { types: string[] }) => {
+      return addr.types?.includes('route');
+    });
+
+    const city = data?.address_components?.find((addr: { types: string[] }) => {
+      return addr.types?.includes('locality');
+    });
+
     const state = data?.address_components?.find((addr: { types: string[] }) =>
       addr.types?.includes('administrative_area_level_1'),
     );
-    const country = data?.address_components?.find((addr: { types: string[] }) => addr.types?.includes('country'));
+
+    const country = data?.address_components?.find((addr: { types: string[] }) => {
+      return addr.types?.includes('country');
+    });
+
+    const zip = data?.address_components?.find((addr: { types: string[] }) => {
+      return addr.types?.includes('postal_code');
+    });
+
+    const lat = data?.geometry?.location?.lat();
+    const lng = data?.geometry?.location?.lng();
 
     changeAddress({
-      address,
-      street: street?.long_name || '',
+      street: `${streetNumber?.long_name || ''} ${street?.long_name || ''}`,
       city: city?.long_name || '',
       state: state?.short_name || '',
       country: country?.short_name || '',
-      zip: zip?.long_name || '',
-      formatted_address: data.formatted_address || '',
+      zipcode: zip?.long_name || '',
       lat,
       lng,
     });
@@ -48,7 +60,7 @@ const AddressAutocomplete = ({
         value={value}
         onChange={e => handleChange(e)}
         className={`google-autocomplete ${className}`}
-        apiKey={apiKey}
+        apiKey={import.meta.env.VITE_GOOGLE_API_KEY}
         options={{ types: ['address'], ...options }}
         onPlaceSelected={onSelect}
         disabled={disabled}

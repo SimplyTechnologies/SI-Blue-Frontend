@@ -1,5 +1,6 @@
+import { toast } from 'sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
@@ -20,8 +21,10 @@ import VehicleCardSkeleton from '@/components/molecule/VehicleCardSkeleton';
 import NothingToShow from '@/components/molecule/NothingToShow';
 
 const Vehicles: React.FC = () => {
+  const location = useLocation();
   const navigate = useNavigate();
   const { isSearchActive } = useSearchStore();
+  const { addedSuccessfully } = location.state || {};
 
   const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -42,7 +45,19 @@ const Vehicles: React.FC = () => {
     modelIds: validatedFilters?.modelIds?.length ? validatedFilters?.modelIds.join(',') : undefined,
   };
 
-  const { isLoading: isVehiclesLoading, data: vehiclesData } = useQuery({
+  const resetPageAndScrollToTop = () => {
+    setPage(1);
+    setVehiclesList([]);
+    if (scrollContainerRef.current) {
+      scrollContainerRef.current.scrollTop = 0;
+    }
+  };
+
+  const {
+    isLoading: isVehiclesLoading,
+    data: vehiclesData,
+    refetch,
+  } = useQuery({
     queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page, active],
     queryFn: () =>
       getVehicles({
@@ -53,6 +68,13 @@ const Vehicles: React.FC = () => {
         favorite: active === 'favorites' ? 1 : undefined,
       }),
   });
+
+  useEffect(() => {
+    if (addedSuccessfully) {
+      toast.success('Vehicle added successfully!');
+      location.state = {};
+    }
+  }, [addedSuccessfully, location]);
 
   //Set vehicles list (add to the existing list starting from page 2)
   useEffect(() => {
@@ -66,21 +88,12 @@ const Vehicles: React.FC = () => {
     }
   }, [vehiclesData, page]);
 
-  // On search or filter scroll to the top of the vehicles list
-  useEffect(() => {
-    if (debounceValue || !isObjectEmpty(validatedFilters)) {
-      setPage(1);
-      if (scrollContainerRef.current) {
-        scrollContainerRef.current.scrollTop = 0;
-      }
-    }
-  }, [debounceValue, validatedFilters]);
 
   const handleDebounceSearch = (value: string) => {
     if (value !== debounceValue) {
       setDebounceValue(value);
       setActive('vehicles');
-
+      resetPageAndScrollToTop();
       if (!isObjectEmpty(validatedFilters)) {
         navigate('/vehicles');
       }
@@ -92,14 +105,13 @@ const Vehicles: React.FC = () => {
     (node: Element | null) => {
       if (isVehiclesLoading || !node) return;
       if (observerRef.current) observerRef.current.disconnect();
-
       observerRef.current = new IntersectionObserver(
         entries => {
           if (entries[0].isIntersecting && page < totalPages) {
             setPage(prev => prev + 1);
           }
         },
-        { threshold: 0.5 },
+        { threshold: 1 },
       );
 
       observerRef.current.observe(node);
@@ -111,7 +123,7 @@ const Vehicles: React.FC = () => {
     <div className="flex w-full h-[calc(100vh-78px)]">
       <div className="flex flex-col gap-2 flex-[0_1_40%] h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2">
         {!isFilterOpen && (
-          <div className="flex justify-between gap-4 min-h-[56px] items-start max-[1200px]:flex-col">
+          <div className="flex justify-between gap-4 min-h-[56px] items-start">
             <div
               className={`flex items-center h-[42px] w-full gap-2 transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
@@ -121,7 +133,15 @@ const Vehicles: React.FC = () => {
                 isFilterActive={!isObjectEmpty(validatedFilters)}
               />
             </div>
-            <AddNewVehicleButton buttonName="+ Add" className="w-[132px] h-[56px] max-[1200px]:h-[42px]" />
+            <AddNewVehicleButton
+              buttonName="+ Add"
+              className="w-[132px] h-[56px]"
+              onSuccess={() => {
+                toast.success('Vehicle added successfully!');
+                resetPageAndScrollToTop();
+                refetch();
+              }}
+            />
           </div>
         )}
 
@@ -130,9 +150,9 @@ const Vehicles: React.FC = () => {
         ) : (
           <div className="flex flex-col h-full">
             <div
-              className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] max-[1200px]:gap-0 transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
+              className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
-              <div className="flex gap-4 max-[600px]:flex-col">
+              <div className="flex gap-4">
                 {vehicleTabs.map(
                   tab =>
                     (!isSearchActive || tab === 'vehicles') && (
@@ -163,21 +183,21 @@ const Vehicles: React.FC = () => {
 
             <div
               ref={scrollContainerRef}
-              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[1200px]:max-h-[calc(100vh-16.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
+              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
             >
-              {isVehiclesLoading ? (
+              {isVehiclesLoading && !vehiclesList.length ? (
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (
                   <VehicleCard
                     key={vehicle.id}
                     vehicle={vehicle}
-                    ref={index === vehiclesList.length - 1 ? lastVehicleRef : null}
+                    ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
                   />
                 ))
               ) : (
@@ -188,7 +208,7 @@ const Vehicles: React.FC = () => {
                 />
               )}
             </div>
-            <Toaster richColors visibleToasts={1}/>
+            <Toaster richColors visibleToasts={1} />
           </div>
         )}
       </div>

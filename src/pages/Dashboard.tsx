@@ -1,12 +1,19 @@
+import { useNavigate } from 'react-router';
 import Map from '@/components/organism/Map';
 import AnalyticCard from '@/components/atom/AnalyticCard';
 import AddNewVehicleButton from '@/components/molecule/AddNewVehicleButton';
 
 const Dashboard: React.FC = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="w-full h-full pt-[1rem] px-[2rem] pb-[3rem] max-[480px]:px-[1rem] flex flex-col gap-[0.5rem] bg-bg-1">
       <div className="flex justify-end">
-        <AddNewVehicleButton buttonName="+ Add New Vehicle" className="w-[244px] h-[56px]" />
+        <AddNewVehicleButton
+          buttonName="+ Add New Vehicle"
+          className="w-[244px] h-[56px]"
+          onSuccess={() => navigate('/vehicles', { state: { addedSuccessfully: true }, replace: true })}
+        />
       </div>
       <p className="text-support-6 text-[length:var(--sm-text)] font-[var(--fw-bold)] leading-[140%]">
         Total analytics
@@ -23,4 +30,3 @@ const Dashboard: React.FC = () => {
   );
 };
 export default Dashboard;
-

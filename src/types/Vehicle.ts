@@ -1,16 +1,12 @@
 import { z } from 'zod';
+import type { TAddress } from './Address';
 
 export type VehicleType = {
   id: number;
   year: number;
   vin: string;
-  location: {
-    street: string;
-    city: string;
-    state: string;
-    country: string;
-    zipcode: string;
-  };
+  favorite: boolean;
+  location: TAddress;
   sold: boolean;
   userId: number;
   model: {
@@ -35,13 +31,18 @@ export const filterSchema = z
     makeId: z
       .string()
       .optional()
-      .refine(val => !val || !isNaN(parseInt(val)), { message: 'Invalid make ID' }),
+      .refine(val => val && !isNaN(parseInt(val)), { message: 'Invalid make ID' }),
     modelIds: z
-      .array(z.string().refine(val => !val || !isNaN(parseInt(val)), { message: 'Invalid model ID' }))
+      .array(z.string().refine(val => val && !isNaN(parseInt(val)), { message: 'Invalid model ID' }))
       .optional(),
-    availability: z.string().optional(),
+    availability: z
+      .string()
+      .optional()
+      .refine(val => val === undefined || val.trim() !== '', { message: 'Invalid availability' }),
   })
-  .refine(({ makeId, modelIds }) => (modelIds?.length && makeId && !isNaN(parseInt(makeId)) || !modelIds?.length), { message: 'Invalid make ID' });
+  .refine(({ makeId, modelIds }) => (modelIds?.length && makeId && !isNaN(parseInt(makeId))) || !modelIds?.length, {
+    message: 'Invalid make ID',
+  });
 
 export type FilterState = z.infer<typeof filterSchema>;
 
@@ -56,5 +57,12 @@ export type OptionType = {
   name: string;
 };
 
+export type CreateVehicleRequest = {
+  location: TAddress;
+  vin: string;
+  year: number;
+  modelId: number;
+};
 
 export type VehicleTab = 'vehicles' | 'favorites';
+

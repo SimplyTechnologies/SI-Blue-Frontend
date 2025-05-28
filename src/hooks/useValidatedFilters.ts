@@ -14,7 +14,6 @@ export const useValidatedFilters = () => {
   const parsed = filterSchema.safeParse(rawParams);
 
   if (!parsed.success) {
-    console.warn(parsed.error.format());
     toast.error('Invalid filters');
     return {};
   }

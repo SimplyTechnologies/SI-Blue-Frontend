@@ -4,8 +4,7 @@ import { Button } from '@/components/atom/Button';
 import { FavoriteColor } from '@/assets/svgIconComponents/FavoriteIcon';
 import carMarker from '@/assets/carMarkerPrimary.svg';
 
-const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehicleType }>(
-  ({ vehicle }, ref) => {
+const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehicleType }>(({ vehicle }, ref) => {
   return (
     <div className="w-full py-6 border-b border-support-12 flex" ref={ref}>
       {/* Marker Circle */}
@@ -20,9 +19,7 @@ const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehicleType }>(
       {/* Vehicle Info */}
       <div className="flex flex-col flex-1 w-full">
         <div className="flex justify-between items-center">
-          <p className="text-[14px] cursor-pointer text-support-6 text-xs font-bold leading-[120%]">
-            {vehicle.vin}
-          </p>
+          <p className="text-[14px] cursor-pointer text-support-6 text-xs font-bold leading-[120%]">{vehicle.vin}</p>
         </div>
 
         <div className="flex flex-col gap-1 cursor-pointer">
@@ -48,7 +45,7 @@ const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehicleType }>(
           </div>
         </div>
         <Button onClick={() => {}} variant="text" className="w-[20px] hover:opacity-80">
-          <FavoriteColor isFavorite={false} />
+          <FavoriteColor isFavorite={vehicle.favorite} />
         </Button>
       </div>
     </div>
