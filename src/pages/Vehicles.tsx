@@ -47,6 +47,7 @@ const Vehicles: React.FC = () => {
 
   const resetPageAndScrollToTop = () => {
     setPage(1);
+    setVehiclesList([]);
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
@@ -87,18 +88,12 @@ const Vehicles: React.FC = () => {
     }
   }, [vehiclesData, page]);
 
-  // On search or filter scroll to the top of the vehicles list
-  useEffect(() => {
-    if (debounceValue || !isObjectEmpty(validatedFilters)) {
-      resetPageAndScrollToTop();
-    }
-  }, [debounceValue, validatedFilters]);
 
   const handleDebounceSearch = (value: string) => {
     if (value !== debounceValue) {
       setDebounceValue(value);
       setActive('vehicles');
-
+      resetPageAndScrollToTop();
       if (!isObjectEmpty(validatedFilters)) {
         navigate('/vehicles');
       }
@@ -110,11 +105,10 @@ const Vehicles: React.FC = () => {
     (node: Element | null) => {
       if (isVehiclesLoading || !node) return;
       if (observerRef.current) observerRef.current.disconnect();
-
       observerRef.current = new IntersectionObserver(
         entries => {
           if (entries[0].isIntersecting && page < totalPages) {
-            setPage(prev => prev + 2);
+            setPage(prev => prev + 1);
           }
         },
         { threshold: 1 },
@@ -129,7 +123,7 @@ const Vehicles: React.FC = () => {
     <div className="flex w-full h-[calc(100vh-78px)]">
       <div className="flex flex-col gap-2 flex-[0_1_40%] h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2">
         {!isFilterOpen && (
-          <div className="flex justify-between gap-4 min-h-[56px] items-start max-[1200px]:flex-col">
+          <div className="flex justify-between gap-4 min-h-[56px] items-start">
             <div
               className={`flex items-center h-[42px] w-full gap-2 transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
@@ -141,7 +135,7 @@ const Vehicles: React.FC = () => {
             </div>
             <AddNewVehicleButton
               buttonName="+ Add"
-              className="w-[132px] h-[56px] max-[1200px]:h-[42px]"
+              className="w-[132px] h-[56px]"
               onSuccess={() => {
                 toast.success('Vehicle added successfully!');
                 resetPageAndScrollToTop();
@@ -156,9 +150,9 @@ const Vehicles: React.FC = () => {
         ) : (
           <div className="flex flex-col h-full">
             <div
-              className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] max-[1200px]:gap-0 transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
+              className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
-              <div className="flex gap-4 max-[600px]:flex-col">
+              <div className="flex gap-4">
                 {vehicleTabs.map(
                   tab =>
                     (!isSearchActive || tab === 'vehicles') && (
@@ -189,7 +183,7 @@ const Vehicles: React.FC = () => {
 
             <div
               ref={scrollContainerRef}
-              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[1200px]:max-h-[calc(100vh-16.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
+              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8
@@ -203,7 +197,7 @@ const Vehicles: React.FC = () => {
                   <VehicleCard
                     key={vehicle.id}
                     vehicle={vehicle}
-                    ref={index === vehiclesList.length - 1 ? lastVehicleRef : null}
+                    ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
                   />
                 ))
               ) : (
@@ -227,3 +221,4 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
+
