@@ -71,3 +71,7 @@ export const removeFavorite = async (params: AddRemoveFavorite) => {
   return response.data;
 };
 
+export const decodeVehicleVin = async (body: { vin: string }) => {
+  const response = await api.post('/vehicles/decode/vin', body);
+  return response.data;
+};
