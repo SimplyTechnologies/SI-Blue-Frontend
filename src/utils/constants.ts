@@ -1,5 +1,7 @@
 import { NothingToShowCarIcon } from '@/assets/svgIconComponents/NothingToShowCarIcon';
+import { NothingToShowCustomersIcon } from '@/assets/svgIconComponents/NothingToShowCustomers';
 import { NothingToShowFavoriteIcon } from '@/assets/svgIconComponents/NothingToShowFavoriteIcon';
+import { NothingToShowUsersIcon } from '@/assets/svgIconComponents/NothingToShowUsers';
 import type { VehicleTab } from '@/types/Vehicle';
 
 export const pathTitles: Record<string, string> = {
@@ -27,5 +29,15 @@ export const nothingToShowOptions = {
     title: 'There are no favorite vehicles',
     subtitle: 'To quickly access more information about vehicles, consider adding them to your favorites.',
     icon: NothingToShowFavoriteIcon,
+  },
+  users: {
+    title: 'There are no users to display',
+    subtitle: 'At the moment, there are no users listed. However, you have the option to manually add new users.',
+    icon: NothingToShowUsersIcon,
+  },
+  customers: {
+    title: 'There are no customers to display',
+    subtitle: 'All customers will be displayed here.',
+    icon: NothingToShowCustomersIcon,
   },
 };
