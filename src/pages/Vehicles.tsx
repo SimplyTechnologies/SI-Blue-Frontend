@@ -224,7 +224,7 @@ const Vehicles: React.FC = () => {
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (
-                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id}>
+                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id} state={{vehicle}}>
                     <VehicleCard
                       vehicle={vehicle}
                       ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
@@ -246,7 +246,7 @@ const Vehicles: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-[1_1_60%] h-full">
+      {/* <div className="flex-[1_1_60%] h-full">
         {vehiclesData && (
           <Map
             cords={vehiclesList.map((vehicle: VehicleType) => ({
@@ -256,7 +256,7 @@ const Vehicles: React.FC = () => {
             }))}
           />
         )}
-      </div>
+      </div> */}
     </div>
   );
 };
