@@ -23,22 +23,13 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
     clusterer.current?.addMarkers(markers);
   }, [pois]);
 
-const setMarkerRef = (marker: Marker | null, key: string) => {
-  const current = markersRef.current;
-
-  if (marker && !current[key]) {
-    current[key] = marker;
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(current));
-  }
-
-  if (!marker && current[key]) {
-    delete current[key];
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(current));
-  }
-};
-
+  const setMarkerRef = (marker: Marker | null, key: string) => {
+    if (marker && !markersRef.current[key]) {
+      markersRef.current[key] = marker;
+    } else if (!marker && markersRef.current[key]) {
+      delete markersRef.current[key];
+    }
+  };
 
   const parsedPois = pois
     .filter(poi => poi.lat && poi.lng)
