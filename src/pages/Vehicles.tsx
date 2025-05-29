@@ -189,6 +189,7 @@ const Vehicles: React.FC = () => {
                       <Button
                         key={tab}
                         onClick={() => {
+                          if (tab === active) return
                           resetPageAndScrollToTop();
                           setActive(tab);
                         }}
