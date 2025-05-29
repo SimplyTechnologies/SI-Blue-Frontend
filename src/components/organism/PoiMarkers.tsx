@@ -38,11 +38,13 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
     });
   };
 
-  const parsedPois: Poi[] = pois.map(poi => ({
-    ...poi,
-    lat: typeof poi.lat === 'string' ? parseFloat(poi.lat) : poi.lat,
-    lng: typeof poi.lng === 'string' ? parseFloat(poi.lng) : poi.lng,
-  }));
+  const parsedPois: Poi[] = pois
+    .filter(poi => poi.lat && poi.lng)
+    .map(poi => ({
+      ...poi,
+      lat: typeof poi.lat === 'string' ? parseFloat(poi.lat) : poi.lat,
+      lng: typeof poi.lng === 'string' ? parseFloat(poi.lng) : poi.lng,
+    }));
 
   return (
     <>
