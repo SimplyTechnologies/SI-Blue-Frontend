@@ -8,13 +8,16 @@ export const useValidatedFilters = () => {
   const rawParams: Record<string, string | string[]> = {};
   for (const key of searchParams.keys()) {
     const values = searchParams.getAll(key);
-    rawParams[key] = key === 'modelIds' ? values : values[0];
+    const val = key === 'modelIds' ? values.filter((item) => item) : values[0];
+
+    if (val?.length) {
+      rawParams[key] = key === 'modelIds' ? values : values[0];
+    }
   }
 
   const parsed = filterSchema.safeParse(rawParams);
 
   if (!parsed.success) {
-    console.warn(parsed.error.format());
     toast.error('Invalid filters');
     return {};
   }

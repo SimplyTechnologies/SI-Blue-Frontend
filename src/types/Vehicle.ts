@@ -35,9 +35,13 @@ export const filterSchema = z
     modelIds: z
       .array(z.string().refine(val => !val || !isNaN(parseInt(val)), { message: 'Invalid model ID' }))
       .optional(),
-    availability: z.string().optional(),
+    availability: z
+      .string()
+      .optional()
   })
-  .refine(({ makeId, modelIds }) => (modelIds?.length && makeId && !isNaN(parseInt(makeId)) || !modelIds?.length), { message: 'Invalid make ID' });
+  .refine(({ makeId, modelIds }) => (modelIds?.length && makeId && !isNaN(parseInt(makeId))) || !modelIds?.length, {
+    message: 'Invalid make ID',
+  });
 
 export type FilterState = z.infer<typeof filterSchema>;
 
@@ -60,3 +64,4 @@ export type CreateVehicleRequest = {
 };
 
 export type VehicleTab = 'vehicles' | 'favorites';
+
