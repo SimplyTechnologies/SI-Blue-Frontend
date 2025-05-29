@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, useEffect } from 'react';
+import { useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import type { AxiosError } from 'axios';
@@ -21,14 +21,59 @@ import {
   getVehicleYearOptions,
   buildLocation,
 } from './AddVehicle.data';
+import type { AddVehicleProps } from './AddVehicle.types';
 
-type AddVehicle = {
-  open: boolean;
-  onOpenChange: Dispatch<SetStateAction<boolean>>;
-  onSuccess?: () => void;
-};
+const TextInputField = ({
+  form,
+  name,
+  label,
+  placeholder,
+  type = 'text',
+  formItemClassName,
+  errorClassName,
+}: {
+  form: ReturnType<typeof useForm<CarFormValues>>;
+  name: keyof CarFormValues;
+  label: string;
+  placeholder: string;
+  type?: string;
+  formItemClassName?: string;
+  errorClassName?: string;
+}) => (
+  <FormField
+    control={form.control}
+    name={name}
+    render={({ field }) => (
+      <FormItem className={formItemClassName}>
+        <FormLabel>{label}</FormLabel>
+        <FormControl>
+          <Input
+            className={inputClassname}
+            placeholder={placeholder}
+            type={type}
+            {...field}
+            value={field.value}
+            onChange={e => {
+              field.onChange(e);
+              if (['street', 'city', 'state', 'country', 'zipcode'].includes(name)) {
+                const value = e.target.value;
+                form.setValue(name, value, { shouldValidate: true });
+                const updatedFields: Partial<CarFormValues> = { [name]: value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }
+            }}
+          />
+        </FormControl>
+        <div className={errorClassName}>
+          <FormMessage />
+        </div>
+      </FormItem>
+    )}
+  />
+);
 
-const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
+const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
     defaultValues: {
@@ -55,22 +100,19 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
     refetchOnWindowFocus: false,
   });
 
+  const selectedMake = form.watch('make');
   const { data: modelOptions } = useQuery({
-    queryKey: ['model', form.getValues('make')],
-    queryFn: () => getModelsByMakeId(form.getValues('make')),
-    enabled: !!form.getValues('make'),
+    queryKey: ['model', selectedMake],
+    queryFn: () => getModelsByMakeId(selectedMake),
+    enabled: !!selectedMake,
     refetchOnWindowFocus: false,
   });
 
-  const errorMessageSpacerClass = 'min-h-[1.25rem]';
-  const selectedMake = form.watch('make');
-
-  const handleAddressFieldChange = (fieldName: keyof CarFormValues) => (value: string) => {
-    form.setValue(fieldName, value, { shouldValidate: true });
-    const updatedFields: Partial<CarFormValues> = { [fieldName]: value };
-    const newLocation = buildLocation(updatedFields, form);
-    form.setValue('location', newLocation);
-  };
+  useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open]);
 
   const onSubmit = async (values: CarFormValues) => {
     try {
@@ -90,9 +132,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
       };
       await createVehicle(body);
       onOpenChange(false);
-      if (onSuccess) {
-        onSuccess();
-      }
+      onSuccess?.();
     } catch (e) {
       const error = e as AxiosError<{ message?: string }>;
       toast.error(error.response?.data?.message || 'An error occurred while adding the vehicle.');
@@ -101,7 +141,6 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
 
   const onAddressSelect = (address: TAddress) => {
     const location = buildLocation(address, form);
-
     form.setValue('location', location);
     form.setValue('street', address.street);
     form.setValue('city', address.city);
@@ -112,10 +151,6 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
     form.setValue('lng', address.lng);
     form.trigger(['street', 'city', 'state', 'country', 'zipcode']);
   };
-
-  useEffect(() => {
-    form.reset();
-  }, [open, form]);
 
   return (
     <Modal
@@ -141,9 +176,10 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
                   <CustomSelect
                     value={field.value}
                     items={
-                      makeOptions?.map((item: { id: number; name: string }) => {
-                        return { id: item.id.toString(), name: item.name };
-                      }) || []
+                      makeOptions?.map((item: { id: number; name: string }) => ({
+                        id: item.id.toString(),
+                        name: item.name,
+                      })) || []
                     }
                     onChange={value => {
                       field.onChange(value);
@@ -153,13 +189,12 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
                     className="bg-white"
                     disabled={!makeOptions?.length}
                   />
-                  <div className={form.formState.errors.model ? errorMessageSpacerClass : ''}>
+                  <div className={form.formState.errors.model ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="model"
@@ -169,29 +204,29 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
                   <CustomSelect
                     value={field.value}
                     items={
-                      modelOptions?.map((item: { id: number; name: string }) => {
-                        return { id: item.id.toString(), name: item.name };
-                      }) || []
+                      modelOptions?.map((item: { id: number; name: string }) => ({
+                        id: item.id.toString(),
+                        name: item.name,
+                      })) || []
                     }
                     onChange={field.onChange}
                     placeholder="Select Model"
                     className="bg-white"
                     disabled={!modelOptions?.length || !selectedMake}
                   />
-                  <div className={form.formState.errors.make ? errorMessageSpacerClass : ''}>
+                  <div className={form.formState.errors.make ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="year"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl>
                       <SelectTrigger className="w-[100%]">
                         <SelectValue placeholder="Select year" />
@@ -205,27 +240,18 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className={form.formState.errors.vin ? errorMessageSpacerClass : ''}>
+                  <div className={form.formState.errors.vin ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="vin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>VIN</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter VIN" {...field} />
-                  </FormControl>
-                  <div className={form.formState.errors.year ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="VIN"
+              placeholder="Enter VIN"
+              errorClassName="min-h-[1.25rem]"
             />
           </div>
           <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2">
@@ -245,110 +271,41 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicle) => {
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="street"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Street</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={inputClassname}
-                      placeholder="Enter Street"
-                      {...field}
-                      onChange={e => handleAddressFieldChange('street')(e.target.value)}
-                    />
-                  </FormControl>
-                  <div className={form.formState.errors.city ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="Street"
+              placeholder="Enter Street"
+              errorClassName={form.formState.errors.city ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={inputClassname}
-                      placeholder="Enter City"
-                      {...field}
-                      onChange={e => handleAddressFieldChange('city')(e.target.value)}
-                    />
-                  </FormControl>
-                  <div className={form.formState.errors.street ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="City"
+              placeholder="Enter City"
+              errorClassName={form.formState.errors.street ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={inputClassname}
-                      placeholder="Enter State"
-                      {...field}
-                      onChange={e => handleAddressFieldChange('state')(e.target.value)}
-                    />
-                  </FormControl>
-                  <div className={form.formState.errors.country ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="State"
+              placeholder="Enter State"
+              errorClassName={form.formState.errors.country ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={inputClassname}
-                      placeholder="Enter Country"
-                      {...field}
-                      onChange={e => handleAddressFieldChange('country')(e.target.value)}
-                    />
-                  </FormControl>
-                  <div className={form.formState.errors.state ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="Country"
+              placeholder="Enter Country"
+              errorClassName={form.formState.errors.state ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="zipcode"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>Zip Code</FormLabel>
-                  <FormControl>
-                    <Input
-                      className={inputClassname}
-                      placeholder="Enter Zip Code"
-                      {...field}
-                      onChange={e => handleAddressFieldChange('zipcode')(e.target.value)}
-                    />
-                  </FormControl>
-                  <div className={errorMessageSpacerClass}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="Zip Code"
+              placeholder="Enter Zip Code"
+              formItemClassName="md:col-span-2"
+              errorClassName="min-h-[1.25rem]"
             />
           </div>
         </form>
