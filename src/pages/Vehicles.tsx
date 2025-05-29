@@ -130,12 +130,14 @@ const Vehicles: React.FC = () => {
         onSuccess: () => {
           // const { vehicle } = response;
           setVehiclesList(prevItems => {
-            return prevItems.map(item => {
-              if (item.id == vehicleId) {
-                return { ...item, favorite: !item.favorite };
-              }
-              return item;
-            });
+            return active === 'favorites'
+              ? prevItems.filter(item => item.id !== vehicleId)
+              : prevItems.map(item => {
+                  if (item.id == vehicleId) {
+                    return { ...item, favorite: !item.favorite };
+                  }
+                  return item;
+                });
           });
           setFavoriteLoadingId(null);
         },
@@ -190,8 +192,8 @@ const Vehicles: React.FC = () => {
                         className="relative w-[67px] h-[37px] pb-4 rounded-none"
                       >
                         <p
-                          className={`font-[var(--fw-bold)] text-[length:var(--sm-text)] leading-[140%] ${
-                            active === tab ? 'text-primary-3' : 'text-support-7'
+                          className={`font-bold text-[length:var(--sm-text)] leading-[140%] ${
+                            active === tab ? 'text-primary-3 font-bold' : 'text-support-7 font-medium'
                           }`}
                         >
                           {tab.charAt(0).toUpperCase() + tab.slice(1)}
