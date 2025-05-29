@@ -130,12 +130,14 @@ const Vehicles: React.FC = () => {
         onSuccess: () => {
           // const { vehicle } = response;
           setVehiclesList(prevItems => {
-            return prevItems.map(item => {
-              if (item.id == vehicleId) {
-                return { ...item, favorite: !item.favorite };
-              }
-              return item;
-            });
+            return active === 'favorites'
+              ? prevItems.filter(item => item.id !== vehicleId)
+              : prevItems.map(item => {
+                  if (item.id == vehicleId) {
+                    return { ...item, favorite: !item.favorite };
+                  }
+                  return item;
+                });
           });
           setFavoriteLoadingId(null);
         },
