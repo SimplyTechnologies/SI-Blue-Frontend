@@ -188,7 +188,10 @@ const Vehicles: React.FC = () => {
                     (!isSearchActive || tab === 'vehicles') && (
                       <Button
                         key={tab}
-                        onClick={() => setActive(tab)}
+                        onClick={() => {
+                          resetPageAndScrollToTop();
+                          setActive(tab);
+                        }}
                         className="relative w-[67px] h-[37px] pb-4 rounded-none"
                       >
                         <p
