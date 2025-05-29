@@ -4,6 +4,7 @@ import { Loader2 } from 'lucide-react';
 import Auth from '@/layouts/Auth';
 import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
 import NotFound from '@/pages/NotFound';
+import VehicleDetails from '@/pages/VehicleDetails';
 
 const Protected = lazy(() => import('@/layouts/Protected'));
 const Public = lazy(() => import('@/layouts/Public'));
@@ -47,6 +48,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
               <Route path="/" index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="vehicles" element={<Vehicles />} />
+              <Route path="vehicles/:id" element={<VehicleDetails />} />
               <Route path="users" element={<Users />} />
               <Route path="customers" element={<Customers />} />
               <Route path="my-profile" element={<MyProfile />} />
