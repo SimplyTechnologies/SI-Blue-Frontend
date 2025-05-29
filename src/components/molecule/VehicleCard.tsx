@@ -1,10 +1,19 @@
 import React from 'react';
+import { Loader2 } from 'lucide-react';
 import type { VehicleType } from '@/types/Vehicle';
 import { Button } from '@/components/atom/Button';
+import CustomTooltip from '@/components/molecule/CustomTooltip';
 import { FavoriteColor } from '@/assets/svgIconComponents/FavoriteIcon';
 import carMarker from '@/assets/carMarkerPrimary.svg';
 
-const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehicleType }>(({ vehicle }, ref) => {
+const VehicleCard = React.forwardRef<
+  HTMLDivElement,
+  {
+    vehicle: VehicleType;
+    handleFavoriteClick?: (vehicleId: number, isFavorite: boolean) => void;
+    favoriteLoadingId?: number | null;
+  }
+>(({ vehicle, handleFavoriteClick, favoriteLoadingId }, ref) => {
   return (
     <div className="w-full py-6 border-b border-support-12 flex" ref={ref}>
       {/* Marker Circle */}
@@ -44,9 +53,31 @@ const VehicleCard = React.forwardRef<HTMLDivElement, { vehicle: VehicleType }>((
             <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.sold ? 'Sold' : 'In Stock'}</p>
           </div>
         </div>
-        <Button onClick={() => {}} variant="text" className="w-[20px] hover:opacity-80">
-          <FavoriteColor isFavorite={vehicle.favorite} />
-        </Button>
+
+        {handleFavoriteClick ? (
+          <CustomTooltip
+            trigger={
+              <Button
+                onClick={e => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  handleFavoriteClick(vehicle.id, vehicle.favorite);
+                }}
+                variant="text"
+                className="w-[20px] hover:opacity-80"
+                disabled={favoriteLoadingId === vehicle.id}
+              >
+                {favoriteLoadingId === vehicle.id ? (
+                  <Loader2 className="animate-spin h-5 w-5" />
+                ) : (
+                  <FavoriteColor isFavorite={vehicle.favorite} />
+                )}
+              </Button>
+            }
+            content={vehicle.favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+            side="right"
+          />
+        ) : null}
       </div>
     </div>
   );

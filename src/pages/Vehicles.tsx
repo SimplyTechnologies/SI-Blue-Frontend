@@ -1,10 +1,11 @@
 import { toast } from 'sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
+import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import { getVehicles } from '@/api/vehicles';
 import { nothingToShowOptions, vehicleTabs } from '@/utils/constants';
 import { isObjectEmpty } from '@/utils/general';
@@ -28,6 +29,7 @@ const Vehicles: React.FC = () => {
 
   const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
 
   const [vehiclesList, setVehiclesList] = useState<VehicleType[] | []>([]);
@@ -39,6 +41,8 @@ const Vehicles: React.FC = () => {
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
 
   const validatedFilters = useValidatedFilters();
+
+  const favoriteToggle = useFavoriteToggle();
 
   const validatedFiltersParams = {
     ...validatedFilters,
@@ -88,7 +92,6 @@ const Vehicles: React.FC = () => {
     }
   }, [vehiclesData, page]);
 
-
   const handleDebounceSearch = (value: string) => {
     if (value !== debounceValue) {
       setDebounceValue(value);
@@ -118,6 +121,31 @@ const Vehicles: React.FC = () => {
     },
     [isVehiclesLoading, page, totalPages],
   );
+
+  const handleFavoriteClick = async (vehicleId: number, isFavorite: boolean) => {
+    setFavoriteLoadingId(vehicleId);
+    favoriteToggle.mutate(
+      { vehicleId, method: isFavorite ? 'DELETE' : 'POST' },
+      {
+        onSuccess: () => {
+          // const { vehicle } = response;
+          setVehiclesList(prevItems => {
+            return prevItems.map(item => {
+              if (item.id == vehicleId) {
+                return { ...item, favorite: !item.favorite };
+              }
+              return item;
+            });
+          });
+          setFavoriteLoadingId(null);
+        },
+        onError: error => {
+          toast.error(error.message);
+          setFavoriteLoadingId(null);
+        },
+      },
+    );
+  };
 
   return (
     <div className="flex w-full h-[calc(100vh-78px)]">
@@ -194,11 +222,14 @@ const Vehicles: React.FC = () => {
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (
-                  <VehicleCard
-                    key={vehicle.id}
-                    vehicle={vehicle}
-                    ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
-                  />
+                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id}>
+                    <VehicleCard
+                      vehicle={vehicle}
+                      ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
+                      handleFavoriteClick={handleFavoriteClick}
+                      favoriteLoadingId={favoriteLoadingId}
+                    />
+                  </Link>
                 ))
               ) : (
                 <NothingToShow

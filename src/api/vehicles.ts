@@ -1,6 +1,6 @@
 import api from './axios';
 import { toast } from 'sonner';
-import type { CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/Vehicle';
+import type { AddRemoveFavorite, CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/Vehicle';
 
 export const getVehicles = async (params: VehicleRequest) => {
   try {
@@ -51,3 +51,14 @@ export const getCSV = async (params: FilterRequest) => {
     toast.error('Failed to export. Please try again.');
   }
 };
+
+export const addFavorite = async (body: AddRemoveFavorite) => {
+  const response = await api.post('/favorites', body);
+  return response.data;
+};
+
+export const removeFavorite = async (params: AddRemoveFavorite) => {
+  const response = await api.delete(`/favorites/${params.vehicleId}`);
+  return response.data;
+};
+
