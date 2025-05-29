@@ -36,7 +36,6 @@ const ForgotPassword: React.FC = () => {
   const onSubmit = (data: FormData) => {
     setEmail(data.email);
     setSuccess(true);
-    console.log(data);
   };
 
   return (

@@ -247,11 +247,18 @@ const Vehicles: React.FC = () => {
       </div>
 
       <div className="flex-[1_1_60%] h-full">
-        <Map />
+        {vehiclesData && (
+          <Map
+            cords={vehiclesList.map((vehicle: VehicleType) => ({
+              id: vehicle.id,
+              lat: vehicle.location.lat as number,
+              lng: vehicle.location.lng as number,
+            }))}
+          />
+        )}
       </div>
     </div>
   );
 };
 
 export default Vehicles;
-

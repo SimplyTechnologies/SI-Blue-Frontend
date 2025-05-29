@@ -13,6 +13,15 @@ export const getVehicles = async (params: VehicleRequest) => {
   }
 };
 
+export const getAllVehicleLocationsAndCounts = async () => {
+  try {
+    const response = await api.get(`/vehicles/dashboard-data`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicles:', error);
+  }
+};
+
 export const createVehicle = async (body: CreateVehicleRequest) => {
   const response = await api.post(`/vehicles/vehicle`, body);
   return response.data;
