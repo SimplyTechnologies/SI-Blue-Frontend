@@ -67,11 +67,7 @@ const VehicleCard = React.forwardRef<
                 className="w-[20px] hover:opacity-80"
                 disabled={favoriteLoadingId === vehicle.id}
               >
-                {favoriteLoadingId === vehicle.id ? (
-                  <Loader2 className="animate-spin h-5 w-5" />
-                ) : (
-                  <FavoriteColor isFavorite={vehicle.favorite} />
-                )}
+                <FavoriteColor isFavorite={vehicle.favorite} />
               </Button>
             }
             content={vehicle.favorite ? 'Remove from Favorites' : 'Add to Favorites'}
