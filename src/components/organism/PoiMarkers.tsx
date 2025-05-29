@@ -37,10 +37,21 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
       }
     });
   };
+
+  const parsedPois: Poi[] = pois.map(poi => ({
+    ...poi,
+    lat: typeof poi.lat === 'string' ? parseFloat(poi.lat) : poi.lat,
+    lng: typeof poi.lng === 'string' ? parseFloat(poi.lng) : poi.lng,
+  }));
+
   return (
     <>
-      {pois.map((poi: Poi) => (
-        <AdvancedMarker key={poi.key} position={poi.location} ref={marker => setMarkerRef(marker, poi.key)}>
+      {parsedPois.map((poi: Poi) => (
+        <AdvancedMarker
+          key={poi.id}
+          position={{ lat: poi.lat, lng: poi.lng }}
+          ref={marker => setMarkerRef(marker, poi.id.toString())}
+        >
           <div className="w-[47.05px] h-[47px] flex items-center justify-center rounded-[40px] bg-[#403C89]/20">
             <div className="w-[31.87px] h-[31.84px] flex justify-center items-center rounded-[30px] bg-[var(--color-primary-3)]">
               <img src={carMarker} alt="carMarker" />
