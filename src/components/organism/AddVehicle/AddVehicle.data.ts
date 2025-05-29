@@ -16,9 +16,9 @@ export const carFormSchema = z.object({
     })
     .min(1, 'Vehicle Model is required.'),
   year: z.string({
-    required_error: 'Vehicle Year is required.',
+    required_error: 'VIN is required.',
   }),
-  vin: z.string().min(1, 'Vehicle VIN is required.'),
+  vin: z.string().min(17, 'VIN must be 17 characters.').max(17, 'VIN must be 17 characters.'),
   location: z.string().optional(),
   street: z.string().min(1, 'Street is required.'),
   city: z.string().min(1, 'City is required.'),
