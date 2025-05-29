@@ -4,7 +4,6 @@ import { useForm } from 'react-hook-form';
 import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
 
-import { useDebounce } from '@/hooks/useDebounce';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { TAddress } from '@/types/Address';
 import Modal from '@/components/atom/Modal';
@@ -52,9 +51,11 @@ const TextInputField = ({
             className={inputClassname}
             placeholder={placeholder}
             type={type}
+            maxLength={name === 'vin' ? 17 : undefined}
             {...field}
             value={field.value}
             onChange={e => {
+              if (name === 'vin' && e.target.value.length > 17) return;
               field.onChange(e);
               if (['street', 'city', 'state', 'country', 'zipcode'].includes(name)) {
                 const value = e.target.value;
@@ -108,13 +109,12 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
   });
 
   const vinValue = form.watch('vin');
-  const { debounceValue: debouncedVin } = useDebounce({ inputValue: vinValue, delay: 700 });
 
   useEffect(() => {
-    if (debouncedVin.length !== 17) return;
+    if (vinValue.length !== 17) return;
     (async () => {
       try {
-        const { data } = await decodeVehicleVin({ vin: debouncedVin });
+        const { data } = await decodeVehicleVin({ vin: vinValue });
         if (!data) return;
         const { vehicleMake, vehicleModel, year } = data;
         if (!vehicleMake && !vehicleModel && !year) return;
@@ -131,8 +131,9 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
         }
         if (makeId) {
           form.setValue('make', makeId.toString());
-          await refetchModels();
-          const modelId = modelOptions?.find((m: { id: number; name: string }) => m.id === vehicleModel?.id)?.id;
+          const { data: updatedModelOptions } = await refetchModels();
+
+          const modelId = updatedModelOptions?.find((m: { id: number; name: string }) => m.id === vehicleModel?.id)?.id;
 
           if (modelId) {
             form.setValue('model', modelId.toString());
@@ -146,7 +147,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
         toast.error(errMsg);
       }
     })();
-  }, [debouncedVin, modelOptions]);
+  }, [vinValue]);
 
   useEffect(() => {
     if (open) {
