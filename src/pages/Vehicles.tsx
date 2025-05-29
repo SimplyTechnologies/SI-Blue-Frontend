@@ -9,7 +9,7 @@ import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import { getVehicles } from '@/api/vehicles';
 import { nothingToShowOptions, vehicleTabs } from '@/utils/constants';
 import { isObjectEmpty } from '@/utils/general';
-// import Map from '@/components/organism/Map';
+import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
 import VehiclesFilter from '@/components/organism/VehiclesFilter';
@@ -224,7 +224,7 @@ const Vehicles: React.FC = () => {
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (
-                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id} state={{vehicle}}>
+                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id} state={{ vehicle }}>
                     <VehicleCard
                       vehicle={vehicle}
                       ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
@@ -246,7 +246,7 @@ const Vehicles: React.FC = () => {
         )}
       </div>
 
-      {/* <div className="flex-[1_1_60%] h-full">
+      <div className="flex-[1_1_60%] h-full">
         {vehiclesData && (
           <Map
             cords={vehiclesList.map((vehicle: VehicleType) => ({
@@ -256,9 +256,10 @@ const Vehicles: React.FC = () => {
             }))}
           />
         )}
-      </div> */}
+      </div>
     </div>
   );
 };
 
 export default Vehicles;
+
