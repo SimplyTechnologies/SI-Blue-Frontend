@@ -16,18 +16,46 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
     }
   }, [map]);
 
-  // Update cluster markers
+  // When pois change, clear and rebuild markers
   useEffect(() => {
-    const markers = Object.values(markersRef.current);
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(markers);
-  }, [pois]);
+    if (!clusterer.current) return;
+
+    const currentMarkers = Object.values(markersRef.current);
+    clusterer.current.clearMarkers();
+    clusterer.current.addMarkers(currentMarkers);
+
+    // Fit map to markers
+    const updateClustersAndZoom = () => {
+      const currentMarkers = Object.values(markersRef.current);
+
+      // Update cluster markers
+      clusterer.current!.clearMarkers();
+      clusterer.current!.addMarkers(currentMarkers);
+
+      // Fit map to markers
+      // if (currentMarkers.length > 0) {
+      //   const bounds = new google.maps.LatLngBounds();
+      //   currentMarkers.forEach(marker => {
+      //     const position = (marker as google.maps.marker.AdvancedMarkerElement).position;
+      //     if (position) bounds.extend(position);
+      //   });
+      //   map?.fitBounds(bounds);
+      // }
+    };
+
+    // Wait a tick to ensure markers are rendered and refs are set
+    const timeout = setTimeout(updateClustersAndZoom, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [pois, map, markersRef, clusterer]);
 
   const setMarkerRef = (marker: Marker | null, key: string) => {
-    if (marker && !markersRef.current[key]) {
-      markersRef.current[key] = marker;
-    } else if (!marker && markersRef.current[key]) {
-      delete markersRef.current[key];
+    const current = markersRef.current;
+
+    if (marker) {
+      current[key] = marker;
+    } else {
+      delete current[key];
     }
   };
 
