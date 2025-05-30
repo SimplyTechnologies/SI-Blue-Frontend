@@ -16,9 +16,12 @@ export const carFormSchema = z.object({
     })
     .min(1, 'Vehicle Model is required.'),
   year: z.string({
-    required_error: 'VIN is required.',
+    required_error: 'Vehicle Year is required.',
   }),
-  vin: z.string().min(17, 'VIN must be 17 characters.').max(17, 'VIN must be 17 characters.'),
+  vin: z
+    .string({ required_error: 'VIN is required.' })
+    .min(1, 'VIN is required.')
+    .length(17, 'VIN must be 17 characters.'),
   location: z.string().optional(),
   street: z.string().min(1, 'Street is required.'),
   city: z.string().min(1, 'City is required.'),
@@ -51,3 +54,4 @@ export const buildLocation = (fields: Partial<CarFormValues>, form: UseFormRetur
   }
   return location;
 };
+

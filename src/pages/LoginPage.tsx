@@ -10,6 +10,7 @@ import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
 import useAuthStore from '@/stores/authStore';
+import { Loader2 } from 'lucide-react';
 
 const passwordSchema = z.string().min(1, 'Password is required');
 
@@ -36,10 +37,11 @@ const LoginPage: React.FC = () => {
     reValidateMode: 'onChange',
   });
   const [serverError, setServerError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const onSubmit = (data: FormData) => {
     setServerError('');
-
+    setLoading(true);
     login.mutate(data, {
       onSuccess: response => {
         const { user, tokens } = response;
@@ -49,6 +51,7 @@ const LoginPage: React.FC = () => {
       onError: error => {
         setServerError(error.message);
       },
+      onSettled: () => setLoading(false),
     });
   };
 
@@ -131,8 +134,8 @@ const LoginPage: React.FC = () => {
             </a>
           </div>
         </div>
-        <Button type="submit" className="h-[56px] " variant={'default'}>
-          Sign in
+        <Button type="submit" className="h-[56px] flex justify-center items-center" variant='default' disabled={loading}>
+          <div className='flex gap-2'>{loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Sign in</div>
         </Button>
       </div>
     </form>
@@ -140,3 +143,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+
