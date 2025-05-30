@@ -1,10 +1,9 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
 
-import { useDebounce } from '@/hooks/useDebounce';
 import { zodResolver } from '@hookform/resolvers/zod';
 import type { TAddress } from '@/types/Address';
 import Modal from '@/components/atom/Modal';
@@ -32,6 +31,7 @@ const TextInputField = ({
   type = 'text',
   formItemClassName,
   errorClassName,
+  disabled = false,
 }: {
   form: ReturnType<typeof useForm<CarFormValues>>;
   name: keyof CarFormValues;
@@ -40,6 +40,7 @@ const TextInputField = ({
   type?: string;
   formItemClassName?: string;
   errorClassName?: string;
+  disabled?: boolean;
 }) => (
   <FormField
     control={form.control}
@@ -52,9 +53,11 @@ const TextInputField = ({
             className={inputClassname}
             placeholder={placeholder}
             type={type}
+            maxLength={name === 'vin' ? 17 : undefined}
             {...field}
             value={field.value}
             onChange={e => {
+              if (name === 'vin' && e.target.value.length > 17) return;
               field.onChange(e);
               if (['street', 'city', 'state', 'country', 'zipcode'].includes(name)) {
                 const value = e.target.value;
@@ -64,6 +67,7 @@ const TextInputField = ({
                 form.setValue('location', newLocation);
               }
             }}
+            disabled={disabled}
           />
         </FormControl>
         <div className={errorClassName}>
@@ -95,6 +99,8 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
     mode: 'onBlur',
   });
 
+  const [vinLoading, setVinLoading] = useState(false);
+
   const { data: makeOptions, refetch: refetchMakes } = useQuery({
     queryKey: ['make'],
     queryFn: getMakes,
@@ -108,13 +114,13 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
   });
 
   const vinValue = form.watch('vin');
-  const { debounceValue: debouncedVin } = useDebounce({ inputValue: vinValue, delay: 700 });
 
   useEffect(() => {
-    if (debouncedVin.length !== 17) return;
+    if (vinValue.length !== 17) return;
+    setVinLoading(true);
     (async () => {
       try {
-        const { data } = await decodeVehicleVin({ vin: debouncedVin });
+        const { data } = await decodeVehicleVin({ vin: vinValue });
         if (!data) return;
         const { vehicleMake, vehicleModel, year } = data;
         if (!vehicleMake && !vehicleModel && !year) return;
@@ -131,8 +137,9 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
         }
         if (makeId) {
           form.setValue('make', makeId.toString());
-          await refetchModels();
-          const modelId = modelOptions?.find((m: { id: number; name: string }) => m.id === vehicleModel?.id)?.id;
+          const { data: updatedModelOptions } = await refetchModels();
+
+          const modelId = updatedModelOptions?.find((m: { id: number; name: string }) => m.id === vehicleModel?.id)?.id;
 
           if (modelId) {
             form.setValue('model', modelId.toString());
@@ -141,12 +148,15 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
         if (year) {
           form.setValue('year', year.toString());
         }
+        form.trigger(['make', 'model', 'year', 'vin']);
       } catch (err: unknown) {
-        const errMsg = err instanceof Error ? err.message : 'Could not decode VIN.';
-        toast.error(errMsg);
+        const error = err as AxiosError<{ message?: string }>;
+        toast.error(error.response?.data?.message || 'Could not decode VIN.');
+      } finally {
+        setVinLoading(false);
       }
     })();
-  }, [debouncedVin, modelOptions]);
+  }, [vinValue]);
 
   useEffect(() => {
     if (open) {
@@ -228,7 +238,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
                     }}
                     placeholder="Select Make"
                     className="bg-white"
-                    disabled={!makeOptions?.length}
+                    disabled={vinLoading || !makeOptions?.length}
                   />
                   <div className={form.formState.errors.model ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
@@ -253,7 +263,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
                     onChange={field.onChange}
                     placeholder="Select Model"
                     className="bg-white"
-                    disabled={!modelOptions?.length || !form.getValues().make}
+                    disabled={vinLoading || !modelOptions?.length || !form.getValues().make}
                   />
                   <div className={form.formState.errors.make ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
@@ -267,7 +277,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
-                  <Select value={field.value} onValueChange={field.onChange}>
+                  <Select value={field.value} onValueChange={field.onChange} disabled={vinLoading}>
                     <FormControl>
                       <SelectTrigger className="w-[100%]">
                         <SelectValue placeholder="Select year" />
@@ -275,7 +285,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
                     </FormControl>
                     <SelectContent>
                       {getVehicleYearOptions().map(year => (
-                        <SelectItem key={year} value={year}>
+                        <SelectItem key={year} value={year} disabled={vinLoading}>
                           {year}
                         </SelectItem>
                       ))}
@@ -293,6 +303,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
               label="VIN"
               placeholder="Enter VIN"
               errorClassName="min-h-[1.25rem]"
+              disabled={vinLoading}
             />
           </div>
           <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2">

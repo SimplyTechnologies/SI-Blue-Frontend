@@ -29,6 +29,7 @@ const Vehicles: React.FC = () => {
 
   const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [customLoading, setCustomLoading] = useState(false);
   const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
 
@@ -61,16 +62,19 @@ const Vehicles: React.FC = () => {
     isLoading: isVehiclesLoading,
     data: vehiclesData,
     refetch,
+    isFetchedAfterMount,
   } = useQuery({
     queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page, active],
-    queryFn: () =>
-      getVehicles({
+    queryFn: () => {
+      setCustomLoading(true);
+      return getVehicles({
         ...validatedFiltersParams,
         search: debounceValue || undefined,
         page,
         offset,
         favorite: active === 'favorites' ? 1 : undefined,
-      }),
+      });
+    },
   });
 
   useEffect(() => {
@@ -82,15 +86,18 @@ const Vehicles: React.FC = () => {
 
   //Set vehicles list (add to the existing list starting from page 2)
   useEffect(() => {
-    if (vehiclesData?.vehicles && Array.isArray(vehiclesData?.vehicles)) {
-      setTotalPages(vehiclesData.totalPages);
-      if (page === 1) {
-        setVehiclesList(vehiclesData.vehicles);
-      } else {
-        setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
+    if (isFetchedAfterMount) {
+      if (vehiclesData?.vehicles && Array.isArray(vehiclesData?.vehicles)) {
+        setTotalPages(vehiclesData.totalPages);
+        if (page === 1) {
+          setVehiclesList(vehiclesData.vehicles);
+        } else {
+          setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
+        }
+        setCustomLoading(false);
       }
     }
-  }, [vehiclesData, page]);
+  }, [vehiclesData, page, isFetchedAfterMount]);
 
   const handleDebounceSearch = (value: string) => {
     if (value !== debounceValue) {
@@ -151,7 +158,7 @@ const Vehicles: React.FC = () => {
 
   return (
     <div className="flex w-full h-[calc(100vh-78px)]">
-      <div className="flex flex-col gap-2 flex-[0_1_40%] h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2">
+      <div className="flex flex-col gap-2 h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2 min-[991px]:w-[600px]">
         {!isFilterOpen && (
           <div className="flex justify-between gap-4 min-h-[56px] items-start">
             <div
@@ -189,7 +196,7 @@ const Vehicles: React.FC = () => {
                       <Button
                         key={tab}
                         onClick={() => {
-                          if (tab === active) return
+                          if (tab === active) return;
                           resetPageAndScrollToTop();
                           setActive(tab);
                         }}
@@ -217,14 +224,14 @@ const Vehicles: React.FC = () => {
 
             <div
               ref={scrollContainerRef}
-              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
+              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
             >
-              {isVehiclesLoading && !vehiclesList.length ? (
+              {(isVehiclesLoading || !isFetchedAfterMount || customLoading) && !vehiclesList.length ? (
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (

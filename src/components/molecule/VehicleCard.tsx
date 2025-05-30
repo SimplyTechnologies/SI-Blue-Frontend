@@ -1,5 +1,4 @@
 import React from 'react';
-import { Loader2 } from 'lucide-react';
 import type { VehicleType } from '@/types/Vehicle';
 import { Button } from '@/components/atom/Button';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
@@ -10,8 +9,8 @@ const VehicleCard = React.forwardRef<
   HTMLDivElement,
   {
     vehicle: VehicleType;
-    handleFavoriteClick?: (vehicleId: number, isFavorite: boolean) => void;
-    favoriteLoadingId?: number | null;
+    handleFavoriteClick: (vehicleId: number, isFavorite: boolean) => void;
+    favoriteLoadingId: number | null;
   }
 >(({ vehicle, handleFavoriteClick, favoriteLoadingId }, ref) => {
   return (
@@ -26,12 +25,12 @@ const VehicleCard = React.forwardRef<
       </div>
 
       {/* Vehicle Info */}
-      <div className="flex flex-col flex-1 w-full">
+      <div className="flex flex-col flex-1 w-full gap-2">
         <div className="flex justify-between items-center">
-          <p className="text-[14px] cursor-pointer text-support-6 text-xs font-bold leading-[120%]">{vehicle.vin}</p>
+          <p className="text-[14px] text-support-6 text-xs font-bold leading-[120%] max-w-[100%] overflow-ellipsis">{vehicle.vin}</p>
         </div>
 
-        <div className="flex flex-col gap-1 cursor-pointer">
+        <div className="flex flex-col gap-1">
           <p className="text-[14px] text-support-5 text-xs font-regular leading-[140%]">
             {vehicle.make.name} {vehicle.model.name} {vehicle.year}
           </p>
@@ -54,30 +53,24 @@ const VehicleCard = React.forwardRef<
           </div>
         </div>
 
-        {handleFavoriteClick ? (
-          <CustomTooltip
-            trigger={
-              <Button
-                onClick={e => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  handleFavoriteClick(vehicle.id, vehicle.favorite);
-                }}
-                variant="text"
-                className="w-[20px] hover:opacity-80"
-                disabled={favoriteLoadingId === vehicle.id}
-              >
-                {favoriteLoadingId === vehicle.id ? (
-                  <Loader2 className="animate-spin h-5 w-5" />
-                ) : (
-                  <FavoriteColor isFavorite={vehicle.favorite} />
-                )}
-              </Button>
-            }
-            content={vehicle.favorite ? 'Remove from Favorites' : 'Add to Favorites'}
-            side="right"
-          />
-        ) : null}
+        <CustomTooltip
+          trigger={
+            <Button
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleFavoriteClick(vehicle.id, vehicle.favorite);
+              }}
+              variant="text"
+              className="w-[20px] hover:opacity-80"
+              disabled={favoriteLoadingId === vehicle.id}
+            >
+              <FavoriteColor isFavorite={vehicle.favorite} />
+            </Button>
+          }
+          content={vehicle.favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+          side="right"
+        />
       </div>
     </div>
   );
