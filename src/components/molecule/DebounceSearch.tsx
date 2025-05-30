@@ -10,8 +10,7 @@ const searchSchema = z
   .string()
   .trim()
   .min(1)
-  .max(100, 'Search too long')
-  .regex(/^[a-zA-Z0-9 .\-/']+$/, 'Only letters, numbers, spaces, dots and dashes allowed');
+  .max(100, 'Search too long');
 
 type DebounceSearchType = {
   setDebounceValue: (e: string) => void;
