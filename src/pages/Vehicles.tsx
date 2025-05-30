@@ -258,7 +258,7 @@ const Vehicles: React.FC = () => {
       </div>
 
       <div className="flex-[1_1_60%] h-full">
-        {vehiclesList?.length && (
+        {vehiclesData && (
           <Map
             cords={vehiclesList.map((vehicle: VehicleType) => ({
               id: vehicle.id,
