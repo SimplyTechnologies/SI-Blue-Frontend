@@ -14,7 +14,7 @@ const Map: React.FC<MapProps> = ({ cords }) => {
       mapId={mapID}
       style={{ width: '100%', height: '100%' }}
       defaultCenter={{ lat: -33.8636005, lng: 151.2092542 }}
-      defaultZoom={15}
+      defaultZoom={4}
       minZoom={4}
       // restriction={latLngBounds = {}}
       gestureHandling={'greedy'}
