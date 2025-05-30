@@ -6,20 +6,17 @@ import { Button } from '@/components/atom/Button';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useSearchStore } from '@/stores/useSearchStore';
 
-const searchSchema = z
-  .string()
-  .trim()
-  .min(1)
-  .max(100, 'Search too long');
+const searchSchema = z.string().trim().min(1).max(100, 'Search too long');
 
 type DebounceSearchType = {
   setDebounceValue: (e: string) => void;
 };
 
 const DebounceSearch = ({ setDebounceValue }: DebounceSearchType) => {
-  const [inputValue, setInputValue] = useState('');
+  const { isSearchActive, searchValue, setIsSearchActive, setSearchValue } = useSearchStore();
+
+  const [inputValue, setInputValue] = useState(searchValue || '');
   const [error, setError] = useState<string | null>(null);
-  const { isSearchActive, setIsSearchActive } = useSearchStore();
 
   const { debounceValue } = useDebounce({ inputValue, delay: 300 });
 
@@ -41,6 +38,7 @@ const DebounceSearch = ({ setDebounceValue }: DebounceSearchType) => {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setInputValue(e.target.value);
+    setSearchValue(e.target.value);
   };
 
   const cleanInput = () => {
@@ -51,6 +49,7 @@ const DebounceSearch = ({ setDebounceValue }: DebounceSearchType) => {
   const handleBack = () => {
     cleanInput();
     setIsSearchActive(false);
+    setSearchValue('');
   };
 
   const onFocus = () => {
