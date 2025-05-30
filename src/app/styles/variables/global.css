@@ -1,39 +1,176 @@
-:root {
-    --font-dm: "DM Sans";
+@import 'tailwindcss';
+@import 'tw-animate-css';
 
-    --fw-regular: 400;
-    --fw-medium: 500;
-    --fw-semibold: 600;
-    --fw-bold: 700;
-
-    --xs-text: 0.875rem; /* 14px */
-    --sm-text: 1rem;
-    --base-text: 1.25rem; /* 20px */
-    --md-text: 1.5rem; /* 24px */
-    --lg-text: 2rem;
-    --xl-text: 2.25rem; /* 36px */
-
-    --color-primary-1: #423A8E;
-    --color-primary-2: #00CCCD;
-    --color-primary-3: #403C89;
-    --color-primary-4: #3652E0;
-    --color-primary-5: #EDF1FE;
-
-    --color-support-1: #FFC107;
-    --color-support-2: #DC3545;
-    --color-support-3: #198754;
-    --color-support-4: #0D6EFD;
-    --color-support-5: #636777;
-    --color-support-6: #192252;
-    --color-support-7: #858C98;
-    --color-support-8: #DBDDE1;
-    --color-support-9: #0DCF89;
-    --color-support-10: #FEEDED;
-
-    --color-success-1: #E5FAF5;
-
-    --color-bg-1: #F8F9F9;
-
-    --color-white: #FFFFFF;
-
+#root {
+  font-family: var(--font-dm);
+  background-color: #f8f9f9;
 }
+
+.app {
+  min-height: 100vh;
+}
+
+:root {
+  --font-dm: 'DM Sans';
+
+  --fw-regular: rgb(230, 233, 239);
+  --fw-medium: 500;
+  --fw-semibold: 600;
+  --fw-bold: 700;
+
+  --xs-text: 0.875rem; /* 14px */
+  --sm-text: 1rem;
+  --base-text: 1.25rem; /* 20px */
+  --md-text: 1.5rem; /* 24px */
+  --lg-text: 2rem;
+  --xl-text: 2.25rem; /* 36px */
+
+  --color-primary-1: #423a8e;
+  --color-primary-2: #00cccd;
+  --color-primary-3: #403c89;
+  --color-primary-4: #3652e0;
+  --color-primary-5: #edf1fe;
+
+  --color-secondary-1: #369afe;
+
+  --color-support-1: #ffc107;
+  --color-support-2: #dc3545;
+  --color-support-3: #afafaf;
+  --color-support-4: #0d6efd;
+  --color-support-5: #636777;
+  --color-support-6: #192252;
+  --color-support-7: #858c98;
+  --color-support-8: #dbdde1;
+  --color-support-9: #0dcf89;
+  --color-support-10: #feeded;
+  --color-support-11: #23a1e9;
+  --color-support-12: #f5f5f7;
+
+  --color-success-1: #e5faf5;
+
+  --color-bg-1: #f8f9f9;
+  --color-bg-2: #f4f6f9;
+
+  --color-white: #ffffff;
+
+  --radius: 0.625rem;
+  --background: oklch(1 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: #192252;
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: #192252;
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: #f4f6f9;
+  --accent-foreground: #192252;
+  --destructive: oklch(0.577 0.245 27.325);
+  --border: #dbdde1;
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: #fff;
+  --sidebar-collapsed: #403c89;
+  --sidebar-foreground: #636777;
+  --sidebar-primary: #192252;
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: #edf1fe;
+  --sidebar-accent-collapsed: #403c89;
+  --sidebar-accent-foreground: #403c89;
+  --sidebar-border: #dbdde1;
+  --sidebar-border-collapsed: rgba(219, 221, 225, 0.3);
+  --sidebar-icon-bg-collapsed: rgba(219, 221, 225, 0.3);
+  --sidebar-ring: oklch(0.708 0 0);
+}
+
+@theme inline {
+  --color-primary-1: var(--color-primary-1);
+  --color-primary-2: var(--color-primary-2);
+  --color-primary-3: var(--color-primary-3);
+  --color-primary-4: var(--color-primary-4);
+  --color-primary-5: var(--color-primary-5);
+
+  --color-secondary-1: var(--color-secondary-1);
+
+  --color-support-1: var(--color-support-1);
+  --color-support-2: var(--color-support-2);
+  --color-support-3: var(--color-support-3);
+  --color-support-4: var(--color-support-4);
+  --color-support-5: var(--color-support-5);
+  --color-support-6: var(--color-support-6);
+  --color-support-7: var(--color-support-7);
+  --color-support-8: var(--color-support-8);
+  --color-support-9: var(--color-support-9);
+  --color-support-10: var(--color-support-10);
+  --color-support-11: var(--color-support-11);
+  --color-support-12: var(--color-support-12);
+
+  --color-success-1: var(--color-success-1);
+
+  --color-bg-1: var(--color-bg-1);
+
+  --color-white: var(--color-white);
+
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+#root {
+  font-family: var(--font-dm);
+  background-color: #f8f9f9;
+}
+
+.app {
+  min-height: 100vh;
+}
+

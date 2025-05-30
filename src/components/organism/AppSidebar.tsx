@@ -2,17 +2,9 @@ import * as React from 'react';
 import { Link } from 'react-router';
 
 import { NavMain } from '@/components/molecule/NavMain';
-import {
-  Sidebar,
-  SidebarContent,
-  SidebarHeader,
-  SidebarRail,
-  SidebarTrigger,
-  useSidebar,
-} from '@/components/atom/Sidebar';
+import { Sidebar, SidebarContent, SidebarHeader, SidebarTrigger, useSidebar } from '@/components/atom/Sidebar';
 import logo from '@/assets/favicon.svg';
 import logoLight from '@/assets/faviconLight.svg';
-
 import { DashboardIcon } from '@/assets/svgIconComponents/DashboardIcon';
 import { VehiclesIcon } from '@/assets/svgIconComponents/VehiclesIcon';
 import { CustomersIcon } from '@/assets/svgIconComponents/CustomersIcon';
@@ -56,16 +48,16 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { state } = useSidebar();
+  const { state, isMobile } = useSidebar();
 
   return (
     <Sidebar collapsible="icon" {...props}>
       <SidebarHeader className="h-[78px] relative">
         <Link to="/dashboard" className="">
-          <img src={state === 'collapsed' ? logoLight : logo} alt="logo" className="w-[42px] h-[42px]" />
+          <img src={state === 'collapsed' && !isMobile ? logoLight : logo} alt="logo" className="w-[42px] h-[42px]" />
         </Link>
         <div className="flex items-center">
-          <SidebarTrigger className="ml-1" />
+          <SidebarTrigger />
         </div>
       </SidebarHeader>
       <SidebarContent>

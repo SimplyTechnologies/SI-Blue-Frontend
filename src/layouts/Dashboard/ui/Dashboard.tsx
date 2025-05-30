@@ -1,56 +1,65 @@
+import { useEffect } from 'react';
 import { AppSidebar } from '@/components/organism/AppSidebar';
 import { SidebarInset, SidebarProvider, SidebarTriggerMobile } from '@/components/atom/Sidebar';
 import { Outlet, useLocation, useNavigate } from 'react-router';
-import { pathTitles } from '@/utils/pageTitles';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
-import { generateStringToColor } from '@/utils/general';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
+import useAuthStore from '@/stores/authStore';
+import { useSearchStore } from '@/stores/useSearchStore';
+import { pathTitles } from '@/utils/constants';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
+import './dashboard.css';
 
 function DashboardLayout() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const pageTitle = pathTitles[location.pathname] || '';
+  const { logout, user } = useAuthStore();
+  const { setIsSearchActive, setSearchValue } = useSearchStore();
 
-  const avatarBg = generateStringToColor('C' + 'N');
+  const pageTitle = pathTitles[location.pathname] || '';
+  const userCredentials = (user?.firstName[0] || '') + (user?.lastName[0] || '');
 
   const handleProfileNavigate = () => {
     navigate('/my-profile');
   };
 
-  const handleSignOut = () => {};
-
   const profileDropdownItems = [
     { label: 'My Profile', onClick: handleProfileNavigate, icon: <AccountIcon /> },
-    { label: 'Log out', onclick: handleSignOut, icon: <LogOutIcon /> },
+    { label: 'Log Out', onClick: logout, icon: <LogOutIcon /> },
   ];
+
+  useEffect(() => {
+    if (!location.pathname.includes('vehicles')) {
+      setIsSearchActive(false);
+      setSearchValue('');
+    }
+  }, [location]);
 
   return (
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset>
-        <header className="flex justify-between bg-[#fff] p-[24px] h-[78px] border-b-1 border-[var(--sidebar-border)]">
+        <header className="flex justify-between bg-white p-[24px] h-[78px] border-b-1 border-sidebar-border">
           <div className="flex gap-2">
             <SidebarTriggerMobile />
-            <h1 className="text-2xl font-bold text-[var(--primary)]">{pageTitle}</h1>
+            <h1 className="text-2xl font-bold text-primary">{pageTitle}</h1>
           </div>
           <CustomDropdown
+            sideOffset={0}
+            align="end"
             trigger={
               <Avatar>
                 <AvatarImage src="" />
-                <AvatarFallback className="text-[#403C89] font-medium" style={{ backgroundColor: avatarBg }}>
-                  CN
-                </AvatarFallback>
+                <AvatarFallback className="text-primary-3 font-medium bg-primary-5">{userCredentials}</AvatarFallback>
               </Avatar>
             }
             items={profileDropdownItems}
+            menuClassName="w-[220px] text-support-5"
           />
         </header>
-        <div className="main-container">
-          <Outlet />
-        </div>
+        <Outlet />
       </SidebarInset>
     </SidebarProvider>
   );

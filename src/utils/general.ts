@@ -1,15 +1,13 @@
-const avatarColors: string[] = [
-    "#EAEAFB",
-    "#D8D7F3",
-    "#C5C3EC",
-    "#B3B0E4",
-    "#A09CDC",
-    "#8C88D5",
-  ];
-
-export const generateStringToColor = (str: string): string => {
-    const hash = Array.from(str).reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
-    const index = Math.abs(hash) % avatarColors.length;
-    return avatarColors[index];
+export const isObjectEmpty = (obj: Record<string, unknown>) => {
+  return !Object.keys(obj).length;
 };
 
+export const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  
+  const dd = String(date.getDate()).padStart(2, '0');
+  const mm = String(date.getMonth() + 1).padStart(2, '0'); // January is 0!
+  const yyyy = date.getFullYear();
+
+  return `${dd}/${mm}/${yyyy}`;
+};
