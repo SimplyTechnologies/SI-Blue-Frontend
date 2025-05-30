@@ -1,45 +1,17 @@
-import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useLocation, useNavigate } from 'react-router';
 import { ChevronLeft } from 'lucide-react';
-import { type VehicleType } from '@/types/Vehicle';
-import { getVehicles } from '@/api/vehicles';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
 import { Toaster } from '@/components/atom/Toaster';
 
 const VehicleDetails: React.FC = () => {
+  const location = useLocation();
   const navigate = useNavigate();
+  const { vehicle } = location.state;
 
-  const { id } = useParams();
-
-  const [vehiclesList, setVehiclesList] = useState<VehicleType[] | []>([]);
-  const page = 1;
-  const offset = 25;
-
-  const { data: vehiclesData } = useQuery({
-    queryKey: ['vehicles', page],
-    queryFn: () =>
-      getVehicles({
-        page,
-        offset,
-      }),
-  });
-
-  //Set vehicles list (add to the existing list starting from page 2)
-  useEffect(() => {
-    if (vehiclesData?.vehicles && Array.isArray(vehiclesData?.vehicles)) {
-      if (page === 1) {
-        setVehiclesList(vehiclesData.vehicles);
-      } else {
-        setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
-      }
-    }
-  }, [vehiclesData, page]);
-
-  const vehicle = vehiclesList.find(item => id && item.id === parseInt(id));
-
+  // const { id } = useParams();
+  
   const handleBack = () => {
     navigate('/vehicles');
   };

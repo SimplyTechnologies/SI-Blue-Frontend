@@ -188,7 +188,11 @@ const Vehicles: React.FC = () => {
                     (!isSearchActive || tab === 'vehicles') && (
                       <Button
                         key={tab}
-                        onClick={() => setActive(tab)}
+                        onClick={() => {
+                          if (tab === active) return
+                          resetPageAndScrollToTop();
+                          setActive(tab);
+                        }}
                         className="relative w-[67px] h-[37px] pb-4 rounded-none"
                       >
                         <p
@@ -224,7 +228,7 @@ const Vehicles: React.FC = () => {
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
               ) : vehiclesList.length ? (
                 vehiclesList.map((vehicle, index) => (
-                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id}>
+                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id} state={{ vehicle }}>
                     <VehicleCard
                       vehicle={vehicle}
                       ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
@@ -247,7 +251,15 @@ const Vehicles: React.FC = () => {
       </div>
 
       <div className="flex-[1_1_60%] h-full">
-        <Map />
+        {vehiclesData && (
+          <Map
+            cords={vehiclesList.map((vehicle: VehicleType) => ({
+              id: vehicle.id,
+              lat: vehicle.location.lat as number,
+              lng: vehicle.location.lng as number,
+            }))}
+          />
+        )}
       </div>
     </div>
   );

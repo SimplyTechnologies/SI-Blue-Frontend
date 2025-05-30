@@ -39,7 +39,6 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = (data: FormData) => {
     setServerError('');
-    console.log(data);
 
     login.mutate(data, {
       onSuccess: response => {

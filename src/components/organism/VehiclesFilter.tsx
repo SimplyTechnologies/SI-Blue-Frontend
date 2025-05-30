@@ -114,6 +114,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
           className="bg-white"
           disabled={makeLoading}
           addNoSelect
+          deselectEnabled
         />
       </div>
       <div>
@@ -144,6 +145,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
           placeholder="Select Availability"
           className="bg-white"
           addNoSelect
+          deselectEnabled
         />
       </div>
       <div className="flex flex-col gap-2">
@@ -161,4 +163,3 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
 };
 
 export default VehiclesFilter;
-
