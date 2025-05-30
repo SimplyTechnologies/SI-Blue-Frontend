@@ -9,6 +9,7 @@ export type VehicleType = {
   location: TAddress;
   sold: boolean;
   userId: number;
+  createdAt: string;
   model: {
     id: number;
     name: string;

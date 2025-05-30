@@ -158,7 +158,7 @@ const Vehicles: React.FC = () => {
 
   return (
     <div className="flex w-full h-[calc(100vh-78px)]">
-      <div className="flex flex-col gap-2 h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2 min-[1200px]:w-[600px]">
+      <div className="flex flex-col gap-2 h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2 min-[991px]:w-[600px]">
         {!isFilterOpen && (
           <div className="flex justify-between gap-4 min-h-[56px] items-start">
             <div
@@ -224,7 +224,7 @@ const Vehicles: React.FC = () => {
 
             <div
               ref={scrollContainerRef}
-              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
+              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8
