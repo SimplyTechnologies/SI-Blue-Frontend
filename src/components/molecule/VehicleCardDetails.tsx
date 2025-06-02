@@ -15,7 +15,7 @@ const VehicleCardDetails = React.forwardRef<
       <div className="w-full flex py-3" ref={ref}>
         {/* Marker Circle */}
         <div
-          className={`mr-3 w-12 h-12 flex justify-center items-center rounded-full bg-support-12 border-2 ${
+          className={`mr-3 w-12 h-12 min-h-12 min-w-12 flex justify-center items-center rounded-full bg-support-12 border-2 ${
             vehicle.sold ? 'border-support-11' : 'border-support-9'
           }`}
         >
@@ -23,9 +23,9 @@ const VehicleCardDetails = React.forwardRef<
         </div>
 
         {/* Vehicle Info */}
-        <div className="flex flex-col flex-1 w-full gap-2">
+        <div className="flex flex-col flex-1 w-full gap-2 max-w-full overflow-hidden">
           <div className="flex justify-between items-center">
-            <p className="text-[14px] text-support-6 text-xs font-bold leading-[120%] max-w-[100%] overflow-ellipsis">{vehicle.vin}</p>
+            <p className="text-[14px] text-support-6 text-xs font-bold leading-[120%] max-w-[100%]">{vehicle.vin}</p>
           </div>
 
           <div className="flex flex-col gap-1">

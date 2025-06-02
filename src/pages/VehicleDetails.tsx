@@ -29,10 +29,10 @@ const VehicleDetails: React.FC = () => {
 
   return (
     <div className="flex w-full h-[calc(100vh-78px)]">
-      <div className="flex flex-col gap-2 h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2 min-[991px]:w-[600px]">
+      <div className="flex flex-col gap-2 h-full bg-white md:px-6 md:pt-6 px-2 pt-2 lg:w-[600px]">
         <div className="flex flex-col h-full">
           <div
-            className={`flex justify-between items-start w-full gap-[6rem] max-[1200px]:gap-0 transition-all duration-300 ease-in-out max-w-full`}
+            className={`flex justify-between items-start w-full gap-[6rem] lg:gap-0 transition-all duration-300 ease-in-out max-w-full`}
           >
             <Button variant="text" className="w-auto flex text-xs text-primary hover:opacity-80" onClick={handleBack}>
               <ChevronLeft color="#28303F" className="h-[24px] w-[24px]" />
@@ -50,7 +50,7 @@ const VehicleDetails: React.FC = () => {
             />
           </div>
           <div
-            className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[1200px]:max-h-[calc(100vh-16.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto   [&::-webkit-scrollbar]:w-[0.25rem]
+            className="flex-1 h-full lg:max-h-[calc(100vh-13.125rem)] pr-2 max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8

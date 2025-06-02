@@ -1,7 +1,7 @@
-import { toast } from 'sonner';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
@@ -25,6 +25,9 @@ const Vehicles: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const { isSearchActive } = useSearchStore();
+  const favoriteToggle = useFavoriteToggle();
+  const validatedFilters = useValidatedFilters();
+
   const { addedSuccessfully } = location.state || {};
 
   const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
@@ -32,27 +35,24 @@ const Vehicles: React.FC = () => {
   const [customLoading, setCustomLoading] = useState(false);
   const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
-
-  const [vehiclesList, setVehiclesList] = useState<VehicleType[] | []>([]);
   const [totalPages, setTotalPages] = useState(1);
   const [page, setPage] = useState(1);
-  const offset = 25;
 
+  const [vehiclesList, setVehiclesList] = useState<VehicleType[] | []>([]);
+  const [favoritesList, setFavoritesList] = useState<VehicleType[] | []>([]);
+
+  const offset = 25;
   const observerRef = useRef<IntersectionObserver | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const validatedFilters = useValidatedFilters();
-
-  const favoriteToggle = useFavoriteToggle();
+  const currentList = active === 'favorites' ? favoritesList : vehiclesList;
 
   const validatedFiltersParams = {
     ...validatedFilters,
-    modelIds: validatedFilters?.modelIds?.length ? validatedFilters?.modelIds.join(',') : undefined,
+    modelIds: validatedFilters.modelIds?.join(',') || undefined,
   };
 
   const resetPageAndScrollToTop = () => {
     setPage(1);
-    setVehiclesList([]);
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
@@ -90,25 +90,34 @@ const Vehicles: React.FC = () => {
       if (vehiclesData?.vehicles && Array.isArray(vehiclesData?.vehicles)) {
         setTotalPages(vehiclesData.totalPages);
         if (page === 1) {
-          setVehiclesList(vehiclesData.vehicles);
+          if (active === 'favorites') {
+            setFavoritesList(vehiclesData.vehicles);
+          } else {
+            setVehiclesList(vehiclesData.vehicles);
+          }
         } else {
-          setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
+          if (active === 'favorites') {
+            setFavoritesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
+          } else {
+            setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
+          }
         }
         setCustomLoading(false);
       }
     }
   }, [vehiclesData, page, isFetchedAfterMount]);
 
-  const handleDebounceSearch = (value: string) => {
-    if (value !== debounceValue) {
-      setDebounceValue(value);
+  useEffect(() => {
+    if (isSearchActive) {
       setActive('vehicles');
       resetPageAndScrollToTop();
       if (!isObjectEmpty(validatedFilters)) {
         navigate('/vehicles');
       }
     }
-  };
+  }, [isSearchActive]);
+
+  const handleDebounceSearch = (value: string) => setDebounceValue(value);
 
   // Get vehicles data on scroll
   const lastVehicleRef = useCallback(
@@ -121,7 +130,7 @@ const Vehicles: React.FC = () => {
             setPage(prev => prev + 1);
           }
         },
-        { threshold: 1 },
+        { threshold: 0.5 },
       );
 
       observerRef.current.observe(node);
@@ -131,34 +140,66 @@ const Vehicles: React.FC = () => {
 
   const handleFavoriteClick = async (vehicleId: number, isFavorite: boolean) => {
     setFavoriteLoadingId(vehicleId);
+    const listForResetOnError = currentList;
+
+    if (active === 'favorites') {
+      setFavoritesList(prevItems => prevItems.filter(item => item.id !== vehicleId));
+    } else {
+      setVehiclesList(prevItems =>
+        prevItems.map(item => {
+          if (item.id == vehicleId) {
+            return { ...item, favorite: !item.favorite };
+          }
+          return item;
+        }),
+      );
+    }
     favoriteToggle.mutate(
       { vehicleId, method: isFavorite ? 'DELETE' : 'POST' },
       {
-        onSuccess: () => {
-          // const { vehicle } = response;
-          setVehiclesList(prevItems => {
-            return active === 'favorites'
-              ? prevItems.filter(item => item.id !== vehicleId)
-              : prevItems.map(item => {
-                  if (item.id == vehicleId) {
-                    return { ...item, favorite: !item.favorite };
-                  }
-                  return item;
-                });
-          });
-          setFavoriteLoadingId(null);
-        },
         onError: error => {
           toast.error(error.message);
+          if (active === 'favorites') {
+            setFavoritesList(listForResetOnError);
+          } else {
+            setVehiclesList(listForResetOnError);
+          }
+        },
+        onSettled: () => {
           setFavoriteLoadingId(null);
         },
       },
     );
   };
 
+  const returnVehiclesList = () => {
+    const listLoading = (isVehiclesLoading || !isFetchedAfterMount || customLoading) && !currentList.length;
+
+    return listLoading ? (
+      Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
+    ) : currentList.length ? (
+      currentList.map((vehicle, index) => (
+        <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ vehicle }}>
+          <VehicleCard
+            vehicle={vehicle}
+            ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
+            handleFavoriteClick={handleFavoriteClick}
+            favoriteLoadingId={favoriteLoadingId}
+          />
+        </Link>
+      ))
+    ) : (
+      <NothingToShow
+        title={nothingToShowOptions[active].title}
+        subtitle={nothingToShowOptions[active].subtitle}
+        icon={nothingToShowOptions[active].icon}
+      />
+    );
+  };
+
   return (
-    <div className="flex w-full h-[calc(100vh-78px)]">
-      <div className="flex flex-col gap-2 h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2 min-[991px]:w-[600px]">
+    <div className="flex w-full h-[calc(100vh-78px)] flex-col lg:flex-row">
+      <div className="flex flex-col gap-2 lg:h-full bg-white md:px-6 md:pt-6 px-2 pt-2 lg:w-[600px] h-[50%]">
         {!isFilterOpen && (
           <div className="flex justify-between gap-4 min-h-[56px] items-start">
             <div
@@ -185,7 +226,7 @@ const Vehicles: React.FC = () => {
         {isFilterOpen ? (
           <VehiclesFilter handleBack={() => setIsFilterOpen(false)} />
         ) : (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col lg:h-full max-h-[calc(100%-80px)]">
             <div
               className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
@@ -224,40 +265,22 @@ const Vehicles: React.FC = () => {
 
             <div
               ref={scrollContainerRef}
-              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
+              className="flex-1 h-full lg:max-h-[calc(100vh-13.125rem)] pr-2 max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
             >
-              {(isVehiclesLoading || !isFetchedAfterMount || customLoading) && !vehiclesList.length ? (
-                Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
-              ) : vehiclesList.length ? (
-                vehiclesList.map((vehicle, index) => (
-                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id} state={{ vehicle }}>
-                    <VehicleCard
-                      vehicle={vehicle}
-                      ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
-                      handleFavoriteClick={handleFavoriteClick}
-                      favoriteLoadingId={favoriteLoadingId}
-                    />
-                  </Link>
-                ))
-              ) : (
-                <NothingToShow
-                  title={nothingToShowOptions[active].title}
-                  subtitle={nothingToShowOptions[active].subtitle}
-                  icon={nothingToShowOptions[active].icon}
-                />
-              )}
+              {active === 'vehicles' ? returnVehiclesList() : null}
+              {active === 'favorites' ? returnVehiclesList() : null}
             </div>
             <Toaster richColors visibleToasts={1} />
           </div>
         )}
       </div>
 
-      <div className="flex-[1_1_60%] h-full">
+      <div className="flex-[1_1_60%] lg:h-full h-[50%]">
         {vehiclesData && (
           <Map
             cords={vehiclesList.map((vehicle: VehicleType) => ({
