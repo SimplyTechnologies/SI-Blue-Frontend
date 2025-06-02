@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 import type { Poi } from '@/types/Poi';
 import carMarker from '@/assets/carMarker.svg';
@@ -6,41 +6,75 @@ import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer';
 
 const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
   const map = useMap();
-  const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
+  const markersRef = useRef<{ [key: string]: Marker }>({});
   const clusterer = useRef<MarkerClusterer | null>(null);
 
-  // Initialize MarkerClusterer, if the map has changed
+  // Initialize clusterer
   useEffect(() => {
-    if (!map) return;
-    if (!clusterer.current) {
+    if (map && !clusterer.current) {
       clusterer.current = new MarkerClusterer({ map });
     }
   }, [map]);
 
-  // Update markers, if the markers array has changed
+  // When pois change, clear and rebuild markers
   useEffect(() => {
-    clusterer.current?.clearMarkers();
-    clusterer.current?.addMarkers(Object.values(markers));
-  }, [markers]);
+    if (!clusterer.current) return;
+
+    const currentMarkers = Object.values(markersRef.current);
+    clusterer.current.clearMarkers();
+    clusterer.current.addMarkers(currentMarkers);
+
+    // Fit map to markers
+    const updateClustersAndZoom = () => {
+      const currentMarkers = Object.values(markersRef.current);
+
+      // Update cluster markers
+      clusterer.current!.clearMarkers();
+      clusterer.current!.addMarkers(currentMarkers);
+
+      // Fit map to markers
+      // if (currentMarkers.length > 0) {
+      //   const bounds = new google.maps.LatLngBounds();
+      //   currentMarkers.forEach(marker => {
+      //     const position = (marker as google.maps.marker.AdvancedMarkerElement).position;
+      //     if (position) bounds.extend(position);
+      //   });
+      //   map?.fitBounds(bounds);
+      // }
+    };
+
+    // Wait a tick to ensure markers are rendered and refs are set
+    const timeout = setTimeout(updateClustersAndZoom, 1000);
+
+    return () => clearTimeout(timeout);
+  }, [pois, map, markersRef, clusterer]);
 
   const setMarkerRef = (marker: Marker | null, key: string) => {
-    if (marker && markers[key]) return;
-    if (!marker && !markers[key]) return;
+    const current = markersRef.current;
 
-    setMarkers(prev => {
-      if (marker) {
-        return { ...prev, [key]: marker };
-      } else {
-        const newMarkers = { ...prev };
-        delete newMarkers[key];
-        return newMarkers;
-      }
-    });
+    if (marker) {
+      current[key] = marker;
+    } else {
+      delete current[key];
+    }
   };
+
+  const parsedPois = pois
+    .filter(poi => poi.lat && poi.lng)
+    .map(poi => ({
+      ...poi,
+      lat: typeof poi.lat === 'string' ? parseFloat(poi.lat) : poi.lat,
+      lng: typeof poi.lng === 'string' ? parseFloat(poi.lng) : poi.lng,
+    }));
+
   return (
     <>
-      {pois.map((poi: Poi) => (
-        <AdvancedMarker key={poi.key} position={poi.location} ref={marker => setMarkerRef(marker, poi.key)}>
+      {parsedPois.map((poi: Poi) => (
+        <AdvancedMarker
+          key={poi.id}
+          position={{ lat: poi.lat, lng: poi.lng }}
+          ref={marker => setMarkerRef(marker, poi.id.toString())}
+        >
           <div className="w-[47.05px] h-[47px] flex items-center justify-center rounded-[40px] bg-[#403C89]/20">
             <div className="w-[31.87px] h-[31.84px] flex justify-center items-center rounded-[30px] bg-[var(--color-primary-3)]">
               <img src={carMarker} alt="carMarker" />

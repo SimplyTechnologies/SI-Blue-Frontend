@@ -9,6 +9,7 @@ interface SelectProps {
   className?: string;
   disabled?: boolean;
   addNoSelect?: boolean;
+  deselectEnabled?: boolean;
 }
 
 export default function CustomSelect({
@@ -20,9 +21,10 @@ export default function CustomSelect({
   className,
   disabled,
   addNoSelect,
+  deselectEnabled = false,
 }: SelectProps) {
   const handleChange = (val: string) => {
-    if (val === '__none__' || val === value) {
+    if (val === '__none__' || (val === value && deselectEnabled)) {
       onChange('');
     } else {
       onChange(val);
@@ -60,4 +62,3 @@ export default function CustomSelect({
     </Select>
   );
 }
-

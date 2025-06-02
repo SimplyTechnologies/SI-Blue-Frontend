@@ -10,17 +10,19 @@ import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
 import useAuthStore from '@/stores/authStore';
+import { Loader2 } from 'lucide-react';
 
 const passwordSchema = z.string().min(1, 'Password is required');
 
 const schema = z.object({
   email: z.string().min(1, 'Email address is required').email('Enter a valid email address.'),
   password: passwordSchema,
+  remember: z.boolean().optional(),
 });
 
 type FormData = z.infer<typeof schema>;
 
-const LoginPage: React.FC = () => {
+const LoginPage = () => {
   const navigate = useNavigate();
   const login = useLogin();
   const { auth } = useAuthStore();
@@ -30,16 +32,22 @@ const LoginPage: React.FC = () => {
     handleSubmit,
     formState: { errors },
     trigger,
+    watch,
+    setValue,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'all',
     reValidateMode: 'onChange',
+    defaultValues: { remember: false },
   });
   const [serverError, setServerError] = useState('');
+  const [loading, setLoading] = useState(false);
+  
+  const remember = watch('remember');
 
   const onSubmit = (data: FormData) => {
     setServerError('');
-    console.log(data);
+    setLoading(true);
 
     login.mutate(data, {
       onSuccess: response => {
@@ -50,6 +58,7 @@ const LoginPage: React.FC = () => {
       onError: error => {
         setServerError(error.message);
       },
+      onSettled: () => setLoading(false),
     });
   };
 
@@ -114,6 +123,8 @@ const LoginPage: React.FC = () => {
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="remember"
+                checked={!!remember}
+                onCheckedChange={checked => setValue('remember', !!checked)}
                 className="w-[18px] h-[18px] rounded-[0.25rem] bg-[transparent] border-[1px] border-[var(--color-primary-3)] data-[state=checked]:text-[var(--color-white)] data-[state=checked]:bg-[var(--color-primary-3)] cursor-pointer"
               />
               <label
@@ -132,8 +143,8 @@ const LoginPage: React.FC = () => {
             </a>
           </div>
         </div>
-        <Button type="submit" className="h-[56px] " variant={'default'}>
-          Sign in
+        <Button type="submit" className="h-[56px] flex justify-center items-center" variant='default' disabled={loading}>
+          <div className='flex gap-2'>{loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Sign in</div>
         </Button>
       </div>
     </form>
@@ -141,3 +152,4 @@ const LoginPage: React.FC = () => {
 };
 
 export default LoginPage;
+

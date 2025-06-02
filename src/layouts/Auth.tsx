@@ -3,7 +3,7 @@ import carBg from '@/assets/carBackground.webp';
 
 const Auth: React.FC = () => {
   return (
-    <div className="grid min-h-svh lg:grid-cols-2">
+    <div className="grid min-h-svh lg:grid-cols-2 max-w-[480px]:px-[1rem]">
       <div className="flex flex-col gap-4 ">
         <div className="flex flex-1 items-center justify-center">
           <div className="w-full max-w-[450px]">

@@ -1,9 +1,11 @@
+import { useEffect } from 'react';
 import { AppSidebar } from '@/components/organism/AppSidebar';
 import { SidebarInset, SidebarProvider, SidebarTriggerMobile } from '@/components/atom/Sidebar';
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
 import useAuthStore from '@/stores/authStore';
+import { useSearchStore } from '@/stores/useSearchStore';
 import { pathTitles } from '@/utils/constants';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
@@ -14,6 +16,7 @@ function DashboardLayout() {
   const navigate = useNavigate();
 
   const { logout, user } = useAuthStore();
+  const { setIsSearchActive, setSearchValue } = useSearchStore();
 
   const pageTitle = pathTitles[location.pathname] || '';
   const userCredentials = (user?.firstName[0] || '') + (user?.lastName[0] || '');
@@ -26,6 +29,13 @@ function DashboardLayout() {
     { label: 'My Profile', onClick: handleProfileNavigate, icon: <AccountIcon /> },
     { label: 'Log Out', onClick: logout, icon: <LogOutIcon /> },
   ];
+
+  useEffect(() => {
+    if (!location.pathname.includes('vehicles')) {
+      setIsSearchActive(false);
+      setSearchValue('');
+    }
+  }, [location]);
 
   return (
     <SidebarProvider>
@@ -56,3 +66,4 @@ function DashboardLayout() {
 }
 
 export default DashboardLayout;
+

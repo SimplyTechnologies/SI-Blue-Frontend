@@ -1,5 +1,5 @@
 function MyProfile() {
-  return <div>My Profile</div>;
+  return <div></div>;
 }
 
 export default MyProfile;

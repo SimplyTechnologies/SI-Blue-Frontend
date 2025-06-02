@@ -1,4 +1,5 @@
 export type Poi = {
-  key: string;
-  location: google.maps.LatLngLiteral;
+  id: number;
+  lat: number;
+  lng: number;
 };
