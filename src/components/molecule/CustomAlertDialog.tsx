@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -8,32 +7,59 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from '@/components/atom/AlertDialog';
+import { AlertDialogIcon } from '@/assets/svgIconComponents/AlertDialogIcon';
 
 type AlertDialog = {
-  trigger: ReactNode;
+  open: boolean;
+  setOpen: (open: boolean) => void;
   title: string;
-  message: string;
+  description: string;
   handleConfirm: () => void;
+  variant: 'default' | 'destructive';
+  actionBtnText: string;
 };
 
-export function CustomAlertDialog({ trigger, title, message, handleConfirm }: AlertDialog) {
+export function CustomAlertDialog({
+  open,
+  setOpen,
+  title,
+  description,
+  handleConfirm,
+  variant,
+  actionBtnText,
+}: AlertDialog) {
+  const variants = {
+    default: {
+      icon: 'text-primary flex items-center justify-center',
+      confirm: 'bg-primary-3 hover:bg-[#534FB1] active:bg-[#322E6F] p-2 text-white',
+      cancel:
+        'border-primary-3 text-primary-4 hover:bg-primary-3 hover:text-white active:bg-[#322E6F] active:border[#322E6F] bg-transparent p-2 border-[1px] active:text-white',
+    },
+    destructive: {
+      icon: 'text-destructive flex items-center justify-center',
+      confirm: 'bg-destructive hover:bg-[#e03d71] active:bg-[#e03d71] p-2 text-white border-destructive',
+      cancel:
+        'border-destructive text-destructive hover:bg-destructive hover:text-white active:bg-[#e03d71] active:border-[#e03d71] bg-transparent p-2 border-[1px] active:text-white',
+    },
+  };
+
   return (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-primary">{title}</AlertDialogTitle>
-          <AlertDialogDescription className="text-support-5">{message}</AlertDialogDescription>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogContent className="max-w-[450px]!">
+        <div className={variants[variant].icon}>
+          <AlertDialogIcon />
+        </div>
+        <AlertDialogHeader className="pb-4 pt-2">
+          <AlertDialogTitle className="text-[#101828] text-center text-[18px]">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-[#667085] text-center text-[16px]">
+            {description}
+          </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel className="bg-secondary p-2 border-0">Cancel</AlertDialogCancel>
-          <AlertDialogAction
-            onClick={handleConfirm}
-            className="bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20"
-          >
-            Confirm
+          <AlertDialogCancel className={variants[variant].cancel}>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleConfirm} className={variants[variant].confirm}>
+            {actionBtnText}
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
