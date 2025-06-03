@@ -18,7 +18,8 @@ function DashboardLayout() {
   const { logout, user } = useAuthStore();
   const { setIsSearchActive, setSearchValue } = useSearchStore();
 
-  const pageTitle = pathTitles[location.pathname] || '';
+  const activePath = location.pathname.split('/').filter(Boolean)[0];
+  const pageTitle = pathTitles[activePath] || '';
   const userCredentials = (user?.firstName[0] || '') + (user?.lastName[0] || '');
 
   const handleProfileNavigate = () => {
