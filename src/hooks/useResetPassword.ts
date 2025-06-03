@@ -16,23 +16,22 @@ const RESET_PASSWORD_ENDPOINT = '/auth/reset-password';
 export const useResetPassword = () => {
   return useMutation<ResetPasswordResponse, Error, ResetPasswordPayload>({
     mutationFn: async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
-      if (!payload.password?.trim() || !payload.confirmPassword.trim()) {
-        throw new Error('Password and confirm password is required');
-      }
-
       try {
-        const response = await axios.post<ResetPasswordResponse>(`${API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`, payload, {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
-        console.log(response.data);
-
+        const response = await axios.post<ResetPasswordResponse>(
+          `${API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`, 
+          payload, 
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        
         return response.data;
       } catch (error) {
         const axiosError = error as AxiosError<{ message: string }>;
         const message = axiosError.response?.data?.message || axiosError.message || 'Reset password failed';
-
+        
         throw new Error(message);
       }
     },

@@ -34,7 +34,7 @@ type FormData = z.infer<typeof schema>;
 const ResetPassword: React.FC = () => {
   const navigate = useNavigate();
   const resetPassword = useResetPassword();
-  const [error, setError] = useState('');
+   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [showValidator, setShowValidator] = useState(false);
 
@@ -50,6 +50,7 @@ const ResetPassword: React.FC = () => {
   });
 
   const onSubmit = (data: FormData) => {
+    setError('')
     resetPassword.mutate(data, {
       onSuccess: () => {
         navigate('/login');
@@ -70,6 +71,8 @@ const ResetPassword: React.FC = () => {
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem]">
           <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
+           
+           
             <Label
               htmlFor="password"
               className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]"
