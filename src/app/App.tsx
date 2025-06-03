@@ -3,7 +3,13 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppRoutes from '@/routes/Routes';
 import './styles/index.css';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false, // default: true
+    },
+  },
+});
 
 function App() {
   const apiKey = import.meta.env.VITE_GOOGLE_API_KEY;
@@ -20,3 +26,4 @@ function App() {
 }
 
 export default App;
+

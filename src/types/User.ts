@@ -1,10 +1,13 @@
 export type User = {
     id: number;
-    first_name: string;
-    last_name: string;
+    firstName: string;
+    lastName: string;
     email: string;
-    phone_number: string;
+    phoneNumber: string;
     role: string;
+    isActive: boolean;
+    createdAt: string;
+    updatedAt: string;
 }
 
 export type UserInput = User & {

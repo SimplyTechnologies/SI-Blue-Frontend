@@ -247,7 +247,7 @@ function SidebarTrigger({ className, onClick, ...props }: React.ComponentProps<t
       data-slot="sidebar-trigger"
       variant="text"
       className={cn(
-        `size-7 flex justify-center items-center rounded-lg w-[14px] h-[22px] ${state === 'collapsed' && !isMobile ? 'border-1 border-[#EDF1FE] absolute right-[-6px] top-[50%] translate-y-[-50%] bg-[var(--sidebar-accent-collapsed)]' : 'bg-[var(--sidebar-accent)]'}`,
+        `size-7 flex justify-center items-center rounded-lg w-[14px] h-[22px] ${state === 'collapsed' && !isMobile ? 'border-1 border-primary-5 absolute right-[-6px] top-[50%] translate-y-[-50%] bg-[var(--sidebar-accent-collapsed)]' : 'bg-[var(--sidebar-accent)]'}`,
         className,
       )}
       onClick={event => {

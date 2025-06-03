@@ -1,7 +1,10 @@
-import Auth from '@/layouts/Auth';
-import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
+import { Loader2 } from 'lucide-react';
+import Auth from '@/layouts/Auth';
+import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
+import NotFound from '@/pages/NotFound';
+import VehicleDetails from '@/pages/VehicleDetails';
 
 const Protected = lazy(() => import('@/layouts/Protected'));
 const Public = lazy(() => import('@/layouts/Public'));
@@ -23,92 +26,41 @@ interface AppRouterProps {
 const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
   return (
     <Router>
-      <Routes>
-        <Route element={<Public />}>
-          <Route element={<Auth />}>
-            <Route
-              path="/login"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <LoginPage />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/forgot-password"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <ForgotPassword />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/reset-password"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <ResetPassword />
-                </Suspense>
-              }
-            />
-            <Route
-              path="/account-activation"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <AccountActivation />
-                </Suspense>
-              }
-            />
+      <Suspense
+        fallback={
+          <div className="w-full h-[100vh] flex justify-center items-center">
+            <Loader2 className="animate-spin h-8 w-8" color="#636777" />
+          </div>
+        }
+      >
+        <Routes>
+          <Route element={<Public />}>
+            <Route element={<Auth />}>
+              <Route path="/login" element={<LoginPage />} />
+              <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
+              <Route path="/account-activation" element={<AccountActivation />} />
+            </Route>
           </Route>
-        </Route>
 
-        <Route element={<Protected />}>
-          <Route element={<DashboardLayout />}>
-            <Route path="/" index element={<Navigate to="/dashboard" replace />} />
-            <Route
-              path="dashboard"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Dashboard />
-                </Suspense>
-              }
-            />
-            <Route
-              path="vehicles"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Vehicles />
-                </Suspense>
-              }
-            />
-            <Route
-              path="users"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Users />
-                </Suspense>
-              }
-            />
-            <Route
-              path="customers"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <Customers />
-                </Suspense>
-              }
-            />
-            <Route
-              path="my-profile"
-              element={
-                <Suspense fallback={<div>Loading...</div>}>
-                  <MyProfile />
-                </Suspense>
-              }
-            />
+          <Route element={<Protected />}>
+            <Route element={<DashboardLayout />}>
+              <Route path="/" index element={<Navigate to="/dashboard" replace />} />
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="vehicles" element={<Vehicles />} />
+              <Route path="vehicles/:id" element={<VehicleDetails />} />
+              <Route path="users" element={<Users />} />
+              <Route path="customers" element={<Customers />} />
+              <Route path="my-profile" element={<MyProfile />} />
+            </Route>
           </Route>
-        </Route>
-      </Routes>
+          {/* 404 fallback route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Suspense>
     </Router>
   );
 };
 
 export default AppRoutes;
+

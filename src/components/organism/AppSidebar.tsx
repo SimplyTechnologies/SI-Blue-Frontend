@@ -57,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <img src={state === 'collapsed' && !isMobile ? logoLight : logo} alt="logo" className="w-[42px] h-[42px]" />
         </Link>
         <div className="flex items-center">
-          <SidebarTrigger className="ml-1" />
+          <SidebarTrigger />
         </div>
       </SidebarHeader>
       <SidebarContent>

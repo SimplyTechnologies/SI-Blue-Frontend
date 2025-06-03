@@ -1,51 +1,79 @@
+import React from 'react';
+import type { VehicleType } from '@/types/Vehicle';
+import { Button } from '@/components/atom/Button';
+import CustomTooltip from '@/components/molecule/CustomTooltip';
+import { FavoriteColor } from '@/assets/svgIconComponents/FavoriteIcon';
 import carMarker from '@/assets/carMarkerPrimary.svg';
-import favorite from '@/assets/favorite.svg';
-// import favoritePrimary from "@/assets/favoritePrimary.svg";
 
-const VehicleCard: React.FC = () => {
+const VehicleCard = React.forwardRef<
+  HTMLDivElement,
+  {
+    vehicle: VehicleType;
+    handleFavoriteClick: (vehicleId: number, isFavorite: boolean) => void;
+    favoriteLoadingId: number | null;
+  }
+>(({ vehicle, handleFavoriteClick, favoriteLoadingId }, ref) => {
   return (
-    <div className="w-full py-[1.5rem] border-b-[1px] border-[#F5F5F7] flex">
-      <div className="w-[60px] flex justify-start items-start cursor-pointer">
-        <div className="w-[48px] h-[48px] flex justify-center items-center bg-[#F5F7FF] border-[2px] border-[var(--color-secondary-1)] rounded-[50%]">
-          <div className="w-[24px] h-[24px] flex justify-center items-center">
-            <img src={carMarker} alt="Vehicle" />
-          </div>
+    <div className="w-full py-6 border-b border-support-12 flex" ref={ref}>
+      {/* Marker Circle */}
+      <div
+        className={`mr-3 w-12 h-12 min-h-12 min-w-12 flex justify-center items-center rounded-full bg-support-12 border-2 ${
+          vehicle.sold ? 'border-support-11' : 'border-support-9'
+        }`}
+      >
+        <img src={carMarker} alt="Vehicle" className="w-6 h-6" />
+      </div>
+
+      {/* Vehicle Info */}
+      <div className="flex flex-col flex-1 w-full gap-2 max-w-full overflow-hidden">
+        <div className="flex justify-between items-center">
+          <p className="text-[14px] text-support-6 text-xs font-bold leading-[120%] max-w-[100%]">{vehicle.vin}</p>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <p className="text-[14px] text-support-5 text-xs font-regular leading-[140%]">
+            {vehicle.make.name} {vehicle.model.name} {vehicle.year}
+          </p>
+          <p className="text-[14px] text-support-5 text-xs font-regular leading-[140%]">
+            Location:{' '}
+            <span className="text-support-6 font-medium">
+              {vehicle.location.street} {vehicle.location.city}
+            </span>
+          </p>
         </div>
       </div>
-      <div className="w-full flex flex-col">
-        <div className="flex justify-between items-center">
-          <div className="cursor-pointer">
-            <p className="text-[var(--color-support-6)] text-[length:var(--xs-text)] font-[var(--fw-bold)] leading-[120%]">
-              1FTEX1C85AKB67308
-            </p>
-          </div>
-          <div className="flex gap-[2.5rem]">
-            <div className="h-[21px] py-[2px] px-[0.5rem] bg-[#23A1E9] rounded-[0.5rem]">
-              <p className="text-[var(--color-white)] text-[12px] font-[var(--fw-regular)] leading-[140%]">Sold</p>
-            </div>
-            <div className="w-[20px] h-[20px] flex justify-center items-center">
-              <img src={favorite} alt="Favorite" />
-            </div>
+
+      {/* Status & Favorite */}
+      <div className="flex items-start gap-5 ml-4">
+        <div className="w-[64px] flex justify-center">
+          <div
+            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.sold ? 'bg-support-11' : 'bg-support-9'}`}
+          >
+            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.sold ? 'Sold' : 'In Stock'}</p>
           </div>
         </div>
-        <div className="flex flex-col gap-[0.25rem] cursor-pointer">
-          <div>
-            <p className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-regular)] leading-[140%]">
-              Toyota Corolla 2022
-            </p>
-          </div>
-          <div>
-            <p className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-regular)] leading-[140%]">
-              Location:{' '}
-              <span className="text-[var(--color-support-6)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
-                NW 27th St, Allaratah
-              </span>
-            </p>
-          </div>
-        </div>
+        <CustomTooltip
+          trigger={
+            <Button
+              onClick={e => {
+                e.preventDefault();
+                e.stopPropagation();
+                handleFavoriteClick(vehicle.id, vehicle.favorite);
+              }}
+              variant="text"
+              className="w-[20px] hover:opacity-80"
+              disabled={favoriteLoadingId === vehicle.id}
+            >
+              <FavoriteColor isFavorite={vehicle.favorite} />
+            </Button>
+          }
+          content={vehicle.favorite ? 'Remove from Favorites' : 'Add to Favorites'}
+          side="right"
+        />
       </div>
     </div>
   );
-};
+});
 
 export default VehicleCard;
+

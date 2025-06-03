@@ -1,24 +1,85 @@
-import { type Dispatch, type SetStateAction, type FC, useEffect } from 'react';
+import { useEffect, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
+import type { AxiosError } from 'axios';
+import { toast } from 'sonner';
 
+import { zodResolver } from '@hookform/resolvers/zod';
 import type { TAddress } from '@/types/Address';
 import Modal from '@/components/atom/Modal';
 import { Label } from '@/components/atom/Label';
 import { Input } from '@/components/atom/Input';
-import { zodResolver } from '@hookform/resolvers/zod';
+import CustomSelect from '@/components/molecule/CustomSelect';
 import AddressAutocomplete from '@/components/molecule/AddressAutocomplete/ui/AddressAutocomplete';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atom/Select';
+import { createVehicle, getMakes, getModelsByMakeId, decodeVehicleVin } from '@/api/vehicles';
 import {
   carFormSchema,
   inputClassname,
-  MAKES,
-  MODELS_BY_MAKE,
   type CarFormValues,
   getVehicleYearOptions,
+  buildLocation,
 } from './AddVehicle.data';
+import type { AddVehicleProps } from './AddVehicle.types';
 
-const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>> }> = ({ open, onOpenChange }) => {
+const TextInputField = ({
+  form,
+  name,
+  label,
+  placeholder,
+  type = 'text',
+  formItemClassName,
+  errorClassName,
+  disabled = false,
+}: {
+  form: ReturnType<typeof useForm<CarFormValues>>;
+  name: keyof CarFormValues;
+  label: string;
+  placeholder: string;
+  type?: string;
+  formItemClassName?: string;
+  errorClassName?: string;
+  disabled?: boolean;
+}) => (
+  <FormField
+    control={form.control}
+    name={name}
+    render={({ field }) => (
+      <FormItem className={formItemClassName}>
+        <FormLabel>{label}</FormLabel>
+        <FormControl>
+          <Input
+            className={inputClassname}
+            placeholder={placeholder}
+            type={type}
+            maxLength={name === 'vin' ? 17 : undefined}
+            {...field}
+            value={field.value}
+            onChange={e => {
+              if (name === 'vin' && e.target.value.length > 17) return;
+              field.onChange(e);
+              if (['street', 'city', 'state', 'country', 'zipcode'].includes(name)) {
+                const value = e.target.value;
+                form.setValue(name, value, { shouldValidate: true });
+                const updatedFields: Partial<CarFormValues> = { [name]: value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }
+            }}
+            disabled={disabled}
+          />
+        </FormControl>
+        <div className={errorClassName}>
+          <FormMessage />
+        </div>
+      </FormItem>
+    )}
+  />
+);
+
+const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
+  const queryClient = useQueryClient();
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
     defaultValues: {
@@ -31,32 +92,115 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
       city: '',
       state: '',
       country: '',
-      zipCode: '',
+      zipcode: '',
+      lat: undefined,
+      lng: undefined,
     },
     mode: 'onBlur',
   });
 
-  const errorMessageSpacerClass = 'min-h-[1.25rem]';
-  const selectedMake = form.watch('make');
+  const [vinLoading, setVinLoading] = useState(false);
 
-  const onSubmit = (values: CarFormValues) => {
-    console.log(values);
-    onOpenChange(false);
+  const { data: makeOptions, refetch: refetchMakes } = useQuery({
+    queryKey: ['make'],
+    queryFn: getMakes,
+    enabled: open,
+  });
+
+  const { data: modelOptions, refetch: refetchModels } = useQuery({
+    queryKey: ['model'],
+    queryFn: () => getModelsByMakeId(form.getValues().make),
+    enabled: !!form.getValues().make,
+  });
+
+  const vinValue = form.watch('vin');
+
+  useEffect(() => {
+    if (vinValue.length !== 17) return;
+    setVinLoading(true);
+    (async () => {
+      try {
+        const { data } = await decodeVehicleVin({ vin: vinValue });
+        if (!data) return;
+        const { vehicleMake, vehicleModel, year } = data;
+        if (!vehicleMake && !vehicleModel && !year) return;
+
+        let makeId = makeOptions?.find(
+          (m: { id: number; name: string }) => m.name.toLowerCase() === vehicleMake?.name?.toLowerCase(),
+        )?.id;
+        if (!makeId && vehicleMake) {
+          await refetchMakes();
+          const updatedMakes = queryClient.getQueryData(['make']) as { id: number; name: string }[];
+          makeId = updatedMakes?.find(
+            (m: { id: number; name: string }) => m.name.toLowerCase() === vehicleMake?.name?.toLowerCase(),
+          )?.id;
+        }
+        if (makeId) {
+          form.setValue('make', makeId.toString());
+          const { data: updatedModelOptions } = await refetchModels();
+
+          const modelId = updatedModelOptions?.find((m: { id: number; name: string }) => m.id === vehicleModel?.id)?.id;
+
+          if (modelId) {
+            form.setValue('model', modelId.toString());
+          }
+        }
+        if (year) {
+          form.setValue('year', year.toString());
+        }
+        form.trigger(['make', 'model', 'year', 'vin']);
+      } catch (err: unknown) {
+        const error = err as AxiosError<{ message?: string }>;
+        toast.error(error.response?.data?.message || 'Could not decode VIN.');
+      } finally {
+        setVinLoading(false);
+      }
+    })();
+  }, [vinValue]);
+
+  useEffect(() => {
+    if (open) {
+      form.reset();
+    }
+  }, [open]);
+
+  const onSubmit = async (values: CarFormValues) => {
+    try {
+      const body = {
+        modelId: Number(values.model),
+        year: Number(values.year),
+        vin: values.vin,
+        location: {
+          country: values.country,
+          city: values.city,
+          street: values.street,
+          zipcode: values.zipcode,
+          state: values.state,
+          lat: values.lat,
+          lng: values.lng,
+        },
+      };
+      await createVehicle(body);
+      onOpenChange(false);
+      onSuccess?.();
+    } catch (e) {
+      const error = e as AxiosError<{ message?: string }>;
+      toast.error(error.response?.data?.message || 'An error occurred while adding the vehicle.');
+    }
   };
 
   const onAddressSelect = (address: TAddress) => {
-    form.setValue('location', address.formatted_address);
+    const location = buildLocation(address, form);
+    form.setValue('location', location);
     form.setValue('street', address.street);
     form.setValue('city', address.city);
     form.setValue('state', address.state);
     form.setValue('country', address.country);
-    form.setValue('zipCode', address.zip);
-    form.trigger(['street', 'city', 'state', 'country', 'zipCode']);
+    form.setValue('zipcode', address.zipcode);
+    form.setValue('lat', address.lat);
+    form.setValue('lng', address.lng);
+    form.trigger(['street', 'city', 'state', 'country', 'zipcode']);
   };
-
-  useEffect(() => {
-    form.reset();
-  }, [open, form]);
 
   return (
     <Modal
@@ -70,7 +214,7 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
       }}
     >
       <Form {...form}>
-        <Label className="text-[var(--color-support-6)] font-bold text-lg mb-3">General</Label>
+        <Label className="text-support-6 font-bold text-lg mb-3">General</Label>
         <form id="add-vehicle-form" onSubmit={form.handleSubmit(onSubmit)} className="mt-3">
           <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2 mb-[10px]">
             <FormField
@@ -79,73 +223,61 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Make</FormLabel>
-                  <Select
-                    onValueChange={value => {
+                  <CustomSelect
+                    value={field.value}
+                    items={
+                      makeOptions?.map((item: { id: number; name: string }) => ({
+                        id: item.id.toString(),
+                        name: item.name,
+                      })) || []
+                    }
+                    onChange={value => {
                       field.onChange(value);
                       form.setValue('model', '');
+                      refetchModels();
                     }}
-                    defaultValue={field.value}
-                  >
-                    <FormControl>
-                      <SelectTrigger className="w-[100%]">
-                        <SelectValue placeholder="Select make" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {MAKES.map(make => (
-                        <SelectItem key={make} value={make}>
-                          {make}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  <div className={form.formState.errors.model ? errorMessageSpacerClass : ''}>
+                    placeholder="Select Make"
+                    className="bg-white"
+                    disabled={vinLoading || !makeOptions?.length}
+                  />
+                  <div className={form.formState.errors.model ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="model"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Model</FormLabel>
-                  <Select onValueChange={field.onChange} value={field.value} disabled={!selectedMake}>
-                    <FormControl>
-                      <SelectTrigger className="w-[100%]">
-                        <SelectValue placeholder="Select model" />
-                      </SelectTrigger>
-                    </FormControl>
-                    <SelectContent>
-                      {selectedMake && MODELS_BY_MAKE[selectedMake] ? (
-                        MODELS_BY_MAKE[selectedMake].map(model => (
-                          <SelectItem key={model} value={model}>
-                            {model}
-                          </SelectItem>
-                        ))
-                      ) : (
-                        <SelectItem value="placeholder" disabled>
-                          {selectedMake ? 'No models available' : 'Select a make first'}
-                        </SelectItem>
-                      )}
-                    </SelectContent>
-                  </Select>
-                  <div className={form.formState.errors.make ? errorMessageSpacerClass : ''}>
+                  <CustomSelect
+                    value={field.value}
+                    items={
+                      modelOptions?.map((item: { id: number; name: string }) => ({
+                        id: item.id.toString(),
+                        name: item.name,
+                      })) || []
+                    }
+                    onChange={field.onChange}
+                    placeholder="Select Model"
+                    className="bg-white"
+                    disabled={vinLoading || !modelOptions?.length || !form.getValues().make}
+                  />
+                  <div className={form.formState.errors.make ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-
             <FormField
               control={form.control}
               name="year"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Year</FormLabel>
-                  <Select onValueChange={field.onChange} defaultValue={field.value}>
+                  <Select value={field.value} onValueChange={field.onChange} disabled={vinLoading}>
                     <FormControl>
                       <SelectTrigger className="w-[100%]">
                         <SelectValue placeholder="Select year" />
@@ -153,33 +285,25 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
                     </FormControl>
                     <SelectContent>
                       {getVehicleYearOptions().map(year => (
-                        <SelectItem key={year} value={year}>
+                        <SelectItem key={year} value={year} disabled={vinLoading}>
                           {year}
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  <div className={form.formState.errors.vin ? errorMessageSpacerClass : ''}>
+                  <div className={form.formState.errors.vin ? 'min-h-[1.25rem]' : ''}>
                     <FormMessage />
                   </div>
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="vin"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>VIN</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter VIN" {...field} />
-                  </FormControl>
-                  <div className={form.formState.errors.year ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="VIN"
+              placeholder="Enter VIN"
+              errorClassName="min-h-[1.25rem]"
+              disabled={vinLoading}
             />
           </div>
           <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2">
@@ -199,85 +323,41 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
                 </FormItem>
               )}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="street"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Street</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter Street" {...field} />
-                  </FormControl>
-                  <div className={form.formState.errors.city ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="Street"
+              placeholder="Enter Street"
+              errorClassName={form.formState.errors.city ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="city"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>City</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter City" {...field} />
-                  </FormControl>
-                  <div className={form.formState.errors.street ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="City"
+              placeholder="Enter City"
+              errorClassName={form.formState.errors.street ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="state"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>State</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter State" {...field} />
-                  </FormControl>
-                  <div className={form.formState.errors.country ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="State"
+              placeholder="Enter State"
+              errorClassName={form.formState.errors.country ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
+            <TextInputField
+              form={form}
               name="country"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Country</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter Country" {...field} />
-                  </FormControl>
-                  <div className={form.formState.errors.state ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+              label="Country"
+              placeholder="Enter Country"
+              errorClassName={form.formState.errors.state ? 'min-h-[1.25rem]' : ''}
             />
-
-            <FormField
-              control={form.control}
-              name="zipCode"
-              render={({ field }) => (
-                <FormItem className="md:col-span-2">
-                  <FormLabel>Zip Code</FormLabel>
-                  <FormControl>
-                    <Input className={inputClassname} placeholder="Enter Zip Code" {...field} />
-                  </FormControl>
-                  <div className={errorMessageSpacerClass}>
-                    <FormMessage />
-                  </div>
-                </FormItem>
-              )}
+            <TextInputField
+              form={form}
+              name="zipcode"
+              label="Zip Code"
+              placeholder="Enter Zip Code"
+              formItemClassName="md:col-span-2"
+              errorClassName="min-h-[1.25rem]"
             />
           </div>
         </form>
