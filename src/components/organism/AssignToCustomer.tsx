@@ -4,16 +4,19 @@ import Modal from '@/components/atom/Modal';
 import { Input } from '@/components/atom/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
-import { assignCustomerFormSchema, type AssignCustomerFormValues } from './AssignCustomer.data';
-import { inputClassname } from '../AddVehicle/AddVehicle.data';
+import { inputClassname } from './AddVehicle/AddVehicle.data';
 import { useDebounce } from '@/hooks/useDebounce';
+import { useQuery } from '@tanstack/react-query';
+import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
+import { useCustomerAssign } from '@/hooks/useCustomerAssign';
+import { toast } from 'sonner';
+import { getCustomerEmails } from '@/api/customers';
 
-const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<boolean>> }> = ({ open, onOpenChange }) => {
-  const items = [
-    { id: 1, email: 'nika.jaghinyan@gmail.com', firstName: 'Nika', lastName: 'Jaghinyan', phoneNumber: '+37499663274' },
-    { id: 2, email: 'nika.jagh@gmail.com', firstName: 'Nik', lastName: 'Jagh', phoneNumber: '+47499663274' },
-    { id: 3, email: 'nika@gmail.com', firstName: 'Veronika', lastName: 'Test', phoneNumber: '+57499663274' },
-  ];
+const AssignToCustomer: FC<{
+  open: boolean;
+  onOpenChange: Dispatch<SetStateAction<boolean>>;
+  onSuccess: () => void;
+}> = ({ open, onOpenChange, onSuccess }) => {
 
   const form = useForm<AssignCustomerFormValues>({
     resolver: zodResolver(assignCustomerFormSchema),
@@ -26,20 +29,29 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
     mode: 'onBlur',
   });
 
+  const assignToCustomer = useCustomerAssign();
+
   const { debounceValue } = useDebounce({ inputValue: form.getValues('email'), delay: 300 });
 
-  const autocompleteRef = useRef<any>(null);
-  const inputRef = useRef<any>(null);
+  const autocompleteRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const errorMessageSpacerClass = 'min-h-[1.25rem]';
 
   const [showAutocomplete, setShowAutocomplete] = useState(false);
-  const [filteredItems, setFilteredItems] = useState(items);
+  const [customLoading, setCustomLoading] = useState(false);
+  const [autofillEmails, setAutofillEmails] = useState<CustomerType[]>([]);
 
-  const disableFields = filteredItems.length === 1 && form.getValues('email') === filteredItems[0].email;
+  const disableFields = autofillEmails.length === 1 && form.getValues('email') === autofillEmails[0].email;
+
+  const { data: emailsData } = useQuery({
+    queryKey: ['emails', debounceValue],
+    queryFn: () => getCustomerEmails(debounceValue),
+    enabled: !!debounceValue,
+  });
 
   useEffect(() => {
-    setFilteredItems(items.filter(item => item.email.includes(form.getValues('email'))));
-  }, [debounceValue]);
+    setAutofillEmails(emailsData || []);
+  }, [emailsData]);
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
@@ -52,25 +64,19 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
     return () => {
       document.removeEventListener('mousedown', handleMouseDown);
     };
-  }, [autocompleteRef, inputRef, showAutocomplete, filteredItems]);
+  }, [autocompleteRef, inputRef, showAutocomplete, autofillEmails]);
 
   useEffect(() => {
     form.reset();
-    console.log('form', form)
   }, [open, form]);
 
   const handleEmailBlur = (target: EventTarget) => {
-    if (!autocompleteRef?.current?.contains(target) && !inputRef?.current?.contains(target)) {
+    if (target instanceof Node && !autocompleteRef?.current?.contains(target) && !inputRef?.current?.contains(target)) {
       setShowAutocomplete(false);
-      if (filteredItems.length === 1 && filteredItems[0].email === form.getValues('email')) {
-        handleAutocomplete(filteredItems[0]);
+      if (autofillEmails.length === 1 && autofillEmails[0].email === form.getValues('email')) {
+        handleAutocomplete(autofillEmails[0]);
       }
     }
-  };
-
-  const onSubmit = (values: AssignCustomerFormValues) => {
-    console.log(values);
-    onOpenChange(false);
   };
 
   const onEmailFocus = () => {
@@ -93,6 +99,26 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
     setShowAutocomplete(false);
   };
 
+  const onSubmit = (values: AssignCustomerFormValues) => {
+    setCustomLoading(true);
+    assignToCustomer.mutate(
+      { data: values },
+      {
+        onSuccess: () => {
+          toast.success('Vehicle successfully assigned to the customer');
+          onSuccess();
+        },
+        onError: () => {
+          toast.error('Something went wrong. Please try again');
+        },
+        onSettled: () => {
+          setCustomLoading(false);
+          onOpenChange(false);
+        },
+      },
+    );
+  };
+
   return (
     <Modal
       isOpen={open}
@@ -102,6 +128,7 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
       footerButtonProps={{
         form: 'assign-customer',
         text: 'Submit',
+        loading: customLoading,
       }}
     >
       <Form {...form}>
@@ -121,12 +148,13 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
                       onFocus={onEmailFocus}
                       autoComplete="off"
                       ref={inputRef}
+                      maxLength={100}
                     />
                     <div
                       ref={autocompleteRef}
                       className={`absolute top-[56px] left-0 ${showAutocomplete ? '' : 'hidden'} w-full overflow-auto bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[150px] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md`}
                     >
-                      {filteredItems.map((item, index) => (
+                      {autofillEmails.map((item, index) => (
                         <div
                           className="hover:text-primary hover:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
                           key={index}
@@ -158,6 +186,7 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
                       placeholder="Enter First Name"
                       {...field}
                       disabled={disableFields}
+                      maxLength={50}
                     />
                   </FormControl>
                   <div className={form.formState.errors.firstName ? errorMessageSpacerClass : ''}>
@@ -179,6 +208,7 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
                       placeholder="Enter Last Name"
                       {...field}
                       disabled={disableFields}
+                      maxLength={50}
                     />
                   </FormControl>
                   <div className={form.formState.errors.lastName ? errorMessageSpacerClass : ''}>
@@ -195,7 +225,13 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
               <FormItem>
                 <FormLabel>Phone Number</FormLabel>
                 <FormControl>
-                  <Input className={inputClassname} placeholder="+1-XXX-XXX-XXXX" {...field} disabled={disableFields} />
+                  <Input
+                    className={inputClassname}
+                    placeholder="+1-XXX-XXX-XXXX"
+                    {...field}
+                    disabled={disableFields}
+                    maxLength={25}
+                  />
                 </FormControl>
                 <div className={form.formState.errors.phoneNumber ? errorMessageSpacerClass : ''}>
                   <FormMessage />
@@ -209,5 +245,5 @@ const AddVehicle: FC<{ open: boolean; onOpenChange: Dispatch<SetStateAction<bool
   );
 };
 
-export default AddVehicle;
+export default AssignToCustomer;
 
