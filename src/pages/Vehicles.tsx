@@ -182,7 +182,7 @@ const Vehicles: React.FC = () => {
         <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ active }}>
           <VehicleCard
             vehicle={vehicle}
-            ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
+            ref={index === currentList.length - 2 ? lastVehicleRef : null}
             handleFavoriteClick={handleFavoriteClick}
             favoriteLoadingId={favoriteLoadingId}
           />
