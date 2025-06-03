@@ -47,8 +47,7 @@ const VehicleCardDetails = React.forwardRef<
             </p>
           </div>
         </div>
-      </div>
-      <div className="flex items-start gap-5 ml-4">
+        <div className="flex items-start gap-5 ml-4">
         <div className="w-[64px] flex justify-center">
           <div
             className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.sold ? 'bg-support-11' : 'bg-support-9'}`}
@@ -57,6 +56,8 @@ const VehicleCardDetails = React.forwardRef<
           </div>
         </div>
       </div>
+      </div>
+      
       <div className="flex flex-col gap-2">
         <Button
           variant="default"
