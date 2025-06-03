@@ -36,6 +36,11 @@ export const createVehicle = async (body: CreateVehicleRequest) => {
   return response.data;
 };
 
+export const editVehicle = async (body: CreateVehicleRequest, id: number) => {
+  const response = await api.post(`/vehicles/vehicle/${id}`, body);
+  return response.data;
+};
+
 export const getMakes = async () => {
   try {
     const response = await api.get(`/vehicles/makes`);

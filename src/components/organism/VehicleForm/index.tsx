@@ -13,15 +13,15 @@ import CustomSelect from '@/components/molecule/CustomSelect';
 import AddressAutocomplete from '@/components/molecule/AddressAutocomplete/ui/AddressAutocomplete';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atom/Select';
-import { createVehicle, getMakes, getModelsByMakeId, decodeVehicleVin } from '@/api/vehicles';
+import { createVehicle, getMakes, getModelsByMakeId, decodeVehicleVin, editVehicle } from '@/api/vehicles';
 import {
   carFormSchema,
   inputClassname,
   type CarFormValues,
   getVehicleYearOptions,
   buildLocation,
-} from './AddVehicle.data';
-import type { AddVehicleProps } from './AddVehicle.types';
+} from './VehicleForm.data';
+import type { AddVehicleProps } from './VehicleForm.types';
 
 const TextInputField = ({
   form,
@@ -78,11 +78,11 @@ const TextInputField = ({
   />
 );
 
-const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
+const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehicleProps) => {
   const queryClient = useQueryClient();
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
-    defaultValues: {
+    defaultValues: data || {
       make: undefined,
       model: undefined,
       year: undefined,
@@ -180,12 +180,19 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
           lng: values.lng,
         },
       };
-      await createVehicle(body);
+      if (vehicleId) {
+        await editVehicle(body, vehicleId);
+      } else {
+        await createVehicle(body);
+      }
+
       onOpenChange(false);
       onSuccess?.();
     } catch (e) {
       const error = e as AxiosError<{ message?: string }>;
-      toast.error(error.response?.data?.message || 'An error occurred while adding the vehicle.');
+      toast.error(
+        error.response?.data?.message || `An error occurred while ${vehicleId ? 'editing' : 'adding'} the vehicle.`,
+      );
     }
   };
 
@@ -206,7 +213,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
     <Modal
       isOpen={open}
       onOpenChange={onOpenChange}
-      title="Add New Vehicle"
+      title={`${vehicleId ? 'Edit' : 'Add New'} Vehicle`}
       closeOnOutsideClick={false}
       footerButtonProps={{
         form: 'add-vehicle-form',
@@ -366,4 +373,5 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
   );
 };
 
-export default AddVehicle;
+export default VehicleForm;
+

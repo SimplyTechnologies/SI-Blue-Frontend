@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
+import { toast } from 'sonner';
 import type { VehicleType } from '@/types/Vehicle';
 import { getVehicleById } from '@/api/vehicles';
 import Map from '@/components/organism/Map';
@@ -11,6 +12,8 @@ import VehicleCardDetails from '@/components/molecule/VehicleCardDetails';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
 import VehicleCardSkeleton from '@/components/molecule/VehicleCardSkeleton';
 import { CustomAlertDialog } from '@/components/molecule/CustomAlertDialog';
+import VehicleForm from '@/components/organism/VehicleForm';
+import { buildLocationForEdit } from '@/components/organism/VehicleForm/VehicleForm.data';
 
 const VehicleDetails: React.FC = () => {
   const navigate = useNavigate();
@@ -20,8 +23,9 @@ const VehicleDetails: React.FC = () => {
 
   const [vehicle, setVehicle] = useState<VehicleType | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const [openAddVehicle, setOpenAddVehicle] = useState(false);
 
-  const { isLoading, data } = useQuery({
+  const { isLoading, data, refetch } = useQuery({
     queryKey: ['vehicle', id],
     queryFn: () => id && getVehicleById(id),
     enabled: !!id,
@@ -37,7 +41,7 @@ const VehicleDetails: React.FC = () => {
     navigate('/vehicles', { state: { active } });
   };
 
-  const handleDelete = () => {
+  const openConfirm = () => {
     const timeout = setTimeout(() => {
       setIsConfirmOpen(true);
     }, 100);
@@ -45,20 +49,50 @@ const VehicleDetails: React.FC = () => {
     return () => clearTimeout(timeout);
   };
 
-  const handleConfirm = () => {};
+  const handleEditOpenChange = () => {
+    const timeout = setTimeout(() => {
+      setOpenAddVehicle(prev => !prev);
+    }, 100);
 
-  const handleEdit = () => {};
+    return () => clearTimeout(timeout);
+  };
+
+  const handleDelete = () => {};
 
   const onAssignSuccess = () => {
     if (vehicle) {
       setVehicle({ ...vehicle, sold: true });
+      toast.success('Customer successfully assigned');
     }
   };
 
+  const onEditSuccess = () => {
+    refetch();
+    toast.success('Vehicle successfully edited');
+  };
+
   const vehicleDropdownOptions = [
-    { label: 'Edit', onClick: handleEdit, icon: <PencilIcon className="stroke-primary" /> },
-    { label: 'Delete', onClick: handleDelete, icon: <TrashIcon className="stroke-primary" /> },
+    { label: 'Edit', onClick: handleEditOpenChange, icon: <PencilIcon className="stroke-primary" /> },
+    { label: 'Delete', onClick: openConfirm, icon: <TrashIcon className="stroke-primary" /> },
   ];
+
+  const getVehicleFormData = () => {
+    if (!vehicle) return null;
+    return {
+      make: vehicle.make.id.toString(),
+      model: vehicle.model.id.toString(),
+      year: vehicle.year.toString(),
+      vin: vehicle.vin,
+      location: buildLocationForEdit(vehicle.location),
+      street: vehicle.location.street,
+      city: vehicle.location.city,
+      state: vehicle.location.state,
+      country: vehicle.location.country,
+      zipcode: vehicle.location.zipcode,
+      lat: vehicle.location.lat,
+      lng: vehicle.location.lng,
+    };
+  };
 
   return (
     <div className="flex w-full h-[calc(100vh-78px)] flex-col lg:flex-row">
@@ -124,9 +158,16 @@ const VehicleDetails: React.FC = () => {
         setOpen={setIsConfirmOpen}
         title="Delete Vehicle"
         description="Are you sure that you would like to delete this vehicle? This action cannot be undone."
-        handleConfirm={handleConfirm}
+        handleConfirm={handleDelete}
         variant="destructive"
         actionBtnText="Delete"
+      />
+      <VehicleForm
+        open={openAddVehicle}
+        onOpenChange={handleEditOpenChange}
+        onSuccess={onEditSuccess}
+        data={getVehicleFormData()}
+        vehicleId={vehicle?.id}
       />
     </div>
   );

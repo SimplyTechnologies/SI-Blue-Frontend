@@ -4,7 +4,7 @@ import Modal from '@/components/atom/Modal';
 import { Input } from '@/components/atom/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
-import { inputClassname } from './AddVehicle/AddVehicle.data';
+import { inputClassname } from './VehicleForm/VehicleForm.data';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useQuery } from '@tanstack/react-query';
 import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
