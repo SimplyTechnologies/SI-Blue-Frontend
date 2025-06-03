@@ -9,9 +9,8 @@ const VehicleCardDetails = React.forwardRef<
   HTMLDivElement,
   {
     vehicle: VehicleType;
-    onSuccess: () => void;
   }
->(({ vehicle, onSuccess }, ref) => {
+>(({ vehicle }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -68,7 +67,7 @@ const VehicleCardDetails = React.forwardRef<
           Assign to Customer
         </Button>
       </div>
-      <AssignToCustomer open={isOpen} onOpenChange={setIsOpen} onSuccess={onSuccess} />
+      <AssignToCustomer open={isOpen} onOpenChange={setIsOpen} vehicleId={vehicle.id} />
     </div>
   );
 });

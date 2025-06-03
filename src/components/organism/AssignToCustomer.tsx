@@ -1,22 +1,23 @@
 import { type Dispatch, type SetStateAction, type FC, useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import Modal from '@/components/atom/Modal';
 import { Input } from '@/components/atom/Input';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useDebounce } from '@/hooks/useDebounce';
+import { assignCustomerFormSchema, type AssignCustomerFormValues } from '@/types/Customer';
+import { useCustomerAssign } from '@/hooks/useCustomerAssign';
+import { getCustomerEmails } from '@/api/customers';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
 import { inputClassname } from './VehicleForm/VehicleForm.data';
-import { useDebounce } from '@/hooks/useDebounce';
-import { useQuery } from '@tanstack/react-query';
-import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
-import { useCustomerAssign } from '@/hooks/useCustomerAssign';
-import { toast } from 'sonner';
-import { getCustomerEmails } from '@/api/customers';
 
 const AssignToCustomer: FC<{
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
-  onSuccess: () => void;
-}> = ({ open, onOpenChange, onSuccess }) => {
+  vehicleId: number;
+}> = ({ open, onOpenChange, vehicleId }) => {
+  const queryClient = useQueryClient();
 
   const form = useForm<AssignCustomerFormValues>({
     resolver: zodResolver(assignCustomerFormSchema),
@@ -39,19 +40,14 @@ const AssignToCustomer: FC<{
 
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [customLoading, setCustomLoading] = useState(false);
-  const [autofillEmails, setAutofillEmails] = useState<CustomerType[]>([]);
 
-  const disableFields = autofillEmails.length === 1 && form.getValues('email') === autofillEmails[0].email;
-
-  const { data: emailsData } = useQuery({
+  const { data: autofillEmails } = useQuery({
     queryKey: ['emails', debounceValue],
     queryFn: () => getCustomerEmails(debounceValue),
     enabled: !!debounceValue,
   });
 
-  useEffect(() => {
-    setAutofillEmails(emailsData || []);
-  }, [emailsData]);
+  const disableFields = autofillEmails.length === 1 && form.getValues('email') === autofillEmails[0].email;
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
@@ -104,9 +100,9 @@ const AssignToCustomer: FC<{
     assignToCustomer.mutate(
       { data: values },
       {
-        onSuccess: () => {
+        onSuccess: (data) => {
           toast.success('Vehicle successfully assigned to the customer');
-          onSuccess();
+          queryClient.setQueryData(['vehicle', { id: vehicleId }], data);
         },
         onError: () => {
           toast.error('Something went wrong. Please try again');

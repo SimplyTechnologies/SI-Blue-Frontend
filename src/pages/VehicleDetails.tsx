@@ -1,9 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import type { VehicleType } from '@/types/Vehicle';
 import { getVehicleById } from '@/api/vehicles';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
@@ -21,21 +20,14 @@ const VehicleDetails: React.FC = () => {
   const { id } = useParams();
   const { active } = location.state;
 
-  const [vehicle, setVehicle] = useState<VehicleType | null>(null);
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
 
-  const { isLoading, data, refetch } = useQuery({
+  const { isLoading, data: vehicle } = useQuery({
     queryKey: ['vehicle', id],
     queryFn: () => id && getVehicleById(id),
     enabled: !!id,
   });
-
-  useEffect(() => {
-    if (data) {
-      setVehicle(data);
-    }
-  }, [data]);
 
   const handleBack = () => {
     navigate('/vehicles', { state: { active } });
@@ -59,15 +51,7 @@ const VehicleDetails: React.FC = () => {
 
   const handleDelete = () => {};
 
-  const onAssignSuccess = () => {
-    if (vehicle) {
-      setVehicle({ ...vehicle, sold: true });
-      toast.success('Customer successfully assigned');
-    }
-  };
-
   const onEditSuccess = () => {
-    refetch();
     toast.success('Vehicle successfully edited');
   };
 
@@ -128,7 +112,7 @@ const VehicleDetails: React.FC = () => {
               "
           >
             {vehicle ? (
-              <VehicleCardDetails vehicle={vehicle} onSuccess={onAssignSuccess} />
+              <VehicleCardDetails vehicle={vehicle} />
             ) : isLoading ? (
               <VehicleCardSkeleton details />
             ) : null}

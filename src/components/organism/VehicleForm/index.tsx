@@ -182,6 +182,7 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
       };
       if (vehicleId) {
         await editVehicle(body, vehicleId);
+        queryClient.setQueryData(['vehicle', { id: vehicleId }], data);
       } else {
         await createVehicle(body);
       }
