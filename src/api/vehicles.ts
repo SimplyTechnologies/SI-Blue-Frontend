@@ -1,5 +1,5 @@
-import api from './axios';
 import { toast } from 'sonner';
+import api from './axios';
 import type { AddRemoveFavorite, CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/Vehicle';
 
 export const getVehicles = async (params: VehicleRequest) => {
@@ -10,6 +10,15 @@ export const getVehicles = async (params: VehicleRequest) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicles:', error);
+  }
+};
+
+export const getVehicleById = async (id: string) => {
+  try {
+    const response = await api.get(`/vehicles/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicle:', error);
   }
 };
 
@@ -24,6 +33,11 @@ export const getAllVehicleLocationsAndCounts = async () => {
 
 export const createVehicle = async (body: CreateVehicleRequest) => {
   const response = await api.post(`/vehicles/vehicle`, body);
+  return response.data;
+};
+
+export const editVehicle = async (body: CreateVehicleRequest, id: number) => {
+  const response = await api.post(`/vehicles/vehicle/${id}`, body);
   return response.data;
 };
 

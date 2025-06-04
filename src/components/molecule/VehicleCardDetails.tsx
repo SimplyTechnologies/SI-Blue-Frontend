@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useState } from 'react';
 import type { VehicleType } from '@/types/Vehicle';
 import { formatDate } from '@/utils/general';
 import { Button } from '@/components/atom/Button';
+import AssignToCustomer from '@/components/organism/AssignToCustomer';
 import carMarker from '@/assets/carMarkerPrimary.svg';
 
 const VehicleCardDetails = React.forwardRef<
@@ -10,6 +11,8 @@ const VehicleCardDetails = React.forwardRef<
     vehicle: VehicleType;
   }
 >(({ vehicle }, ref) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
     <div className="w-full py-3 border-b border-support-12">
       <div className="w-full flex py-3" ref={ref}>
@@ -43,12 +46,28 @@ const VehicleCardDetails = React.forwardRef<
             </p>
           </div>
         </div>
+        <div className="flex items-start gap-5 ml-4">
+        <div className="w-[64px] flex justify-center">
+          <div
+            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.sold ? 'bg-support-11' : 'bg-support-9'}`}
+          >
+            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.sold ? 'Sold' : 'In Stock'}</p>
+          </div>
+        </div>
       </div>
+      </div>
+      
       <div className="flex flex-col gap-2">
-        <Button variant="default" className="w-full h-[40px] text-xs" onClick={() => {}} disabled={false}>
+        <Button
+          variant="default"
+          className="w-full h-[40px] text-xs"
+          onClick={() => !vehicle.sold && setIsOpen(true)}
+          disabled={vehicle.sold}
+        >
           Assign to Customer
         </Button>
       </div>
+      <AssignToCustomer open={isOpen} onOpenChange={setIsOpen} vehicleId={vehicle.id} />
     </div>
   );
 });

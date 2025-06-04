@@ -33,7 +33,7 @@ const Vehicles: React.FC = () => {
 
   const { addedSuccessfully } = location.state || {};
 
-  const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
+  const [active, setActive] = useState<VehicleTab>(location?.state?.active || vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
@@ -244,7 +244,7 @@ const Vehicles: React.FC = () => {
                 data?.pages.map(page => (
                   <React.Fragment key={page.nextId}>
                     {page.vehicles.map((vehicle, index) => (
-                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ vehicle }}>
+                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ active }}>
                         <VehicleCard
                           vehicle={vehicle}
                           ref={index === page.vehicles.length - 2 ? ref : null}
