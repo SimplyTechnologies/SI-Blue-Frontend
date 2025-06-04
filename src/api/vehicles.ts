@@ -41,6 +41,11 @@ export const editVehicle = async (body: CreateVehicleRequest, id: number) => {
   return response.data;
 };
 
+export const deleteVehicle = async (id: number) => {
+  const response = await api.delete(`/vehicles/vehicle/`, {params: {id}});
+  return response;
+};
+
 export const getMakes = async () => {
   try {
     const response = await api.get(`/vehicles/makes`);

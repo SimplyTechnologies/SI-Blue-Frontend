@@ -231,7 +231,7 @@ export function DataTableDemo() {
         </div>
         <div className="flex gap-[2rem]">
           <Button
-            variant="outline"
+            variant="outlineStrong"
             className="max-w-[143px] h-[40px] py-[10px] px-[18px] text-xs leading-[120%] flex gap-[0.5rem] justify-center items-center"
             // onClick={() => table.previousPage()}
             // disabled={!table.getCanPreviousPage()}
@@ -239,7 +239,7 @@ export function DataTableDemo() {
             Previous
           </Button>
           <Button
-            variant="outline"
+            variant="outlineStrong"
             className="max-w-[143px] h-[40px] py-[10px] px-[18px] text-xs leading-[120%] flex gap-[0.5rem] justify-center items-center"
             // onClick={() => table.nextPage()}
             // disabled={!table.getCanNextPage()}

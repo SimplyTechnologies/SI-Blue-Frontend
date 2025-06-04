@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { getVehicleById } from '@/api/vehicles';
+import { deleteVehicle, getVehicleById } from '@/api/vehicles';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import { Toaster } from '@/components/atom/Toaster';
@@ -49,7 +49,10 @@ const VehicleDetails: React.FC = () => {
     return () => clearTimeout(timeout);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = async () => {
+    const result = await deleteVehicle(14);
+    console.log(result);
+  };
 
   const onEditSuccess = () => {
     toast.success('Vehicle successfully edited');
@@ -88,7 +91,7 @@ const VehicleDetails: React.FC = () => {
             <Button variant="text" className="w-auto flex text-xs text-primary hover:opacity-80" onClick={handleBack}>
               <ChevronLeft color="#28303F" className="h-[24px] w-[24px]" />
             </Button>
-            {vehicle && !vehicle.sold ? (
+            {(
               <CustomDropdown
                 sideOffset={0}
                 align="end"
@@ -100,7 +103,7 @@ const VehicleDetails: React.FC = () => {
                 items={vehicleDropdownOptions}
                 menuClassName="w-[220px] text-support-5"
               />
-            ) : null}
+            )}
           </div>
 
           <div
