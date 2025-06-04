@@ -101,7 +101,7 @@ const AssignToCustomer: FC<{
       }}
     >
       <Form {...form}>
-        <form id="add-vehicle-form" onSubmit={form.handleSubmit(onSubmit)} className="mt-3">
+        <form id="assign-to-customer-form" onSubmit={form.handleSubmit(onSubmit)} className="mt-3">
           <FormField
             control={form.control}
             name="email"
