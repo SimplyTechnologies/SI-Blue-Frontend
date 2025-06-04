@@ -95,7 +95,7 @@ const AssignToCustomer: FC<{
       title="Assign to Customer"
       closeOnOutsideClick={false}
       footerButtonProps={{
-        form: 'assign-customer',
+        form: 'assign-to-customer-form',
         text: 'Submit',
         loading: customLoading,
       }}
