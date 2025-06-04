@@ -1,12 +1,13 @@
-import { type Dispatch, type SetStateAction, type FC, useEffect, useState, useRef } from 'react';
+import { type Dispatch, type SetStateAction, type FC, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import Modal from '@/components/atom/Modal';
 import { Input } from '@/components/atom/Input';
+import CustomAutoCompleteInput from '@/components/molecule/CustomerEmailSuggest';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDebounce } from '@/hooks/useDebounce';
-import { assignCustomerFormSchema, type AssignCustomerFormValues } from '@/types/Customer';
+import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
 import { useCustomerAssign } from '@/hooks/useCustomerAssign';
 import { getCustomerEmails } from '@/api/customers';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
@@ -34,50 +35,22 @@ const AssignToCustomer: FC<{
 
   const { debounceValue } = useDebounce({ inputValue: form.getValues('email'), delay: 300 });
 
-  const autocompleteRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
   const errorMessageSpacerClass = 'min-h-[1.25rem]';
 
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [customLoading, setCustomLoading] = useState(false);
 
-  const { data: autofillEmails } = useQuery({
+  const { data: autofillEmails } = useQuery<CustomerType[]>({
     queryKey: ['emails', debounceValue],
     queryFn: () => getCustomerEmails(debounceValue),
     enabled: !!debounceValue,
   });
 
-  const disableFields = autofillEmails.length === 1 && form.getValues('email') === autofillEmails[0].email;
-
-  useEffect(() => {
-    const handleMouseDown = (e: MouseEvent) => {
-      if (e.target && showAutocomplete) {
-        handleEmailBlur(e.target);
-      }
-    };
-
-    document.addEventListener('mousedown', handleMouseDown);
-    return () => {
-      document.removeEventListener('mousedown', handleMouseDown);
-    };
-  }, [autocompleteRef, inputRef, showAutocomplete, autofillEmails]);
+  const disableFields = autofillEmails?.length === 1 && form.getValues('email') === autofillEmails[0].email;
 
   useEffect(() => {
     form.reset();
   }, [open, form]);
-
-  const handleEmailBlur = (target: EventTarget) => {
-    if (target instanceof Node && !autocompleteRef?.current?.contains(target) && !inputRef?.current?.contains(target)) {
-      setShowAutocomplete(false);
-      if (autofillEmails.length === 1 && autofillEmails[0].email === form.getValues('email')) {
-        handleAutocomplete(autofillEmails[0]);
-      }
-    }
-  };
-
-  const onEmailFocus = () => {
-    setShowAutocomplete(true);
-  };
 
   const handleAutocomplete = (item: {
     id: number;
@@ -100,7 +73,7 @@ const AssignToCustomer: FC<{
     assignToCustomer.mutate(
       { data: values },
       {
-        onSuccess: (data) => {
+        onSuccess: data => {
           toast.success('Vehicle successfully assigned to the customer');
           queryClient.setQueryData(['vehicle', { id: vehicleId }], data);
         },
@@ -136,31 +109,15 @@ const AssignToCustomer: FC<{
               <FormItem>
                 <FormLabel>Email</FormLabel>
                 <FormControl>
-                  <div className="relative">
-                    <Input
-                      className={`${inputClassname} w-full`}
-                      placeholder="Enter Email"
-                      {...field}
-                      onFocus={onEmailFocus}
-                      autoComplete="off"
-                      ref={inputRef}
-                      maxLength={100}
-                    />
-                    <div
-                      ref={autocompleteRef}
-                      className={`absolute top-[56px] left-0 ${showAutocomplete ? '' : 'hidden'} w-full overflow-auto bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[150px] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md`}
-                    >
-                      {autofillEmails.map((item, index) => (
-                        <div
-                          className="hover:text-primary hover:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-                          key={index}
-                          onClick={() => handleAutocomplete(item)}
-                        >
-                          {item.email}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
+                  <CustomAutoCompleteInput
+                    inputValue={form.getValues('email')}
+                    inputClassname={inputClassname}
+                    open={showAutocomplete}
+                    setOpen={setShowAutocomplete}
+                    handleAutocomplete={handleAutocomplete}
+                    options={autofillEmails || []}
+                    field={field}
+                  />
                 </FormControl>
                 <div className={form.formState.errors.email ? errorMessageSpacerClass : ''}>
                   <FormMessage />

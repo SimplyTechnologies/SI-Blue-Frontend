@@ -244,7 +244,7 @@ const Vehicles: React.FC = () => {
                 data?.pages.map(page => (
                   <React.Fragment key={page.nextId}>
                     {page.vehicles.map((vehicle, index) => (
-                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ vehicle }}>
+                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ active }}>
                         <VehicleCard
                           vehicle={vehicle}
                           ref={index === page.vehicles.length - 2 ? ref : null}
