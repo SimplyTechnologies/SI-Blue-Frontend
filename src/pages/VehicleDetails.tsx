@@ -6,7 +6,6 @@ import { toast } from 'sonner';
 import { deleteVehicle, getVehicleById } from '@/api/vehicles';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
-import { Toaster } from '@/components/atom/Toaster';
 import VehicleCardDetails from '@/components/molecule/VehicleCardDetails';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
 import VehicleCardSkeleton from '@/components/molecule/VehicleCardSkeleton';
@@ -53,7 +52,8 @@ const VehicleDetails: React.FC = () => {
     if (!vehicle.id) return;
     setIsConfirmOpen(false);
     await deleteVehicle(vehicle.id);
-    navigate('/vehicles', { state: { deletedSuccessfully: true }, replace: true });
+    toast.success('Vehicle deleted successfully!');
+    navigate('/vehicles');
   };
 
   const onEditSuccess = () => {
@@ -122,7 +122,6 @@ const VehicleDetails: React.FC = () => {
               <VehicleCardSkeleton details />
             ) : null}
           </div>
-          <Toaster richColors visibleToasts={1} />
         </div>
       </div>
 

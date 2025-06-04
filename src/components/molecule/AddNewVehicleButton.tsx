@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Button } from '@/components/atom/Button';
 import VehicleForm from '@/components/organism/VehicleForm';
 import { useSearchStore } from '@/stores/useSearchStore';
-import { Toaster } from '@/components/atom/Toaster';
 
 type AddNewVehicleButton = {
   buttonName: string;
@@ -21,7 +20,6 @@ const AddNewVehicleButton = ({ buttonName, className, onSuccess }: AddNewVehicle
       </Button>
 
       <VehicleForm open={openAddVehicle} onOpenChange={setOpenAddVehicle} onSuccess={onSuccess} />
-      <Toaster richColors visibleToasts={1} />
     </div>
   );
 };
