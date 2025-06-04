@@ -88,7 +88,7 @@ const DebounceSearch = ({ setDebounceValue }: DebounceSearchType) => {
         </div>
       </div>
       {error && (
-        <p className="text-support-2 text-[length:var(--xs-text)] font-[var(--fw-medium)] pl-8 mt-1">{error}</p>
+        <p className="text-support-2 text-[length:var(--xs-text)] font-[var(--fw-normal)] pl-8 mt-1">{error}</p>
       )}
     </div>
   );
