@@ -72,7 +72,7 @@ function FormItem({ className, ...props }: React.ComponentProps<'div'>) {
 
   return (
     <FormItemContext.Provider value={{ id }}>
-      <div data-slot="form-item" className={cn('flex flex-col gap-[6px]', className)} {...props} />
+      <div data-slot="form-item" className={cn('flex flex-col gap-[4px]', className)} {...props} />
     </FormItemContext.Provider>
   );
 }
@@ -85,7 +85,7 @@ function FormLabel({ className, ...props }: React.ComponentProps<typeof LabelPri
       data-slot="form-label"
       data-error={!!error}
       className={cn(
-        'text-[14px] text-support-5 font-medium data-[error=true]:text-support-5',
+        'text-[14px] text-support-5 font-medium data-[error=true]:text-support-5 mb-0.5',
         className,
       )}
       htmlFor={formItemId}
@@ -133,7 +133,7 @@ function FormMessage({ className, ...props }: React.ComponentProps<'p'>) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn('text-support-2 text-sm font-medium', className)}
+      className={cn('text-support-2 text-sm font-normal', className)}
       {...props}
     >
       {body}
