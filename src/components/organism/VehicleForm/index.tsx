@@ -116,7 +116,7 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
   const vinValue = form.watch('vin');
 
   useEffect(() => {
-    if (vinValue.length !== 17) return;
+    if (vinValue.length !== 17 || data?.vin === vinValue) return;
     setVinLoading(true);
     (async () => {
       try {
@@ -181,8 +181,8 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
         },
       };
       if (vehicleId) {
-        await editVehicle(body, vehicleId);
-        queryClient.setQueryData(['vehicle', { id: vehicleId }], data);
+        const updatedData = await editVehicle(body, vehicleId);
+        queryClient.setQueryData(['vehicle', { id: vehicleId }], updatedData);
       } else {
         await createVehicle(body);
       }
