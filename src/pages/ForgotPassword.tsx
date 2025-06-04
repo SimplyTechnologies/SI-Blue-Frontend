@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForgotPassword } from '@/hooks/useForgotPassword';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
@@ -18,24 +19,35 @@ type FormData = z.infer<typeof schema>;
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
+  const forgotPasswordMutation = useForgotPassword();
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    trigger,
-  } = useForm<FormData>({
+  const { register, handleSubmit, trigger } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onBlur',
   });
 
   const [success, setSuccess] = useState(false);
-  const [ email, setEmail ] = useState('');
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState<string>('');
 
   const onSubmit = (data: FormData) => {
-    setEmail(data.email);
-    setSuccess(true);
+    forgotPasswordMutation.mutate(
+      { email: data.email },
+      {
+        onSuccess: response => {
+          console.log(response);
+
+          setEmail(data.email);
+          setSuccess(true);
+        },
+        onError: error => {
+          setError(error.message);
+
+          console.error('Forgot password error', error.message);
+        },
+      },
+    );
   };
 
   return (
@@ -48,8 +60,8 @@ const ForgotPassword: React.FC = () => {
           {success ? (
             <>
               We’ve just sent an email to{' '}
-              <span className="font-[var(--fw-medium)] text-[var(--color-support-9)]">{email}</span>. If the email
-              doesn’t show up soon, check your spam folder.
+              <span className="font-[var(--fw-medium)] text-[var(--color-support-9)]">{email}</span>. Please check your
+              inbox and follow the instructions to reset your password. The link will expire in 10 minutes.
             </>
           ) : (
             'Enter your email account to reset your password'
@@ -74,9 +86,9 @@ const ForgotPassword: React.FC = () => {
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
             />
 
-            {errors.email && (
+            {error && (
               <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
-                {errors.email.message}
+                {error}
               </p>
             )}
           </div>
@@ -93,7 +105,9 @@ const ForgotPassword: React.FC = () => {
         </Button>
         <div className={`${success ? 'hidden' : 'relative text-center text-[length:var(--sm-text)] h-[22px]'}`}>
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />
-          <span className="relative z-10 inline-block bg-bg-1 px-2 text-support-6">Or</span> 
+          <span className="relative z-10 inline-block bg-[var(--color-bg-1)] px-2 text-[var(--color-support-6)]">
+            Or
+          </span>
         </div>
         <Button className={`${success ? 'hidden' : 'h-[56px]'}`} variant={'outline'} onClick={() => navigate('/login')}>
           Back to Sign In
@@ -104,3 +118,4 @@ const ForgotPassword: React.FC = () => {
 };
 
 export default ForgotPassword;
+

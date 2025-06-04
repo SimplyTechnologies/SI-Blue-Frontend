@@ -31,7 +31,7 @@ export function NavMain({
                 <SidebarMenuButton
                   tooltip={item.title}
                   isActive={isActive}
-                  className={state === 'collapsed' && !isMobile ? 'dd-collapsed' : ''}
+                  className={`${state === 'collapsed' && !isMobile ? 'dd-collapsed' : ''} cursor-pointer`}
                   onClick={() => {
                     if (isMobile) {
                       setOpenMobile(false);

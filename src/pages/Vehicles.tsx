@@ -1,7 +1,8 @@
-import { toast } from 'sonner';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
+import { useInView } from 'react-intersection-observer';
+import { toast } from 'sonner';
 import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
@@ -24,141 +25,148 @@ import NothingToShow from '@/components/molecule/NothingToShow';
 const Vehicles: React.FC = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { ref, inView } = useInView();
   const { isSearchActive } = useSearchStore();
+  const favoriteToggle = useFavoriteToggle();
+  const validatedFilters = useValidatedFilters();
+
   const { addedSuccessfully } = location.state || {};
 
   const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
-  const [customLoading, setCustomLoading] = useState(false);
   const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
 
-  const [vehiclesList, setVehiclesList] = useState<VehicleType[] | []>([]);
-  const [totalPages, setTotalPages] = useState(1);
-  const [page, setPage] = useState(1);
   const offset = 25;
-
-  const observerRef = useRef<IntersectionObserver | null>(null);
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
-
-  const validatedFilters = useValidatedFilters();
-
-  const favoriteToggle = useFavoriteToggle();
 
   const validatedFiltersParams = {
     ...validatedFilters,
-    modelIds: validatedFilters?.modelIds?.length ? validatedFilters?.modelIds.join(',') : undefined,
+    modelIds: validatedFilters.modelIds?.join(',') || undefined,
   };
 
   const resetPageAndScrollToTop = () => {
-    setPage(1);
-    setVehiclesList([]);
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
   };
 
-  const {
-    isLoading: isVehiclesLoading,
-    data: vehiclesData,
-    refetch,
-    isFetchedAfterMount,
-  } = useQuery({
-    queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), page, active],
-    queryFn: () => {
-      setCustomLoading(true);
+  const { data, fetchNextPage, isPending, refetch } = useInfiniteQuery({
+    queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), active],
+    queryFn: async ({
+      pageParam,
+    }): Promise<{
+      vehicles: VehicleType[];
+      previousId: number;
+      nextId: number;
+    }> => {
       return getVehicles({
         ...validatedFiltersParams,
         search: debounceValue || undefined,
-        page,
+        page: pageParam,
         offset,
         favorite: active === 'favorites' ? 1 : undefined,
       });
     },
+    initialPageParam: 1,
+    getPreviousPageParam: firstPage => firstPage.previousId,
+    getNextPageParam: lastPage => lastPage.nextId,
+    refetchOnMount: false,
   });
 
   useEffect(() => {
     if (addedSuccessfully) {
       toast.success('Vehicle added successfully!');
-      location.state = {};
     }
   }, [addedSuccessfully, location]);
 
-  //Set vehicles list (add to the existing list starting from page 2)
   useEffect(() => {
-    if (isFetchedAfterMount) {
-      if (vehiclesData?.vehicles && Array.isArray(vehiclesData?.vehicles)) {
-        setTotalPages(vehiclesData.totalPages);
-        if (page === 1) {
-          setVehiclesList(vehiclesData.vehicles);
-        } else {
-          setVehiclesList(prevItems => [...prevItems, ...vehiclesData.vehicles]);
-        }
-        setCustomLoading(false);
-      }
+    if (inView) {
+      fetchNextPage();
     }
-  }, [vehiclesData, page, isFetchedAfterMount]);
+  }, [inView, fetchNextPage]);
 
-  const handleDebounceSearch = (value: string) => {
-    if (value !== debounceValue) {
-      setDebounceValue(value);
+  useEffect(() => {
+    if (isSearchActive) {
       setActive('vehicles');
       resetPageAndScrollToTop();
       if (!isObjectEmpty(validatedFilters)) {
         navigate('/vehicles');
       }
     }
-  };
+  }, [isSearchActive]);
 
-  // Get vehicles data on scroll
-  const lastVehicleRef = useCallback(
-    (node: Element | null) => {
-      if (isVehiclesLoading || !node) return;
-      if (observerRef.current) observerRef.current.disconnect();
-      observerRef.current = new IntersectionObserver(
-        entries => {
-          if (entries[0].isIntersecting && page < totalPages) {
-            setPage(prev => prev + 1);
-          }
-        },
-        { threshold: 1 },
-      );
-
-      observerRef.current.observe(node);
-    },
-    [isVehiclesLoading, page, totalPages],
-  );
+  const handleDebounceSearch = (value: string) => setDebounceValue(value);
 
   const handleFavoriteClick = async (vehicleId: number, isFavorite: boolean) => {
     setFavoriteLoadingId(vehicleId);
+
+    queryClient.setQueryData(
+      ['vehicles', debounceValue, JSON.stringify(validatedFilters), active],
+      (old: { pages: { vehicles: VehicleType[] }[] }) => {
+        const newPages = old.pages.map(page => {
+          if (active === 'favorites') {
+            const updatedPageData = page.vehicles.filter(vehicle => vehicle.id !== vehicleId);
+
+            return { ...page, vehicles: updatedPageData };
+          } else {
+            const updatedPageData = page.vehicles.map(vehicle => {
+              if (vehicle.id === vehicleId) {
+                return { ...vehicle, favorite: !vehicle.favorite };
+              } else {
+                return vehicle;
+              }
+            });
+
+            return { ...page, vehicles: updatedPageData };
+          }
+        });
+        return {
+          ...old,
+          pages: newPages,
+        };
+      },
+    );
+
     favoriteToggle.mutate(
       { vehicleId, method: isFavorite ? 'DELETE' : 'POST' },
       {
         onSuccess: () => {
-          // const { vehicle } = response;
-          setVehiclesList(prevItems => {
-            return active === 'favorites'
-              ? prevItems.filter(item => item.id !== vehicleId)
-              : prevItems.map(item => {
-                  if (item.id == vehicleId) {
-                    return { ...item, favorite: !item.favorite };
-                  }
-                  return item;
-                });
-          });
-          setFavoriteLoadingId(null);
+          if (active === 'favorites') {
+            refetch();
+          }
         },
         onError: error => {
           toast.error(error.message);
+        },
+        onSettled: () => {
           setFavoriteLoadingId(null);
         },
       },
     );
   };
 
+  const getMapData = () => {
+    const mapData: { lat: number; lng: number; id: number }[] = [];
+
+    data?.pages?.map(page =>
+      page.vehicles
+        .map(vehicle => {
+          if (vehicle.location.lat && vehicle.location.lng) {
+            mapData.push({ id: vehicle.id, lat: vehicle.location.lat, lng: vehicle.location.lng });
+          }
+          return null;
+        })
+        .filter(vehicle => vehicle),
+    );
+
+    return mapData;
+  };
+
   return (
-    <div className="flex w-full h-[calc(100vh-78px)]">
-      <div className="flex flex-col gap-2 h-full bg-white px-6 pt-6 max-[768px]:px-2 max-[768px]:pt-2 min-[991px]:w-[600px]">
+    <div className="flex w-full h-[calc(100vh-78px)] flex-col lg:flex-row">
+      <div className="flex flex-col gap-2 lg:h-full bg-white md:px-6 md:pt-6 px-2 pt-2 lg:w-[600px] h-[50%]">
         {!isFilterOpen && (
           <div className="flex justify-between gap-4 min-h-[56px] items-start">
             <div
@@ -176,7 +184,6 @@ const Vehicles: React.FC = () => {
               onSuccess={() => {
                 toast.success('Vehicle added successfully!');
                 resetPageAndScrollToTop();
-                refetch();
               }}
             />
           </div>
@@ -185,7 +192,7 @@ const Vehicles: React.FC = () => {
         {isFilterOpen ? (
           <VehiclesFilter handleBack={() => setIsFilterOpen(false)} />
         ) : (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col lg:h-full max-h-[calc(100%-80px)]">
             <div
               className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
             >
@@ -218,31 +225,35 @@ const Vehicles: React.FC = () => {
               </div>
               <ExportCSVButton
                 filters={{ ...validatedFiltersParams, favorite: active === 'favorites' ? 1 : undefined }}
-                disabled={!vehiclesList.length}
+                disabled={!data?.pages?.[0]?.vehicles.length}
               />
             </div>
 
             <div
               ref={scrollContainerRef}
-              className="flex-1 h-full max-h-[calc(100vh-13.125rem)] max-[600px]:max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
+              className="flex-1 h-full lg:max-h-[calc(100vh-13.125rem)] pr-2 max-h-[calc(100vh-18.125rem)] overflow-y-auto [&::-webkit-scrollbar]:w-[0.25rem]
                 [&::-webkit-scrollbar-track]:bg-transparent
                 [&::-webkit-scrollbar-track]:h-[1px]
                 [&::-webkit-scrollbar-thumb]:bg-support-8
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
             >
-              {(isVehiclesLoading || !isFetchedAfterMount || customLoading) && !vehiclesList.length ? (
+              {isPending ? (
                 Array.from({ length: 5 }, (_, i) => <VehicleCardSkeleton key={i} />)
-              ) : vehiclesList.length ? (
-                vehiclesList.map((vehicle, index) => (
-                  <Link to={`/vehicles/${vehicle.id}`} key={vehicle.id} state={{ vehicle }}>
-                    <VehicleCard
-                      vehicle={vehicle}
-                      ref={index === vehiclesList.length - 2 ? lastVehicleRef : null}
-                      handleFavoriteClick={handleFavoriteClick}
-                      favoriteLoadingId={favoriteLoadingId}
-                    />
-                  </Link>
+              ) : data?.pages?.[0]?.vehicles?.length ? (
+                data?.pages.map(page => (
+                  <React.Fragment key={page.nextId}>
+                    {page.vehicles.map((vehicle, index) => (
+                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ vehicle }}>
+                        <VehicleCard
+                          vehicle={vehicle}
+                          ref={index === page.vehicles.length - 2 ? ref : null}
+                          handleFavoriteClick={handleFavoriteClick}
+                          favoriteLoadingId={favoriteLoadingId}
+                        />
+                      </Link>
+                    ))}
+                  </React.Fragment>
                 ))
               ) : (
                 <NothingToShow
@@ -257,16 +268,8 @@ const Vehicles: React.FC = () => {
         )}
       </div>
 
-      <div className="flex-[1_1_60%] h-full">
-        {vehiclesData && (
-          <Map
-            cords={vehiclesList.map((vehicle: VehicleType) => ({
-              id: vehicle.id,
-              lat: vehicle.location.lat as number,
-              lng: vehicle.location.lng as number,
-            }))}
-          />
-        )}
+      <div className="flex-[1_1_60%] lg:h-full h-[50%]">
+        <Map cords={getMapData()} />
       </div>
     </div>
   );

@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeftIcon } from 'lucide-react';
 import { getMakes, getModelsByMakeId } from '@/api/vehicles';
-import type { FilterState, OptionType } from '@/types/Vehicle';
+import type { FilterState } from '@/types/Vehicle';
 import { availabilityOptions } from '@/utils/constants';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
@@ -18,41 +18,23 @@ type VehiclesFilterTypes = {
 const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   const [, setSearchParams] = useSearchParams();
 
-  const [makeOptions, setMakeOptions] = useState<OptionType[] | []>([]);
-  const [modelOptions, setModelOptions] = useState<OptionType[] | []>();
   const validatedFilters = useValidatedFilters();
 
   const [filters, setFilters] = useState<FilterState>(validatedFilters);
 
-  const { isLoading: makeLoading, data: makeData } = useQuery({
+  const { isLoading: makeLoading, data: makeOptions } = useQuery({
     queryKey: ['makes'],
     queryFn: getMakes,
-    staleTime: 3600000,
+    refetchOnMount: false,
   });
 
-  const { isLoading: modelLoading, data: modelsData } = useQuery({
+  const { isLoading: modelLoading, data: modelOptions } = useQuery({
     queryKey: ['models', filters.makeId],
     queryFn: () => filters.makeId && getModelsByMakeId(filters.makeId),
     enabled: !!filters.makeId,
   });
 
   const filtersCount = [filters.makeId, filters.availability, ...(filters.modelIds || [])].filter(Boolean).length;
-
-  useEffect(() => {
-    if (makeData) {
-      setMakeOptions(makeData);
-    } else {
-      setMakeOptions([]);
-    }
-  }, [makeData]);
-
-  useEffect(() => {
-    if (modelsData) {
-      setModelOptions(modelsData);
-    } else {
-      setModelOptions([]);
-    }
-  }, [modelsData]);
 
   const handleMakeChange = (value: string) => {
     if (filters?.modelIds?.length) {
@@ -163,3 +145,4 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
 };
 
 export default VehiclesFilter;
+
