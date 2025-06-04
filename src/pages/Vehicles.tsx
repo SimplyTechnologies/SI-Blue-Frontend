@@ -15,7 +15,6 @@ import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
 import VehiclesFilter from '@/components/organism/VehiclesFilter';
 import DebounceSearch from '@/components/molecule/DebounceSearch';
-import { Toaster } from '@/components/atom/Toaster';
 import ExportCSVButton from '@/components/molecule/ExportCSVButton';
 import AddNewVehicleButton from '@/components/molecule/AddNewVehicleButton';
 import FilterButton from '@/components/molecule/FilterButton';
@@ -30,8 +29,6 @@ const Vehicles: React.FC = () => {
   const { isSearchActive } = useSearchStore();
   const favoriteToggle = useFavoriteToggle();
   const validatedFilters = useValidatedFilters();
-
-  const { addedSuccessfully, deletedSuccessfully } = location.state || {};
 
   const [active, setActive] = useState<VehicleTab>(location?.state?.active || vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -73,12 +70,6 @@ const Vehicles: React.FC = () => {
     getPreviousPageParam: firstPage => firstPage.previousId,
     getNextPageParam: lastPage => lastPage.nextId,
   });
-
-  useEffect(() => {
-    if (addedSuccessfully || deletedSuccessfully) {
-      toast.success(`Vehicle ${addedSuccessfully ? 'added' : 'deleted'} successfully!`);
-    }
-  }, [addedSuccessfully, deletedSuccessfully, location]);
 
   useEffect(() => {
     if (inView) {
@@ -262,7 +253,6 @@ const Vehicles: React.FC = () => {
                 />
               )}
             </div>
-            <Toaster richColors visibleToasts={1} />
           </div>
         )}
       </div>
@@ -275,4 +265,3 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
-

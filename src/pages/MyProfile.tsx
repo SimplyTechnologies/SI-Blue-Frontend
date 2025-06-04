@@ -8,7 +8,6 @@ import { updateUser } from '@/api/user';
 import { Form } from '@/components/atom/Form';
 import useAuthStore from '@/stores/authStore';
 import { Button } from '@/components/atom/Button';
-import { Toaster } from '@/components/atom/Toaster';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '@/components/molecule/InputField';
 import { useForgotPassword } from '@/hooks/useForgotPassword';
@@ -31,9 +30,8 @@ type UserFormValues = z.infer<typeof userFormSchema>;
 const MyProfile = () => {
   const { user, setUser, logout } = useAuthStore();
   const [isEdit, setIsEdit] = useState(false);
-  const [loading, setLoading] = useState(false);
   const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
-  const { mutateAsync } = useForgotPassword();
+  const { mutateAsync, isPending: isResetPasswordPending } = useForgotPassword();
 
   const form = useForm<UserFormValues>({
     resolver: zodResolver(userFormSchema),
@@ -63,17 +61,13 @@ const MyProfile = () => {
 
   const handleResetPassword = async () => {
     try {
-      setLoading(true);
       await mutateAsync({ email: user?.email || '' });
       toast.success('Password reset link sent to your email.');
-      await new Promise(resolve => setTimeout(resolve, 3000));
       setIsConfirmResetOpen(false);
       logout();
     } catch (e) {
       console.dir(e);
       toast.error('Failed to send password reset link. Please try again.');
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -160,15 +154,14 @@ const MyProfile = () => {
           </Button>
         </div>
       </div>
-      <Toaster richColors visibleToasts={1} />
       <CustomAlertDialog
         open={isConfirmResetOpen}
         setOpen={setIsConfirmResetOpen}
         title="Reset Password"
         description="Are you sure that you would like to reset password? You will be logged out from all devices."
         handleConfirm={handleResetPassword}
-        actionBtnText={loading ? 'Loading...' : 'Reset'}
-        actionBtnDisabled={loading}
+        actionBtnText={isResetPasswordPending ? 'Loading...' : 'Reset'}
+        actionBtnDisabled={isResetPasswordPending}
       />
     </div>
   );
