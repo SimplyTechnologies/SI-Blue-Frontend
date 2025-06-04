@@ -31,7 +31,7 @@ const Vehicles: React.FC = () => {
   const favoriteToggle = useFavoriteToggle();
   const validatedFilters = useValidatedFilters();
 
-  const { addedSuccessfully } = location.state || {};
+  const { addedSuccessfully, deletedSuccessfully } = location.state || {};
 
   const [active, setActive] = useState<VehicleTab>(location?.state?.active || vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -72,14 +72,13 @@ const Vehicles: React.FC = () => {
     initialPageParam: 1,
     getPreviousPageParam: firstPage => firstPage.previousId,
     getNextPageParam: lastPage => lastPage.nextId,
-    refetchOnMount: false,
   });
 
   useEffect(() => {
-    if (addedSuccessfully) {
-      toast.success('Vehicle added successfully!');
+    if (addedSuccessfully || deletedSuccessfully) {
+      toast.success(`Vehicle ${addedSuccessfully ? 'added' : 'deleted'} successfully!`);
     }
-  }, [addedSuccessfully, location]);
+  }, [addedSuccessfully, deletedSuccessfully, location]);
 
   useEffect(() => {
     if (inView) {

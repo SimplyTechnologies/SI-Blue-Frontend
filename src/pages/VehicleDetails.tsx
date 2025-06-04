@@ -3,7 +3,7 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
-import { getVehicleById } from '@/api/vehicles';
+import { deleteVehicle, getVehicleById } from '@/api/vehicles';
 import Map from '@/components/organism/Map';
 import { Button } from '@/components/atom/Button';
 import { Toaster } from '@/components/atom/Toaster';
@@ -49,7 +49,12 @@ const VehicleDetails: React.FC = () => {
     return () => clearTimeout(timeout);
   };
 
-  const handleDelete = () => {};
+  const handleDelete = async () => {
+    if (!vehicle.id) return;
+    setIsConfirmOpen(false);
+    await deleteVehicle(vehicle.id);
+    navigate('/vehicles', { state: { deletedSuccessfully: true }, replace: true });
+  };
 
   const onEditSuccess = () => {
     toast.success('Vehicle successfully edited');
