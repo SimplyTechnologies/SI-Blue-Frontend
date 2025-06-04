@@ -12,6 +12,7 @@
 
 :root {
   --font-dm: 'DM Sans';
+  --default-font-family: 'DM Sans';
 
   --fw-regular: rgb(230, 233, 239);
   --fw-medium: 500;
