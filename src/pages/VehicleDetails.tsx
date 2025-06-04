@@ -51,6 +51,7 @@ const VehicleDetails: React.FC = () => {
 
   const handleDelete = async () => {
     if (!vehicle.id) return;
+    setIsConfirmOpen(false);
     await deleteVehicle(vehicle.id);
     navigate('/vehicles', { state: { deletedSuccessfully: true }, replace: true });
   };
