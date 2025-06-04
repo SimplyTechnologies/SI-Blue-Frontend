@@ -32,15 +32,15 @@ export function CustomAlertDialog({
   const variants = {
     default: {
       icon: 'text-primary flex items-center justify-center',
-      confirm: 'bg-primary-3 hover:bg-[#534FB1] active:bg-[#322E6F] p-2 text-white',
+      confirm: 'bg-primary-3 hover:bg-[#534FB1] active:bg-[#322E6F] p-2 text-white h-[56px]',
       cancel:
-        'border-primary-3 text-primary-4 hover:bg-primary-3 hover:text-white active:bg-[#322E6F] active:border[#322E6F] bg-transparent p-2 border-[1px] active:text-white',
+        'border-primary-3 text-primary-3 hover:bg-primary-3 hover:text-white active:bg-[#322E6F] active:border[#322E6F] bg-transparent p-2 border-[1px] active:text-white h-[56px]',
     },
     destructive: {
       icon: 'text-destructive flex items-center justify-center',
-      confirm: 'bg-destructive hover:bg-[#e03d71] active:bg-[#e03d71] p-2 text-white border-destructive',
+      confirm: 'bg-destructive hover:bg-[#e03d71] active:bg-[#e03d71] p-2 text-white border-destructive h-[56px]',
       cancel:
-        'border-destructive text-destructive hover:bg-destructive hover:text-white active:bg-[#e03d71] active:border-[#e03d71] bg-transparent p-2 border-[1px] active:text-white',
+        'border-destructive text-destructive hover:bg-destructive hover:text-white active:bg-[#e03d71] active:border-[#e03d71] bg-transparent p-2 border-[1px] active:text-white h-[56px]',
     },
   };
 
