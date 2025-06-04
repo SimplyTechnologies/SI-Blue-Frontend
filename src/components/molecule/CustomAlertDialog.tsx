@@ -16,8 +16,9 @@ type AlertDialog = {
   title: string;
   description: string;
   handleConfirm: () => void;
-  variant: 'default' | 'destructive';
+  variant?: 'default' | 'destructive';
   actionBtnText: string;
+  actionBtnDisabled?: boolean;
 };
 
 export function CustomAlertDialog({
@@ -26,8 +27,9 @@ export function CustomAlertDialog({
   title,
   description,
   handleConfirm,
-  variant,
+  variant = 'default',
   actionBtnText,
+  actionBtnDisabled = false,
 }: AlertDialog) {
   const variants = {
     default: {
@@ -48,17 +50,24 @@ export function CustomAlertDialog({
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogContent className="max-w-[450px]!">
         <div className={variants[variant].icon}>
-          <AlertDialogIcon />
+          <AlertDialogIcon variant={variant} />
         </div>
         <AlertDialogHeader className="pb-4 pt-2">
-          <AlertDialogTitle className="text-[#101828] text-center text-[18px]">{title}</AlertDialogTitle>
+          <AlertDialogTitle className="text-[#101828] text-center text-[18px] font-bold">{title}</AlertDialogTitle>
           <AlertDialogDescription className="text-[#667085] text-center text-[16px]">
             {description}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
           <AlertDialogCancel className={variants[variant].cancel}>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleConfirm} className={variants[variant].confirm}>
+          <AlertDialogAction
+            onClick={e => {
+              e.preventDefault();
+              handleConfirm();
+            }}
+            className={variants[variant].confirm}
+            disabled={actionBtnDisabled}
+          >
             {actionBtnText}
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -66,4 +75,3 @@ export function CustomAlertDialog({
     </AlertDialog>
   );
 }
-

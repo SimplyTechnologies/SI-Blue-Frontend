@@ -4,6 +4,7 @@ import axios, { AxiosError } from 'axios';
 interface ResetPasswordPayload {
   password: string;
   confirmPassword: string;
+  token: string;
 }
 
 interface ResetPasswordResponse {
@@ -17,21 +18,17 @@ export const useResetPassword = () => {
   return useMutation<ResetPasswordResponse, Error, ResetPasswordPayload>({
     mutationFn: async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
       try {
-        const response = await axios.post<ResetPasswordResponse>(
-          `${API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`, 
-          payload, 
-          {
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        
+        const response = await axios.put<ResetPasswordResponse>(`${API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`, payload, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
         return response.data;
       } catch (error) {
         const axiosError = error as AxiosError<{ message: string }>;
         const message = axiosError.response?.data?.message || axiosError.message || 'Reset password failed';
-        
+
         throw new Error(message);
       }
     },
