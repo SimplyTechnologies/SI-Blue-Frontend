@@ -1,3 +1,4 @@
+import { Toaster } from '@/components/atom/Toaster';
 import { APIProvider } from '@vis.gl/react-google-maps';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import AppRoutes from '@/routes/Routes';
@@ -19,6 +20,7 @@ function App() {
       <APIProvider apiKey={apiKey} libraries={['marker', 'places']}>
         <div className="app">
           <AppRoutes />
+          <Toaster richColors visibleToasts={1} />
         </div>
       </APIProvider>
     </QueryClientProvider>
