@@ -3,7 +3,7 @@ import { nothingToShowOptions } from '@/utils/constants';
 
 function Users() {
   return (
-    <div className='w-full h-full flex justify-center items-center'>
+    <div className="w-full h-full flex justify-center items-center">
       <NothingToShow
         title={nothingToShowOptions.users.title}
         subtitle={nothingToShowOptions.users.subtitle}

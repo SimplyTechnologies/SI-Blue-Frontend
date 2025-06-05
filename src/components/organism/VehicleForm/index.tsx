@@ -8,81 +8,20 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import type { TAddress } from '@/types/Address';
 import Modal from '@/components/atom/Modal';
 import { Label } from '@/components/atom/Label';
-import { Input } from '@/components/atom/Input';
+import InputField from '@/components/molecule/InputField';
 import CustomSelect from '@/components/molecule/CustomSelect';
 import AddressAutocomplete from '@/components/molecule/AddressAutocomplete/ui/AddressAutocomplete';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/atom/Select';
-import { createVehicle, getMakes, getModelsByMakeId, decodeVehicleVin } from '@/api/vehicles';
-import {
-  carFormSchema,
-  inputClassname,
-  type CarFormValues,
-  getVehicleYearOptions,
-  buildLocation,
-} from './AddVehicle.data';
-import type { AddVehicleProps } from './AddVehicle.types';
+import { createVehicle, getMakes, getModelsByMakeId, decodeVehicleVin, editVehicle } from '@/api/vehicles';
+import { carFormSchema, type CarFormValues, getVehicleYearOptions, buildLocation } from './VehicleForm.data';
+import type { AddVehicleProps } from './VehicleForm.types';
 
-const TextInputField = ({
-  form,
-  name,
-  label,
-  placeholder,
-  type = 'text',
-  formItemClassName,
-  errorClassName,
-  disabled = false,
-}: {
-  form: ReturnType<typeof useForm<CarFormValues>>;
-  name: keyof CarFormValues;
-  label: string;
-  placeholder: string;
-  type?: string;
-  formItemClassName?: string;
-  errorClassName?: string;
-  disabled?: boolean;
-}) => (
-  <FormField
-    control={form.control}
-    name={name}
-    render={({ field }) => (
-      <FormItem className={formItemClassName}>
-        <FormLabel>{label}</FormLabel>
-        <FormControl>
-          <Input
-            className={inputClassname}
-            placeholder={placeholder}
-            type={type}
-            maxLength={name === 'vin' ? 17 : undefined}
-            {...field}
-            value={field.value}
-            onChange={e => {
-              if (name === 'vin' && e.target.value.length > 17) return;
-              field.onChange(e);
-              if (['street', 'city', 'state', 'country', 'zipcode'].includes(name)) {
-                const value = e.target.value;
-                form.setValue(name, value, { shouldValidate: true });
-                const updatedFields: Partial<CarFormValues> = { [name]: value };
-                const newLocation = buildLocation(updatedFields, form);
-                form.setValue('location', newLocation);
-              }
-            }}
-            disabled={disabled}
-          />
-        </FormControl>
-        <div className={errorClassName}>
-          <FormMessage />
-        </div>
-      </FormItem>
-    )}
-  />
-);
-
-const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
+const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehicleProps) => {
   const queryClient = useQueryClient();
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
-    defaultValues: {
+    defaultValues: data || {
       make: undefined,
       model: undefined,
       year: undefined,
@@ -116,7 +55,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
   const vinValue = form.watch('vin');
 
   useEffect(() => {
-    if (vinValue.length !== 17) return;
+    if (vinValue.length !== 17 || data?.vin === vinValue) return;
     setVinLoading(true);
     (async () => {
       try {
@@ -180,12 +119,20 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
           lng: values.lng,
         },
       };
-      await createVehicle(body);
+      if (vehicleId) {
+        const updatedData = await editVehicle(body, vehicleId);
+        queryClient.setQueryData(['vehicle', { id: vehicleId }], updatedData);
+      } else {
+        await createVehicle(body);
+      }
+
       onOpenChange(false);
       onSuccess?.();
     } catch (e) {
       const error = e as AxiosError<{ message?: string }>;
-      toast.error(error.response?.data?.message || 'An error occurred while adding the vehicle.');
+      toast.error(
+        error.response?.data?.message || `An error occurred while ${vehicleId ? 'editing' : 'adding'} the vehicle.`,
+      );
     }
   };
 
@@ -206,7 +153,7 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
     <Modal
       isOpen={open}
       onOpenChange={onOpenChange}
-      title="Add New Vehicle"
+      title={`${vehicleId ? 'Edit' : 'Add New'} Vehicle`}
       closeOnOutsideClick={false}
       footerButtonProps={{
         form: 'add-vehicle-form',
@@ -297,13 +244,18 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
                 </FormItem>
               )}
             />
-            <TextInputField
+            <InputField
               form={form}
               name="vin"
               label="VIN"
               placeholder="Enter VIN"
               errorClassName="min-h-[1.25rem]"
               disabled={vinLoading}
+              onChange={(e, field) => {
+                if (e.target.value.length > 17) return;
+                field.onChange(e);
+                form.setValue('vin', e.target.value, { shouldValidate: true });
+              }}
             />
           </div>
           <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2">
@@ -323,41 +275,76 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
                 </FormItem>
               )}
             />
-            <TextInputField
+            <InputField
               form={form}
               name="street"
               label="Street"
               placeholder="Enter Street"
               errorClassName={form.formState.errors.city ? 'min-h-[1.25rem]' : ''}
+              onChange={(e, field) => {
+                field.onChange(e);
+                form.setValue('street', e.target.value, { shouldValidate: true });
+                const updatedFields = { street: e.target.value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }}
             />
-            <TextInputField
+            <InputField
               form={form}
               name="city"
               label="City"
               placeholder="Enter City"
               errorClassName={form.formState.errors.street ? 'min-h-[1.25rem]' : ''}
+              onChange={(e, field) => {
+                field.onChange(e);
+                form.setValue('city', e.target.value, { shouldValidate: true });
+                const updatedFields = { city: e.target.value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }}
             />
-            <TextInputField
+            <InputField
               form={form}
               name="state"
               label="State"
               placeholder="Enter State"
               errorClassName={form.formState.errors.country ? 'min-h-[1.25rem]' : ''}
+              onChange={(e, field) => {
+                field.onChange(e);
+                form.setValue('state', e.target.value, { shouldValidate: true });
+                const updatedFields = { state: e.target.value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }}
             />
-            <TextInputField
+            <InputField
               form={form}
               name="country"
               label="Country"
               placeholder="Enter Country"
               errorClassName={form.formState.errors.state ? 'min-h-[1.25rem]' : ''}
+              onChange={(e, field) => {
+                field.onChange(e);
+                form.setValue('country', e.target.value, { shouldValidate: true });
+                const updatedFields = { country: e.target.value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }}
             />
-            <TextInputField
+            <InputField
               form={form}
               name="zipcode"
               label="Zip Code"
               placeholder="Enter Zip Code"
               formItemClassName="md:col-span-2"
               errorClassName="min-h-[1.25rem]"
+              onChange={(e, field) => {
+                field.onChange(e);
+                form.setValue('zipcode', e.target.value, { shouldValidate: true });
+                const updatedFields = { zipcode: e.target.value };
+                const newLocation = buildLocation(updatedFields, form);
+                form.setValue('location', newLocation);
+              }}
             />
           </div>
         </form>
@@ -366,4 +353,4 @@ const AddVehicle = ({ open, onOpenChange, onSuccess }: AddVehicleProps) => {
   );
 };
 
-export default AddVehicle;
+export default VehicleForm;

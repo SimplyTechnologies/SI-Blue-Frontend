@@ -4,7 +4,6 @@ const apiUrl = import.meta.env.VITE_API_URL;
 
 const api = axios.create({
   baseURL: apiUrl,
-  withCredentials: true,
 });
 
 api.interceptors.request.use(request => {
@@ -36,7 +35,9 @@ api.interceptors.response.use(
         api.defaults.headers.common['Authorization'] = `Bearer ${accessToken}`;
         return api(originalRequest);
       } catch (refreshError) {
-        localStorage.clear();
+        localStorage.removeItem('ACCESS_TOKEN');
+        localStorage.removeItem('REFRESH_TOKEN');
+        localStorage.setItem('authStore', JSON.stringify({ user: null, isAuthenticated: false }));
         window.location.href = '/login';
         return Promise.reject(refreshError);
       }

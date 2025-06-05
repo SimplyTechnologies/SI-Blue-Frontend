@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { useNavigate } from 'react-router';
+import { useNavigate, useSearchParams } from 'react-router';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useResetPassword } from '@/hooks/useResetPassword';
@@ -32,11 +32,13 @@ const schema = z
 type FormData = z.infer<typeof schema>;
 
 const ResetPassword: React.FC = () => {
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const resetPassword = useResetPassword();
-   const [error, setError] = useState('');
+  const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [showValidator, setShowValidator] = useState(false);
+  const token = searchParams.get('token') || '';
 
   const {
     register,
@@ -50,15 +52,18 @@ const ResetPassword: React.FC = () => {
   });
 
   const onSubmit = (data: FormData) => {
-    setError('')
-    resetPassword.mutate(data, {
-      onSuccess: () => {
-        navigate('/login');
+    setError('');
+    resetPassword.mutate(
+      { ...data, token },
+      {
+        onSuccess: () => {
+          navigate('/login');
+        },
+        onError: error => {
+          setError(error.message);
+        },
       },
-      onError: error => {
-        setError(error.message);
-      },
-    });
+    );
   };
 
   return (

@@ -15,7 +15,6 @@ import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
 import VehiclesFilter from '@/components/organism/VehiclesFilter';
 import DebounceSearch from '@/components/molecule/DebounceSearch';
-import { Toaster } from '@/components/atom/Toaster';
 import ExportCSVButton from '@/components/molecule/ExportCSVButton';
 import AddNewVehicleButton from '@/components/molecule/AddNewVehicleButton';
 import FilterButton from '@/components/molecule/FilterButton';
@@ -31,9 +30,7 @@ const Vehicles: React.FC = () => {
   const favoriteToggle = useFavoriteToggle();
   const validatedFilters = useValidatedFilters();
 
-  const { addedSuccessfully } = location.state || {};
-
-  const [active, setActive] = useState<VehicleTab>(vehicleTabs[0]);
+  const [active, setActive] = useState<VehicleTab>(location?.state?.active || vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
@@ -72,14 +69,7 @@ const Vehicles: React.FC = () => {
     initialPageParam: 1,
     getPreviousPageParam: firstPage => firstPage.previousId,
     getNextPageParam: lastPage => lastPage.nextId,
-    refetchOnMount: false,
   });
-
-  useEffect(() => {
-    if (addedSuccessfully) {
-      toast.success('Vehicle added successfully!');
-    }
-  }, [addedSuccessfully, location]);
 
   useEffect(() => {
     if (inView) {
@@ -244,7 +234,7 @@ const Vehicles: React.FC = () => {
                 data?.pages.map(page => (
                   <React.Fragment key={page.nextId}>
                     {page.vehicles.map((vehicle, index) => (
-                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ vehicle }}>
+                      <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ active }}>
                         <VehicleCard
                           vehicle={vehicle}
                           ref={index === page.vehicles.length - 2 ? ref : null}
@@ -263,7 +253,6 @@ const Vehicles: React.FC = () => {
                 />
               )}
             </div>
-            <Toaster richColors visibleToasts={1} />
           </div>
         )}
       </div>
@@ -276,4 +265,3 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
-
