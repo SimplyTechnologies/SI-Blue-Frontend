@@ -41,9 +41,11 @@ export type CustomerType = {
 };
 
 export type AssignCustomerFormResponse = {
+  customer: CustomerType;
   message: string;
+}
+
+export type AssignCustomerForm = AssignCustomerFormValues & {
+  vehicleId: number;
 };
 
-export type AssignCustomerForm = {
-  data: AssignCustomerFormValues;
-};

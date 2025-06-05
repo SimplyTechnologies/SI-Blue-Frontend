@@ -47,9 +47,7 @@ export default function CustomerEmailSuggest({
   }, [autocompleteRef, inputRef, open, options]);
 
   const onEmailFocus = () => {
-    if (options?.length) {
-      setOpen(true);
-    }
+    setOpen(true);
   };
 
   const handleBlur = (target: EventTarget) => {
@@ -72,15 +70,19 @@ export default function CustomerEmailSuggest({
         ref={inputRef}
         maxLength={100}
       />
+
       <div
         ref={autocompleteRef}
-        className={`absolute top-[56px] left-0 ${open ? '' : 'hidden'} w-full overflow-auto bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[150px] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md`}
+        className={`absolute top-[56px] left-0 ${open && options?.length ? '' : 'hidden'} w-full overflow-auto bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[150px] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md`}
       >
         {options?.map((item, index) => (
           <div
             className="hover:text-primary hover:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
             key={index}
-            onClick={() => handleAutocomplete(item)}
+            onClick={e => {
+              e.preventDefault();
+              handleAutocomplete(item);
+            }}
           >
             {item.email}
           </div>

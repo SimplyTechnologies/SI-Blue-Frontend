@@ -1,5 +1,6 @@
 import { AxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
+import { toast } from 'sonner';
 import type { AssignCustomerForm, AssignCustomerFormResponse } from '@/types/Customer';
 import { assignToCustomer } from '@/api/customers';
 
@@ -12,8 +13,7 @@ export const useCustomerAssign = () => {
       } catch (error) {
         const axiosError = error as AxiosError<{ message: string }>;
         const message = axiosError.response?.data?.message || axiosError.message || 'Something went wrong';
-
-        throw new Error(message);
+        toast.error(message);
       }
     },
   });

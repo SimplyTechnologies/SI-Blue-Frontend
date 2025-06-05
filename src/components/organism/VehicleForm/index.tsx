@@ -19,6 +19,7 @@ import type { AddVehicleProps } from './VehicleForm.types';
 
 const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehicleProps) => {
   const queryClient = useQueryClient();
+
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
     defaultValues: data || {
@@ -121,7 +122,7 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
       };
       if (vehicleId) {
         const updatedData = await editVehicle(body, vehicleId);
-        queryClient.setQueryData(['vehicle', { id: vehicleId }], updatedData);
+        onSuccess?.(updatedData);
       } else {
         await createVehicle(body);
       }
@@ -148,6 +149,23 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
     form.setValue('lng', address.lng);
     form.trigger(['street', 'city', 'state', 'country', 'zipcode']);
   };
+
+  useEffect(() => {
+    if (vehicleId && data) {
+      form.setValue('make', data.make);
+      form.setValue('model', data.model);
+      form.setValue('year', data.year);
+      form.setValue('vin', data.vin);
+      form.setValue('location', data.location);
+      form.setValue('street', data.street);
+      form.setValue('city', data.city);
+      form.setValue('state', data.state);
+      form.setValue('country', data.country);
+      form.setValue('zipcode', data.zipcode);
+      form.setValue('lat', data.lat);
+      form.setValue('lng', data.lng);
+    }
+  }, [data, vehicleId]);
 
   return (
     <Modal
@@ -354,3 +372,4 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
 };
 
 export default VehicleForm;
+
