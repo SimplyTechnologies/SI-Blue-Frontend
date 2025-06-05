@@ -91,6 +91,7 @@ const MyProfile = () => {
             <div className="flex items-center space-x-2 sm:space-x-12">
               {isEdit && (
                 <Button
+                  type='button'
                   className="h-[40px] w-[128px] text-xs"
                   variant="outline"
                   onClick={() => {

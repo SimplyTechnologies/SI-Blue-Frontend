@@ -70,10 +70,10 @@ const ForgotPassword: React.FC = () => {
       </div>
       <div className="grid gap-[2.25rem]">
         <div className={`${success ? 'hidden' : 'grid gap-[1rem]'}`}>
-          <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-[var(--color-support-6)]">
             <Label
               htmlFor="email"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]"
+              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)] mb-0.5"
             >
               Your Email
             </Label>
@@ -87,7 +87,7 @@ const ForgotPassword: React.FC = () => {
             />
 
             {error && (
-              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
                 {error}
               </p>
             )}

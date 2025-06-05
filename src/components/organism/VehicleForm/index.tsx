@@ -90,7 +90,7 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
         form.trigger(['make', 'model', 'year', 'vin']);
       } catch (err: unknown) {
         const error = err as AxiosError<{ message?: string }>;
-        toast.error(error.response?.data?.message || 'Could not decode VIN.');
+        console.dir(error);
       } finally {
         setVinLoading(false);
       }
