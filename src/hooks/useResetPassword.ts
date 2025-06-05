@@ -28,7 +28,6 @@ export const useResetPassword = () => {
       } catch (error) {
         const axiosError = error as AxiosError<{ message: string }>;
         const message = axiosError.response?.data?.message || axiosError.message || 'Reset password failed';
-
         throw new Error(message);
       }
     },

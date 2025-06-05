@@ -41,3 +41,23 @@ export const nothingToShowOptions = {
     icon: NothingToShowCustomersIcon,
   },
 };
+
+export const avatarColors: Array<{ bg: string, color: string }> = [
+  {
+    bg: '#FFE7D5',
+    color: '#FF852D',
+  },
+  {
+    bg: '#EDF1FE',
+    color: '#23A1E9',
+  },
+  {
+    bg: '#EBDFFA',
+    color: '#9B5DE5',
+  },
+  {
+    bg: '#E7FAF3',
+    color: '#0DCF89',
+  },
+];
+

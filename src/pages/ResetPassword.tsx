@@ -76,6 +76,8 @@ const ResetPassword: React.FC = () => {
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem]">
           <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
+           
+           
             <Label
               htmlFor="password"
               className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]"
