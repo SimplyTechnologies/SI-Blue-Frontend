@@ -1,6 +1,6 @@
 import type { ComponentProps, ComponentPropsWithoutRef, MouseEvent, ReactNode } from 'react';
 import { Root, Trigger, Portal, Overlay, Content, Title, Close } from '@radix-ui/react-dialog';
-import { X } from 'lucide-react';
+import { Loader2, X } from 'lucide-react';
 
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
@@ -15,6 +15,7 @@ interface TModalProps extends Omit<ComponentPropsWithoutRef<typeof Content>, 'ti
     text: string;
     onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
     form?: string;
+    loading?: boolean;
   };
   size?: 'sm' | 'md' | 'lg' | 'xl' | 'auto';
   bodyClassName?: string;
@@ -38,7 +39,7 @@ const Modal = ({
   closeOnOutsideClick = true,
   ...props
 }: TModalProps) => {
-  const { text: footerButtonText, onClick: onFooterButtonClick, ...restFooterButtonProps } = footerButtonProps;
+  const { text: footerButtonText, onClick: onFooterButtonClick, loading, ...restFooterButtonProps } = footerButtonProps;
 
   const sizeClasses = {
     auto: 'max-w-max',
@@ -84,7 +85,7 @@ const Modal = ({
             <div className="relative flex-shrink-0">
               <Close
                 className={cn(
-                  'absolute -top-2 -right-2',
+                  'absolute -top-2 -right-2 cursor-pointer',
                   'h-6 w-6 flex items-center justify-center rounded-sm opacity-70 ring-offset-background transition-opacity hover:opacity-100 focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground',
                 )}
               >
@@ -92,12 +93,7 @@ const Modal = ({
                 <span className="sr-only">Close</span>
               </Close>
 
-              <Title
-                className={cn(
-                  'text-center font-bold text-2xl leading-[1.3] text-support-6',
-                  'mt-2 mb-6',
-                )}
-              >
+              <Title className={cn('text-center font-bold text-2xl leading-[1.3] text-support-6', 'mt-2 mb-6')}>
                 {title}
               </Title>
             </div>
@@ -111,8 +107,11 @@ const Modal = ({
                 className="w-full h-[56px]"
                 onClick={onFooterButtonClick}
                 {...restFooterButtonProps}
+                disabled={loading}
               >
-                {footerButtonText}
+                <div className="flex gap-2 items-center justify-center">
+                  {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} {footerButtonText}
+                </div>
               </Button>
             </div>
           </div>
@@ -123,3 +122,4 @@ const Modal = ({
 };
 
 export default Modal;
+

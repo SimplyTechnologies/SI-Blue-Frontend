@@ -55,3 +55,18 @@ export const buildLocation = (fields: Partial<CarFormValues>, form: UseFormRetur
   return location;
 };
 
+export const buildLocationForEdit = (fields: Partial<CarFormValues>) => {
+  const street = fields.street;
+  const city = fields.city;
+  const state = fields.state;
+  const zipcode = fields.zipcode;
+  const country = fields.country;
+  let location = '';
+  if (street || city || state || zipcode || country) {
+    location = `${street}, ${city}, ${state} ${zipcode}, ${country}`
+      .replace(/(, )+/g, ', ')
+      .replace(/^[, ]+|[, ]+$/g, '');
+  }
+  return location;
+};
+
