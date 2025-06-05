@@ -12,6 +12,7 @@
 
 :root {
   --font-dm: 'DM Sans';
+  --default-font-family: 'DM Sans';
 
   --fw-regular: rgb(230, 233, 239);
   --fw-medium: 500;
@@ -32,6 +33,8 @@
   --color-primary-5: #edf1fe;
 
   --color-secondary-1: #369afe;
+
+  --color-destructive: #FA5087;
 
   --color-support-1: #ffc107;
   --color-support-2: #dc3545;
@@ -115,6 +118,8 @@
 
   --color-success-1: var(--color-success-1);
 
+  --color-destructive: var(--color-destructive);
+
   --color-bg-1: var(--color-bg-1);
 
   --color-white: var(--color-white);
@@ -137,7 +142,6 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);

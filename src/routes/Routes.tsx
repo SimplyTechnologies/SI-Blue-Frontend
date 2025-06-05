@@ -4,7 +4,6 @@ import { Loader2 } from 'lucide-react';
 import Auth from '@/layouts/Auth';
 import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
 import NotFound from '@/pages/NotFound';
-import VehicleDetails from '@/pages/VehicleDetails';
 
 const Protected = lazy(() => import('@/layouts/Protected'));
 const Public = lazy(() => import('@/layouts/Public'));
@@ -15,6 +14,7 @@ const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
 const AccountActivation = lazy(() => import('@/pages/AccountActivation'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Vehicles = lazy(() => import('@/pages/Vehicles'));
+const VehicleDetails = lazy(() => import('@/pages/VehicleDetails'));
 const Users = lazy(() => import('@/pages/Users'));
 const Customers = lazy(() => import('@/pages/Customers'));
 const MyProfile = lazy(() => import('@/pages/MyProfile'));

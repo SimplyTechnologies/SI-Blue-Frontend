@@ -5,11 +5,11 @@ import { NothingToShowUsersIcon } from '@/assets/svgIconComponents/NothingToShow
 import type { VehicleTab } from '@/types/Vehicle';
 
 export const pathTitles: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/vehicles': 'Vehicles',
-  '/users': 'Users',
-  '/customers': 'Customers',
-  '/my-profile': 'Account',
+  'dashboard': 'Dashboard',
+  'vehicles': 'Vehicles',
+  'users': 'Users',
+  'customers': 'Customers',
+  'my-profile': 'Account',
 };
 
 export const availabilityOptions = [
