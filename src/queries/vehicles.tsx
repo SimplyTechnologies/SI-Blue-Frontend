@@ -25,7 +25,7 @@ export const mapDataQuery = (search?: string) =>
   queryOptions({
     queryKey: ['map-data', search],
     queryFn: async () => {
-      const mapData = await getAllVehicleLocationsAndCounts(search || '');
+      const mapData = await getAllVehicleLocationsAndCounts();
       return mapData;
     },
   });
