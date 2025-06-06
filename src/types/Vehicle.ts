@@ -80,6 +80,7 @@ export type CustomerVehicle = {
   year: number;
   make: string;
   model: string;
+  assignedDate: string;
 }
 
 export type VehicleTab = 'vehicles' | 'favorites';

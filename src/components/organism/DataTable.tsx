@@ -7,192 +7,109 @@ import {
   type VisibilityState,
   flexRender,
   getCoreRowModel,
+  getExpandedRowModel,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable,
 } from '@tanstack/react-table';
-import { MoreVertical } from 'lucide-react';
 
-import { Button } from '@/components/atom/Button';
-import { Checkbox } from '@/components/atom/Checkbox';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/atom/DropdownMenu';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atom/Table';
-import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationPrevious,
+  PaginationNext,
+  PaginationEllipsis,
+} from '@/components/molecule/Pagination';
+import type { Customers } from '@/types/Customers';
+import TableColumns from '../molecule/TableColumns';
 
-const data: Payment[] = [
-  {
-    id: 'm5gr84i9',
-    phone: '+374 55 55 55 55',
-    name: 'Kennnnn',
-    mail: 'ken99@example.com',
-  },
-  {
-    id: '3u1reuv4',
-    phone: '+374 55 55 55 55',
-    name: 'Abeeeee',
-    mail: 'Abe45@example.com',
-  },
-  {
-    id: 'derv1ws0',
-    phone: '+374 55 55 55 55',
-    name: 'Monserrat',
-    mail: 'Monserrat44@example.com',
-  },
-  {
-    id: '5kma53ae',
-    phone: '+374 55 55 55 55',
-    name: 'Silas',
-    mail: 'Silas22@example.com',
-  },
-  {
-    id: 'bhqecj4p',
-    phone: '+374 55 55 55 55',
-    name: 'Carmella',
-    mail: 'carmella@example.com',
-  },
-];
+import { usePaginationRange } from '@/hooks/usePaginationRange';
 
-export type Payment = {
-  id: string;
-  name: string;
-  mail: string;
-  phone: string;
-};
+interface PaginationProps {
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}
 
-export const columns: ColumnDef<Payment>[] = [
-  {
-    id: 'select',
-    header: ({ table }) => (
-      <div className="w-[56px] min-h-[64px] flex justify-start items-center">
-        <Checkbox
-          checked={table.getIsAllPageRowsSelected() || (table.getIsSomePageRowsSelected() && 'indeterminate')}
-          onCheckedChange={(value: boolean) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-          className="w-[24px] h-[24px] rounded-[0.25rem] bg-support-12 border-[1px] border-support-8 data-[state=checked]:text-primary-3 cursor-pointer"
-        />
-      </div>
-    ),
-    cell: ({ row }) => (
-      <div className="w-[56px] min-h-[80px] flex justify-start items-center">
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value: boolean) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className="w-[24px] h-[24px] rounded-[0.25rem] bg-support-12 border-[1px] border-support-8 data-[state=checked]:text-primary-3 cursor-pointer"
-        />
-      </div>
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: 'name',
-    header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Name</p>,
-    cell: ({ row }) => {
-      return (
-        <div className="flex gap-[12px] items-center">
-          <Avatar className="w-[52px] h-[52px] rounded-[50%] bg-primary-5">
-            <AvatarImage src="" />
-            <AvatarFallback className="text-support-6 font-bold text-sm bg-primary-5 leading-[120%]"></AvatarFallback>
-          </Avatar>
-          <div className="capitalize">{row.getValue('name')}</div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: 'mail',
-    header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Mail</p>,
-    cell: ({ row }) => (
-      <div className="capitalize font-medium text-sm leading-[140%] text-support-5">{row.getValue('mail')}</div>
-    ),
-  },
-  {
-    accessorKey: 'phone',
-    header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Phone</p>,
-    cell: ({ row }) => (
-      <div className="capitalize font-medium text-sm leading-[140%] text-support-5">{row.getValue('phone')}</div>
-    ),
-  },
-  {
-    id: 'actions',
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original;
+interface DataTableProps {
+  type: 'users' | 'customers';
+  data: Customers[];
+  pagination: PaginationProps;
+  isLoading: boolean;
+}
 
-      return (
-        <div className="flex justify-end w-[24px] h-[24px]">
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button className="w-[24px] h-[24px] ">
-                <span className="sr-only">Open menu</span>
-                <MoreVertical className="text-support-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Actions</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => navigator.clipboard.writeText(payment.id)}>
-                Copy payment ID
-              </DropdownMenuItem>
-              <DropdownMenuSeparator />
-              <DropdownMenuItem>View customer</DropdownMenuItem>
-              <DropdownMenuItem>View payment details</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
-      );
-    },
-  },
-];
+type ExpandedState = true | Record<string, boolean>;
 
-export function DataTableDemo() {
+
+export const DataTableDemo: React.FC<DataTableProps> = ({ type, data, pagination }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
+  const [expanded, setExpanded] = useState<ExpandedState>({});
 
+  const columns = TableColumns({ type });
   const table = useReactTable({
     data,
-    columns,
+    columns: columns as ColumnDef<Customers>[],
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
+    getSubRows: row => row.vehicles as unknown as Customers[],
+    getRowCanExpand: row => row.original.vehicles?.length > 1,
+    getRowId: (row, index, parent) => {
+      if (parent) {
+        return `${parent.id}_sub_${index}`;
+      }
+      return `row_${row.id}`;
+    },
+
     getCoreRowModel: getCoreRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getExpandedRowModel: getExpandedRowModel(),
     onColumnVisibilityChange: setColumnVisibility,
     onRowSelectionChange: setRowSelection,
+    manualPagination: true,
+    pageCount: pagination.totalPages,
     state: {
       sorting,
       columnFilters,
       columnVisibility,
       rowSelection,
+      expanded,
     },
+    onExpandedChange: setExpanded,
   });
+
+  const paginationRange = usePaginationRange(pagination.page, pagination.totalPages);
+
+  const handlePreviousPage = () => {
+    if (pagination.page > 1) {
+      pagination.onPageChange(pagination.page - 1);
+    }
+  };
+
+  const handleNextPage = () => {
+    if (pagination.page < pagination.totalPages) {
+      pagination.onPageChange(pagination.page + 1);
+    }
+  };
+  const handlePageClick = (page: number) => {
+    pagination.onPageChange(page);
+  };
 
   return (
     <div className="w-full">
-      <div className="flex items-center justify-end pb-4">
-        <Button
-          variant="default"
-          className="max-w-[143px] h-[40px] py-[10px] px-[18px] text-xs leading-[120%] flex gap-[0.5rem] justify-center items-center"
-        >
-          <span>+</span> Add New User
-        </Button>
-      </div>
-      <div className="rounded-md border p-[1.5rem] overflow-hidden">
+      <div className="rounded-md p-[1.5rem] overflow-hidden bg-white">
         <Table>
-          <TableHeader>
+          <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12">
             {table.getHeaderGroups().map(headerGroup => (
-              <TableRow key={headerGroup.id}>
+              <TableRow key={headerGroup.id} className="hover:bg-transparent focus:bg-transparent">
                 {headerGroup.headers.map(header => {
                   return (
                     <TableHead key={header.id} className="p-0">
@@ -205,15 +122,31 @@ export function DataTableDemo() {
           </TableHeader>
           <TableBody>
             {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map(row => (
-                <TableRow key={row.id} data-state={row.getIsSelected() && 'selected'}>
-                  {row.getVisibleCells().map(cell => (
-                    <TableCell key={cell.id} className="p-0 last:w-[24px]">
-                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                    </TableCell>
-                  ))}
-                </TableRow>
-              ))
+              table.getRowModel().rows.map(row => {
+                const isMainRow = row.depth === 0;
+                const isSubRow = row.depth > 0;
+
+                return (
+                  <TableRow
+                    key={row.id}
+                    className={`${isSubRow ? 'h-[50px]' : 'h-[80px]'} last:mb-0
+                      ${isSubRow ? 'border-none bg-[#F5F5F5] hover:bg-[#F5F5F5]' : 'border-b border-support-12 hover:bg-transparent'} ${isMainRow && row.getIsExpanded() ? 'bg-[#F5F5F5] hover:bg-[#F5F5F5] shadow-[inset_2px_4px_16px_-0px_rgba(0,0,0,0.06)] ' : ''} `}
+                  >
+                    {row.getVisibleCells().map(cell => (
+                      <TableCell
+                        key={cell.id}
+                        style={{ verticalAlign: 'middle' }}
+                        className={`p-0 pr-[2rem] 
+                          ${isSubRow || cell.column.id === 'actions' ? 'h-[50px]' : isMainRow || cell.column.id === 'actions' ? 'h-[80px]' : ''}
+                          ${isMainRow && cell.column.id === 'actions' ? 'h-[80px] flex items-center justify-end p-[0]' : ''}
+                        `}
+                      >
+                        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                      </TableCell>
+                    ))}
+                  </TableRow>
+                );
+              })
             ) : (
               <TableRow>
                 <TableCell colSpan={columns.length} className="h-24 text-center">
@@ -224,30 +157,43 @@ export function DataTableDemo() {
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="flex-1 text-sm text-muted-foreground">
-          {table.getFilteredSelectedRowModel().rows.length} of {table.getFilteredRowModel().rows.length} row(s)
-          selected.
-        </div>
-        <div className="flex gap-[2rem]">
-          <Button
-            variant="outlineStrong"
-            className="max-w-[143px] h-[40px] py-[10px] px-[18px] text-xs leading-[120%] flex gap-[0.5rem] justify-center items-center"
-            // onClick={() => table.previousPage()}
-            // disabled={!table.getCanPreviousPage()}
-          >
-            Previous
-          </Button>
-          <Button
-            variant="outlineStrong"
-            className="max-w-[143px] h-[40px] py-[10px] px-[18px] text-xs leading-[120%] flex gap-[0.5rem] justify-center items-center"
-            // onClick={() => table.nextPage()}
-            // disabled={!table.getCanNextPage()}
-          >
-            Next
-          </Button>
-        </div>
-      </div>
+      <Pagination className="justify-end">
+        <PaginationContent>
+          <PaginationItem>
+            <PaginationPrevious
+              onClick={handlePreviousPage}
+              className={pagination.page <= 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
+            />
+          </PaginationItem>
+
+          {paginationRange.map((page, index) => (
+            <PaginationItem key={index}>
+              {page === 'dots' ? (
+                <PaginationEllipsis />
+              ) : (
+                <PaginationLink
+                  onClick={() => handlePageClick(page as number)}
+                  isActive={pagination.page === page}
+                  className={`text-xs w-[40px] h-[40px] p-[0.5rem] rounded-[0.5rem] flex items-center justify-center ${
+                    pagination.page === page
+                      ? 'bg-sidebar-accent text-primary-3 font-bold leading-[120%]'
+                      : 'font-medium hover:bg-sidebar-accent text-support-7 leading-[140%]'
+                  }`}
+                >
+                  {page}
+                </PaginationLink>
+              )}
+            </PaginationItem>
+          ))}
+
+          <PaginationItem>
+            <PaginationNext
+              onClick={handleNextPage}
+              className={pagination.page >= pagination.totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
+            />
+          </PaginationItem>
+        </PaginationContent>
+      </Pagination>
     </div>
   );
-}
+};
