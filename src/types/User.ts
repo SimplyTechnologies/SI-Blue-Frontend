@@ -13,3 +13,10 @@ export type User = {
 export type UserInput = User & {
   password: string;
 };
+
+export type UpdateUserRequest = {
+  firstName?: string;
+  lastName?: string;
+  phoneNumber?: string;
+  password?: string;
+};

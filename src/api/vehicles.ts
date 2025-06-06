@@ -1,5 +1,6 @@
-import api from './axios';
+import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
+import api from './axios';
 import type { AddRemoveFavorite, CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/Vehicle';
 
 export const getVehicles = async (params: VehicleRequest) => {
@@ -10,6 +11,15 @@ export const getVehicles = async (params: VehicleRequest) => {
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicles:', error);
+  }
+};
+
+export const getVehicleById = async (id: string) => {
+  try {
+    const response = await api.get(`/vehicles/vehicle/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicle:', error);
   }
 };
 
@@ -25,6 +35,28 @@ export const getAllVehicleLocationsAndCounts = async () => {
 export const createVehicle = async (body: CreateVehicleRequest) => {
   const response = await api.post(`/vehicles/vehicle`, body);
   return response.data;
+};
+
+export const editVehicle = async (body: CreateVehicleRequest, id: string) => {
+  try {
+    const response = await api.put(`/vehicles/vehicle/${id}`, body);
+    return response.data;
+  } catch (error) {
+    const axiosError = error as AxiosError<{ message: string }>;
+    const message = axiosError.response?.data?.message || axiosError.message || 'Something went wrong';
+    toast.error(message);
+  }
+};
+
+export const deleteVehicle = async (id: string) => {
+  try {
+    const response = await api.delete(`/vehicles/vehicle/${id}`);
+    return response;
+  } catch (error) {
+    const axiosError = error as AxiosError<{ message: string }>;
+    const message = axiosError.response?.data?.message || axiosError.message || 'Something went wrong';
+    toast.error(message);
+  }
 };
 
 export const getMakes = async () => {
@@ -75,3 +107,4 @@ export const decodeVehicleVin = async (body: { vin: string }) => {
   const response = await api.post('/vehicles/decode/vin', body);
   return response.data;
 };
+

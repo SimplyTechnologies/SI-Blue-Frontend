@@ -42,7 +42,7 @@ const LoginPage = () => {
   });
   const [serverError, setServerError] = useState('');
   const [loading, setLoading] = useState(false);
-  
+
   const remember = watch('remember');
 
   const onSubmit = (data: FormData) => {
@@ -71,10 +71,10 @@ const LoginPage = () => {
       </div>
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem]">
-          <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-[var(--color-support-6)]">
             <Label
               htmlFor="email"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]"
+              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)] mb-0.5"
             >
               Email
             </Label>
@@ -86,15 +86,15 @@ const LoginPage = () => {
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
             />
             {errors.email && (
-              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
                 {errors.email.message}
               </p>
             )}
           </div>
-          <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-[var(--color-support-6)]">
             <Label
               htmlFor="password"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]"
+              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]  mb-0.5"
             >
               Password
             </Label>
@@ -107,14 +107,14 @@ const LoginPage = () => {
               className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
             />
             {errors.password && (
-              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
                 {errors.password.message}
               </p>
             )}
           </div>
 
           {serverError && (
-            <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
+            <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
               {serverError}
             </p>
           )}

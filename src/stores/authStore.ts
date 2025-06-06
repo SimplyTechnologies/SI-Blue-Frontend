@@ -7,12 +7,13 @@ interface AuthStore {
   user: User | null;
   auth: (user: User, tokens: { accessToken: string; refreshToken: string }) => void;
   logout: () => void;
+  setUser: (user: User) => void;
 }
 
 const useAuthStore = create<AuthStore>()(
   persist(
     set => ({
-      isAuthenticated: !!localStorage.getItem('ACCESS_TOKEN'),
+      isAuthenticated: typeof window !== 'undefined' ? !!localStorage.getItem('ACCESS_TOKEN') : false,
       user: null,
       auth: (user, tokens) => {
         if (typeof window !== 'undefined') {
@@ -24,9 +25,11 @@ const useAuthStore = create<AuthStore>()(
         }
       },
       logout: () => {
-        localStorage.clear();
+        localStorage.removeItem('ACCESS_TOKEN');
+        localStorage.removeItem('REFRESH_TOKEN');
         set({ user: null, isAuthenticated: false });
       },
+      setUser: (user) => set({ user }),
     }),
     {
       name: 'authStore',

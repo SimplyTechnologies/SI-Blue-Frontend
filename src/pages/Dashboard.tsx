@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { getAllVehicleLocationsAndCounts } from '@/api/vehicles';
@@ -19,7 +20,10 @@ const Dashboard: React.FC = () => {
         <AddNewVehicleButton
           buttonName="+ Add New Vehicle"
           className="w-[244px] h-[56px]"
-          onSuccess={() => navigate('/vehicles', { state: { addedSuccessfully: true }, replace: true })}
+          onSuccess={() => {
+            toast.success('Vehicle added successfully!');
+            navigate('/vehicles');
+          }}
         />
       </div>
       <p className="text-support-6 text-[length:var(--sm-text)] font-[var(--fw-bold)] leading-[140%]">
