@@ -94,7 +94,7 @@ const ForgotPassword: React.FC = () => {
           </div>
         </div>
         <Button
-          type="submit"
+          type={success ? 'button' : 'submit'}
           className="h-[56px]"
           variant={'default'}
           onClick={() => {
@@ -118,4 +118,3 @@ const ForgotPassword: React.FC = () => {
 };
 
 export default ForgotPassword;
-
