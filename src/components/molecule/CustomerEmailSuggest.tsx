@@ -30,13 +30,17 @@ export default function CustomerEmailSuggest({
   field,
   inputValue,
 }: CustomerEmailSuggest) {
-  const autocompleteRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
+  const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
     const handleMouseDown = (e: MouseEvent) => {
-      if (e.target && open) {
-        handleBlur(e.target);
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setTimeout(() => {
+          setOpen(false);
+          if (options.length === 1 && options[0].email === inputValue) {
+            handleAutocomplete(options[0]);
+          }
+        }, 0);
       }
     };
 
@@ -44,45 +48,50 @@ export default function CustomerEmailSuggest({
     return () => {
       document.removeEventListener('mousedown', handleMouseDown);
     };
-  }, [autocompleteRef, inputRef, open, options]);
+  }, [setOpen, handleAutocomplete, options, inputValue]);
 
-  const onEmailFocus = () => {
+  const handleFocus = () => {
     setOpen(true);
   };
 
-  const handleBlur = (target: EventTarget) => {
-    if (target instanceof Node && !autocompleteRef?.current?.contains(target) && !inputRef?.current?.contains(target)) {
-      setOpen(false);
-      if (options?.length === 1 && options[0].email === inputValue) {
-        handleAutocomplete(options[0]);
+  const handleBlur = () => {
+    setTimeout(() => {
+      const activeEl = document.activeElement;
+      if (!containerRef?.current?.contains(activeEl)) {
+        field.onBlur();
+      } else {
+        return;
       }
-    }
+    }, 0);
   };
 
   return (
-    <div className="relative">
+    <div ref={containerRef} className="relative" onBlur={handleBlur} tabIndex={0}>
       <Input
         className={`${inputClassname} w-full`}
         placeholder="Enter Email"
         {...field}
-        onFocus={onEmailFocus}
+        onFocus={handleFocus}
+        onBlur={() => {
+          return;
+        }}
         autoComplete="off"
-        ref={inputRef}
         maxLength={100}
       />
 
       <div
-        ref={autocompleteRef}
-        className={`absolute top-[56px] left-0 ${open && options?.length ? '' : 'hidden'} w-full overflow-auto bg-popover text-popover-foreground data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 z-50 max-h-[150px] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md`}
+        className={`absolute top-[56px] left-0 ${
+          open && options?.length ? '' : 'hidden'
+        } w-full overflow-auto bg-popover text-popover-foreground z-50 max-h-[150px] min-w-[8rem] overflow-x-hidden overflow-y-auto rounded-md border p-1 shadow-md`}
       >
-        {options?.map((item, index) => (
+        {options.map(item => (
           <div
-            className="hover:text-primary hover:bg-accent focus:text-accent-foreground data-[variant=destructive]:text-destructive data-[variant=destructive]:focus:bg-destructive/10 dark:data-[variant=destructive]:focus:bg-destructive/20 data-[variant=destructive]:focus:text-destructive data-[variant=destructive]:*:[svg]:!text-destructive [&_svg:not([class*='text-'])]:text-muted-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 data-[inset]:pl-8 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-            key={index}
+            key={item.id}
             onClick={e => {
               e.preventDefault();
               handleAutocomplete(item);
             }}
+            className="hover:text-primary hover:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm select-none"
           >
             {item.email}
           </div>
