@@ -23,7 +23,7 @@ export const getVehicleById = async (id: string) => {
   }
 };
 
-export const getAllVehicleLocationsAndCounts = async () => {
+export const getAllVehicleLocationsAndCounts = async (search: string) => {
   try {
     const response = await api.get(`/vehicles/dashboard-data`);
     return response.data;

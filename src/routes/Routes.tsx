@@ -1,9 +1,12 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Routes, BrowserRouter, type BrowserRouterProps, Navigate } from 'react-router';
+import { useQueryClient } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import Auth from '@/layouts/Auth';
 import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
+import VehicleLayout from '@/layouts/Vehicles';
 import NotFound from '@/pages/NotFound';
+import { mapDataLoader, vehicleDetailsLoader } from '@/queries/vehicles';
 
 const Protected = lazy(() => import('@/layouts/Protected'));
 const Public = lazy(() => import('@/layouts/Public'));
@@ -24,6 +27,8 @@ interface AppRouterProps {
 }
 
 const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
+  const queryClient = useQueryClient();
+
   return (
     <Router>
       <Suspense
@@ -46,9 +51,15 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
           <Route element={<Protected />}>
             <Route element={<DashboardLayout />}>
               <Route path="/" index element={<Navigate to="/dashboard" replace />} />
-              <Route path="dashboard" element={<Dashboard />} />
-              <Route path="vehicles" element={<Vehicles />} />
-              <Route path="vehicles/:id" element={<VehicleDetails />} />
+              <Route path="dashboard" element={<Dashboard />} loader={() => mapDataLoader(queryClient)} />
+              <Route element={<VehicleLayout />} loader={() => mapDataLoader(queryClient)}>
+                <Route path="vehicles" element={<Vehicles />} />
+                <Route
+                  path="vehicles/:id"
+                  element={<VehicleDetails />}
+                  loader={() => vehicleDetailsLoader(queryClient)}
+                />
+              </Route>
               <Route path="users" element={<Users />} />
               <Route path="customers" element={<Customers />} />
               <Route path="my-profile" element={<MyProfile />} />
