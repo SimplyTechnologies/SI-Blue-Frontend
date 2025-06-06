@@ -7,9 +7,9 @@ export type VehicleType = {
   vin: string;
   favorite: boolean;
   location: TAddress;
-  sold: boolean;
   userId: number;
   createdAt: string;
+  customerId: number;
   model: {
     id: number;
     name: string;

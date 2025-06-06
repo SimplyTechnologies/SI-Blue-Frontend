@@ -16,7 +16,7 @@ export const getVehicles = async (params: VehicleRequest) => {
 
 export const getVehicleById = async (id: string) => {
   try {
-    const response = await api.get(`/vehicles/${id}`);
+    const response = await api.get(`/vehicles/vehicle/${id}`);
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicle:', error);
@@ -37,7 +37,7 @@ export const createVehicle = async (body: CreateVehicleRequest) => {
   return response.data;
 };
 
-export const editVehicle = async (body: CreateVehicleRequest, id: number) => {
+export const editVehicle = async (body: CreateVehicleRequest, id: string) => {
   try {
     const response = await api.put(`/vehicles/vehicle/${id}`, body);
     return response.data;
@@ -48,7 +48,7 @@ export const editVehicle = async (body: CreateVehicleRequest, id: number) => {
   }
 };
 
-export const deleteVehicle = async (id: number) => {
+export const deleteVehicle = async (id: string) => {
   try {
     const response = await api.delete(`/vehicles/vehicle/${id}`);
     return response;
