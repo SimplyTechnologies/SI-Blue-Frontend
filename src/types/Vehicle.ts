@@ -74,5 +74,14 @@ export type AddRemoveFavoriteResponse = {
   vehicle: VehicleType;
 };
 
+export type CustomerVehicle = {
+  id: number;
+  vin: string;
+  year: number;
+  make: string;
+  model: string;
+  assignedDate: string;
+}
+
 export type VehicleTab = 'vehicles' | 'favorites';
 
