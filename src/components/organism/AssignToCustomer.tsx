@@ -36,8 +36,6 @@ const AssignToCustomer: FC<{
 
   const { debounceValue } = useDebounce({ inputValue: emailInput, delay: 300 });
 
-  const errorMessageSpacerClass = 'min-h-[1.25rem]';
-
   const [showAutocomplete, setShowAutocomplete] = useState(false);
   const [customLoading, setCustomLoading] = useState(false);
 
@@ -123,9 +121,7 @@ const AssignToCustomer: FC<{
                       field={field}
                     />
                   </FormControl>
-                  <div className={form.formState.errors.email ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
@@ -145,9 +141,7 @@ const AssignToCustomer: FC<{
                         maxLength={50}
                       />
                     </FormControl>
-                    <div className={form.formState.errors.firstName ? errorMessageSpacerClass : ''}>
-                      <FormMessage />
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -167,9 +161,7 @@ const AssignToCustomer: FC<{
                         maxLength={50}
                       />
                     </FormControl>
-                    <div className={form.formState.errors.lastName ? errorMessageSpacerClass : ''}>
-                      <FormMessage />
-                    </div>
+                    <FormMessage />
                   </FormItem>
                 )}
               />
@@ -189,9 +181,7 @@ const AssignToCustomer: FC<{
                       maxLength={25}
                     />
                   </FormControl>
-                  <div className={form.formState.errors.phoneNumber ? errorMessageSpacerClass : ''}>
-                    <FormMessage />
-                  </div>
+                  <FormMessage />
                 </FormItem>
               )}
             />
