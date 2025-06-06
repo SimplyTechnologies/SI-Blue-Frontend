@@ -64,13 +64,19 @@ const VehicleDetails: React.FC = () => {
   const onEditSuccess = (updatedData?: VehicleType) => {
     if (updatedData) {
       queryClient.setQueryData(['vehicle', id], { vehicle: updatedData });
+      queryClient.removeQueries({
+        queryKey: ['vehicles'],
+      });
       toast.success('Vehicle successfully edited');
     }
   };
 
   const onAssignSuccess = (customerId: number) => {
     if (customerId && data.vehicle) {
-      queryClient.setQueryData(['vehicle', id], {vehicle: { ...data.vehicle, customerId} });
+      queryClient.setQueryData(['vehicle', id], { vehicle: { ...data.vehicle, customerId } });
+      queryClient.removeQueries({
+        queryKey: ['vehicles'],
+      });
       toast.success('Vehicle successfully assigned to the customer');
     }
   };
