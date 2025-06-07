@@ -3,32 +3,36 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
 import trashIcon from '@/assets/trash.svg';
-import type { TableHeaders } from '@/types/TableHeaders';
 import type { CustomerVehicle } from '@/types/Vehicle';
+import type { Customers } from '@/types/Customer';
+import type { User } from '@/types/User';
 
 import getColorFromName from '@/utils/getRandomColor';
 import formatDate from '@/utils/formatDate';
+
+type TableData = User | Customers;
+
+const isCustomer = (item: TableData): item is Customers => {
+  return 'vehicles' in item;
+};
 
 interface TableColumnsProps {
   type: 'users' | 'customers';
 }
 
-const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] => {
+const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnDef<T>[] => {
   return [
     {
-      accessorFn: row => `${row.firstName}  ${row.lastName}`,
+      accessorFn: row => `${row.firstName} ${row.lastName}`,
       id: 'fullName',
       header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Name</p>,
       cell: ({ row }) => {
-        // Check if this is a sub-row (vehicle) or main row (customer)
         const isSubRow = row.depth > 0;
 
         if (isSubRow) {
-          // For vehicle sub-rows, don't show name info
-          return <div className="pl-8"></div>; // Just indent to show hierarchy
+          return <div className="pl-8"></div>;
         }
 
-        // For main customer rows
         const fullName = row.getValue('fullName') as string;
         const firstName = row.original?.firstName || '';
         const lastName = row.original?.lastName || '';
@@ -36,22 +40,23 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
 
         return (
           <div className="flex gap-[12px] items-center">
-            {row.getCanExpand() ? (
-              <button
-                onClick={row.getToggleExpandedHandler()}
-                className="flex items-center justify-center w-6 h-6 hover:bg-gray-100 rounded cursor-pointer"
-              >
-                {row.getIsExpanded() ? (
-                  <ChevronDown className="w-4 h-4 text-support-6" />
-                ) : (
-                  <ChevronRight className="w-4 h-4 text-support-6" />
-                )}
-              </button>
-            ) : (
-              <button className='w-6 h-6' disabled>
-                <ChevronRight className="w-4 h-4 text-support-7" />
-              </button>
-            )}
+            {type === 'customers' &&
+              (row.getCanExpand() ? (
+                <button
+                  onClick={row.getToggleExpandedHandler()}
+                  className="flex items-center justify-center w-6 h-6 hover:bg-gray-100 rounded cursor-pointer"
+                >
+                  {row.getIsExpanded() ? (
+                    <ChevronDown className="w-4 h-4 text-support-6" />
+                  ) : (
+                    <ChevronRight className="w-4 h-4 text-support-6" />
+                  )}
+                </button>
+              ) : (
+                <button className="w-6 h-6" disabled>
+                  <ChevronRight className="w-4 h-4 text-support-7" />
+                </button>
+              ))}
 
             <Avatar
               className="w-[52px] h-[52px] rounded-[50%] flex justify-center items-center"
@@ -73,13 +78,13 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
     ...(type === 'customers'
       ? [
           {
-            accessorFn: row => row.vehicles,
+            accessorFn: row => (isCustomer(row) ? row.vehicles : undefined),
             id: 'vehicles',
             header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Vehicle</p>,
             cell: ({ row }) => {
               const isSubRow = row.depth > 0;
               if (isSubRow) {
-                const vehicle = row.original;
+                const vehicle = row.original as unknown as CustomerVehicle;
                 return (
                   <div className="flex flex-col gap-[2px] justify-center items-start">
                     <span className="font-bold text-xs leading-[120%] text-support-6">{vehicle?.vin}</span>
@@ -95,7 +100,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
               const hasMultipleVehicles = vehicles && vehicles.length > 1;
 
               if (!vehicles || vehicles.length === 0) {
-                return <div className='min-w-[123px]'></div>;
+                return <div className="min-w-[123px]"></div>;
               }
 
               return (
@@ -107,7 +112,6 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
                     </span>
                   </div>
 
-                  {/* Show count indicator if multiple vehicles but not expanded */}
                   {hasMultipleVehicles && !isExpanded && (
                     <span className="text-xs text-support-5 italic">
                       +{vehicles.length - 1} more vehicle{vehicles.length - 1 > 1 ? 's' : ''}
@@ -116,7 +120,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
                 </>
               );
             },
-          } as ColumnDef<TableHeaders>,
+          } as ColumnDef<T>,
         ]
       : []),
     {
@@ -125,7 +129,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
       cell: ({ row }) => {
         const isSubRow = row.depth > 0;
         if (isSubRow) {
-          return <span className="pl-8"></span>; // Empty cell for sub-rows
+          return <span className="pl-8"></span>;
         }
         return <span className="font-medium text-sm leading-[140%] text-support-5">{row.getValue('email')}</span>;
       },
@@ -134,15 +138,14 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
       ? [
           {
             accessorFn: row =>
-              (row.vehicles as CustomerVehicle[])?.map((vehicle: CustomerVehicle) => vehicle.assignedDate),
+              isCustomer(row) ? row.vehicles?.map((vehicle: CustomerVehicle) => vehicle.assignedDate) : undefined,
             id: 'assignedDate',
             header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Assign Date</p>,
             cell: ({ row }) => {
               const isSubRow = row.depth > 0;
 
               if (isSubRow) {
-                // Show assign date for individual vehicle
-                const vehicle = row.original;
+                const vehicle = row.original as unknown as CustomerVehicle;
                 return (
                   <div className="">
                     <span className="capitalize font-medium text-sm leading-[140%] text-support-5">
@@ -155,7 +158,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
               const assignedDates = row.getValue('assignedDate') as string[];
 
               if (!assignedDates || assignedDates.length === 0) {
-                return <div className='min-w-[148px]'></div>;
+                return <div className="min-w-[148px]"></div>;
               }
 
               return (
@@ -166,7 +169,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
                 </div>
               );
             },
-          } as ColumnDef<TableHeaders>,
+          } as ColumnDef<T>,
         ]
       : []),
     {
@@ -187,7 +190,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
     ...(type === 'users'
       ? [
           {
-            accessorKey: 'status',
+            accessorKey: 'isActive',
             header: () => <p className="font-bold text-sm text-support-7 leading-[140%]">Status</p>,
             cell: ({ row }) => {
               const isSubRow = row.depth > 0;
@@ -197,14 +200,14 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
               return (
                 <div
                   className={`capitalize w-[81px] h-[40px] py-[10px] px-[12px] flex justify-center items-center rounded-full font-semibold text-xs leading-[140%] ${
-                    row.getValue('status') === 'Pending' ? 'bg-[#FFF8E0] text-[#F2A626]' : 'bg-[#E5FAF5] text-[#04B78A]'
+                    row.getValue('isActive') === false ? 'bg-[#FFF8E0] text-[#F2A626]' : 'bg-[#E5FAF5] text-[#04B78A]'
                   }`}
                 >
-                  {row.getValue('status')}
+                  {row.getValue('isActive') ? 'Active' : 'Pending'}
                 </div>
               );
             },
-          } as ColumnDef<TableHeaders>,
+          } as ColumnDef<T>,
         ]
       : []),
     {
@@ -214,7 +217,7 @@ const TableColumns = ({ type }: TableColumnsProps): ColumnDef<TableHeaders>[] =>
       cell: ({ row }) => {
         const isSubRow = row.depth > 0;
         if (isSubRow) {
-          return <div></div>; // Empty cell for sub-rows
+          return <div></div>;
         }
         return (
           <div className="flex w-[1.5rem] h-[1.5rem] items-center justify-center cursor-pointer">
