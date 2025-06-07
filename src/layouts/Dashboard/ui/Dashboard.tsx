@@ -41,7 +41,7 @@ function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset>
+      <SidebarInset className='overflow-hidden'>
         <header className="flex justify-between bg-white p-[24px] h-[78px] border-b-1 border-sidebar-border">
           <div className="flex gap-2">
             <SidebarTriggerMobile />
