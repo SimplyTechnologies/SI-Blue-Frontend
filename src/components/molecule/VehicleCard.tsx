@@ -18,7 +18,7 @@ const VehicleCard = React.forwardRef<
       {/* Marker Circle */}
       <div
         className={`mr-3 w-12 h-12 min-h-12 min-w-12 flex justify-center items-center rounded-full bg-support-12 border-2 ${
-          vehicle.sold ? 'border-support-11' : 'border-support-9'
+          vehicle.customerId ? 'border-support-11' : 'border-support-9'
         }`}
       >
         <img src={carMarker} alt="Vehicle" className="w-6 h-6" />
@@ -47,9 +47,9 @@ const VehicleCard = React.forwardRef<
       <div className="flex items-start gap-5 ml-4">
         <div className="w-[64px] flex justify-center">
           <div
-            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.sold ? 'bg-support-11' : 'bg-support-9'}`}
+            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.customerId ? 'bg-support-11' : 'bg-support-9'}`}
           >
-            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.sold ? 'Sold' : 'In Stock'}</p>
+            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.customerId ? 'Sold' : 'In Stock'}</p>
           </div>
         </div>
         <CustomTooltip

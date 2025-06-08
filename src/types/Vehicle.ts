@@ -7,9 +7,9 @@ export type VehicleType = {
   vin: string;
   favorite: boolean;
   location: TAddress;
-  sold: boolean;
   userId: number;
   createdAt: string;
+  customerId: number;
   model: {
     id: number;
     name: string;
@@ -80,6 +80,7 @@ export type CustomerVehicle = {
   year: number;
   make: string;
   model: string;
+  assignedDate: string;
 }
 
 export type VehicleTab = 'vehicles' | 'favorites';
