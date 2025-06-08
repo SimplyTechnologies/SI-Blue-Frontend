@@ -1,7 +1,9 @@
+import { useState } from 'react';
 import type { ColumnDef } from '@tanstack/react-table';
 import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 import { ChevronDown, ChevronRight } from 'lucide-react';
 
+import { CustomAlertDialog } from './CustomAlertDialog';
 import trashIcon from '@/assets/trash.svg';
 import type { CustomerVehicle } from '@/types/Vehicle';
 import type { Customers } from '@/types/Customer';
@@ -9,18 +11,38 @@ import type { User } from '@/types/User';
 
 import getColorFromName from '@/utils/getRandomColor';
 import formatDate from '@/utils/formatDate';
+import { useDeleteUser } from '@/hooks/useUser';
+import { useDeleteCustomer } from '@/hooks/useCustomer';
 
 type TableData = User | Customers;
-
-const isCustomer = (item: TableData): item is Customers => {
-  return 'vehicles' in item;
-};
 
 interface TableColumnsProps {
   type: 'users' | 'customers';
 }
 
+const isCustomer = (item: TableData): item is Customers => {
+  return 'vehicles' in item;
+};
+
 const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnDef<T>[] => {
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
+
+  const deleteUser = useDeleteUser();
+  const deleteCustomer = useDeleteCustomer();
+
+  const handleDelete = async (id: number, type: 'users' | 'customers') => {
+    try {
+      if (type === 'users') {
+        await deleteUser.mutate(id.toString());
+      } else {
+        await deleteCustomer.mutate(id.toString());
+      }
+      console.log(`Deleting user with id: ${id}`);
+    } catch (error) {
+      console.error('Error deleting user:', error);
+    }
+  };
+
   return [
     {
       accessorFn: row => `${row.firstName} ${row.lastName}`,
@@ -220,9 +242,24 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
           return <div></div>;
         }
         return (
-          <div className="flex w-[1.5rem] h-[1.5rem] items-center justify-center cursor-pointer">
-            <img src={trashIcon} alt="trash" className="w-[24px] h-[24px]" />
-          </div>
+          <>
+            <div
+              onClick={() => setIsConfirmDeleteOpen(true)}
+              className="flex w-[1.5rem] h-[1.5rem] items-center justify-center cursor-pointer"
+            >
+              <img src={trashIcon} alt="trash" className="w-[24px] h-[24px]" />
+            </div>
+            <CustomAlertDialog
+              open={isConfirmDeleteOpen}
+              setOpen={setIsConfirmDeleteOpen}
+              title={type === 'users' ? 'Delete User' : 'Delete Customer'}
+              description={`Are you sure that you would like to delete this ${type === 'users' ? 'user' : 'customer'}? This action cannot be undone.`}
+              handleConfirm={() => handleDelete(row.original.id, type)}
+              variant="destructive"
+              actionBtnText={deleteUser.isPending ? 'Deleting...' : 'Delete'}
+              actionBtnDisabled={deleteUser.isPending}
+            />
+          </>
         );
       },
     },

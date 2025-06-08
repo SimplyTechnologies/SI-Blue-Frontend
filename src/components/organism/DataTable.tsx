@@ -124,7 +124,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
 
   return (
     <div className="w-full">
-      <div className="w-full max-h-[calc(100%-71.97px)] rounded-md p-[1.5rem] bg-white overflow-auto">
+      <div className={`w-full max-h-[${showPagination ? 'calc(100%-71.97px)' : '100%'}] rounded-md p-[1.5rem] bg-white overflow-auto`}>
         <Table>
           <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12">
             {table.getHeaderGroups().map(headerGroup => (
