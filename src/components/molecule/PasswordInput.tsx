@@ -14,6 +14,7 @@ const PasswordInput = ({ className = '', ...props }) => {
         type="button"
         onClick={() => setShowPassword(!showPassword)}
         className="absolute right-1 top-1/2 -translate-y-1/2 text-gray-400 hover:text-blue-600 w-8 h-8 p-0 min-w-0 flex items-center justify-center"
+        tabIndex={-1}
       >
         {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
       </Button>

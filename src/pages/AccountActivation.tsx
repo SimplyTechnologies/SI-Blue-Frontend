@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router';
-
+import { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router';
+import { useQuery } from '@tanstack/react-query';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
+import { getUserDataOnAccountActivation } from '@/api/accountActivation';
 import useAuthStore from '@/stores/authStore';
 import { useActivateAccount } from '@/hooks/useActivateAccount';
 import { Button } from '@/components/atom/Button';
@@ -47,6 +48,15 @@ const AccountActivation: React.FC = () => {
   const navigate = useNavigate();
   const activateAccount = useActivateAccount();
   const { auth } = useAuthStore();
+  const [searchParams] = useSearchParams();
+  const token = searchParams.get('token');
+
+  const { data } = useQuery({
+    queryKey: ['userData', token],
+    queryFn: () => token && getUserDataOnAccountActivation(token),
+    enabled: !!token,
+    retry: false,
+  });
 
   const {
     register,
@@ -71,27 +81,40 @@ const AccountActivation: React.FC = () => {
 
   const onSubmit = (data: FormData) => {
     setServerError('');
+    if (!token) {
+      setServerError('Invalid token');
+      return;
+    }
+
     setLoading(true);
 
-    activateAccount.mutate(data, {
-      onSuccess: response => {
-        const { user, tokens } = response;
-        auth(user, tokens);
-        navigate('/dashboard');
+    activateAccount.mutate(
+      { password: data.password, confirmPassword: data.confirmPassword, token, remember: data.remember },
+      {
+        onSuccess: response => {
+          const { user, tokens } = response;
+          auth(user, tokens);
+          navigate('/dashboard');
+        },
+        onError: error => {
+          setServerError(error.message);
+        },
+        onSettled: () => setLoading(false),
       },
-      onError: error => {
-        setServerError(error.message);
-      },
-      onSettled: () => setLoading(false),
-    });
+    );
   };
+
+  useEffect(() => {
+    if (data?.user?.firstName && data?.user?.lastName && data?.user?.email) {
+      setValue('email', data.user.email);
+      setValue('name', data.user.firstName + ' ' + data.user.lastName);
+    }
+  }, [data]);
 
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <p className="text-support-6 text-[length:var(--xl-text)] font-bold leading-[120%]">
-          Account Activation
-        </p>
+        <p className="text-support-6 text-[length:var(--xl-text)] font-bold leading-[120%]">Account Activation</p>
       </div>
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem] flex-grow overflow-y-auto scroll-smooth max-h-[calc(90vh_-_200px)] pr-2">
@@ -108,6 +131,7 @@ const AccountActivation: React.FC = () => {
               placeholder="m@example.com"
               {...register('email')}
               onBlur={() => trigger('email')}
+              disabled={true}
               className="h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] caret-support-8 focus:border-primary-4 focus:border-[2px] focus:caret-support-6"
             />
             {errors.email && (
@@ -124,9 +148,10 @@ const AccountActivation: React.FC = () => {
               Name
             </Label>
             <Input
-              id="email"
-              type="email"
-              placeholder="m@example.com"
+              id="name"
+              type="text"
+              placeholder="John Doe"
+              disabled={true}
               {...register('name')}
               onBlur={() => trigger('name')}
               className="h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] caret-support-8 focus:border-primary-4 focus:border-[2px] focus:caret-support-6"
@@ -185,9 +210,7 @@ const AccountActivation: React.FC = () => {
           </div>
 
           {serverError && (
-            <p className="text-support-2 text-[length:var(--xs-text)] font-medium leading-[140%]">
-              {serverError}
-            </p>
+            <p className="text-support-2 text-[length:var(--xs-text)] font-medium leading-[140%]">{serverError}</p>
           )}
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
