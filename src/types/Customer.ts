@@ -1,4 +1,4 @@
-import type { CustomerVehicle } from './Vehicle';
+import type { CustomerVehicle, VehicleType } from './Vehicle';
 import * as z from 'zod';
 
 export const assignCustomerFormSchema = z.object({
@@ -42,7 +42,7 @@ export type CustomerType = {
 };
 
 export type AssignCustomerFormResponse = {
-  customer: CustomerType;
+  vehicle: VehicleType;
   message: string;
 }
 
