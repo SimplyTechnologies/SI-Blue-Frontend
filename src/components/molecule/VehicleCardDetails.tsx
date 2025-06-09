@@ -9,7 +9,7 @@ const VehicleCardDetails = React.forwardRef<
   HTMLDivElement,
   {
     vehicle: VehicleType;
-    onAssignSuccess: (customerId: number) => void;
+    onAssignSuccess: (vehicle: VehicleType) => void;
   }
 >(({ vehicle, onAssignSuccess }, ref) => {
   const [isOpen, setIsOpen] = useState(false);
