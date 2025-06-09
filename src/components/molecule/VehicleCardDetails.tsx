@@ -48,26 +48,29 @@ const VehicleCardDetails = React.forwardRef<
           </div>
         </div>
         <div className="flex items-start gap-5 ml-4">
-        <div className="w-[64px] flex justify-center">
-          <div
-            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.customerId ? 'bg-support-11' : 'bg-support-9'}`}
-          >
-            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.customerId ? 'Sold' : 'In Stock'}</p>
+          <div className="w-[64px] flex justify-center">
+            <div
+              className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.customerId ? 'bg-support-11' : 'bg-support-9'}`}
+            >
+              <p className="text-white text-[12px] font-regular leading-[140%]">
+                {vehicle.customerId ? 'Sold' : 'In Stock'}
+              </p>
+            </div>
           </div>
         </div>
       </div>
-      </div>
-      
-      <div className="flex flex-col gap-2">
-        <Button
-          variant="default"
-          className="w-full h-[40px] text-xs"
-          onClick={() => !vehicle.customerId && setIsOpen(true)}
-          disabled={!!vehicle.customerId}
-        >
-          Assign to Customer
-        </Button>
-      </div>
+
+      {!vehicle.customerId ? (
+        <div className="flex flex-col gap-2">
+          <Button
+            variant="default"
+            className="w-full h-[40px] text-xs"
+            onClick={() => !vehicle.customerId && setIsOpen(true)}
+          >
+            Assign to Customer
+          </Button>
+        </div>
+      ) : null}
       <AssignToCustomer open={isOpen} onOpenChange={setIsOpen} vehicleId={vehicle.id} onSuccess={onAssignSuccess} />
     </div>
   );
