@@ -91,7 +91,7 @@ const MyProfile = () => {
             <div className="flex items-center space-x-2 sm:space-x-12">
               {isEdit && (
                 <Button
-                  type='button'
+                  type="button"
                   className="h-[40px] w-[128px] text-xs"
                   variant="outline"
                   onClick={() => {
@@ -106,7 +106,7 @@ const MyProfile = () => {
                 type={isEdit ? 'submit' : 'button'}
                 className="h-[40px] w-[128px] text-xs"
                 variant="default"
-                disabled={isPending}
+                disabled={isPending || (isEdit && !form.formState.isDirty)}
                 onClick={e => {
                   if (!isEdit) {
                     e.preventDefault();
