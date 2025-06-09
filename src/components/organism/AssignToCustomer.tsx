@@ -8,7 +8,7 @@ import CustomerEmailSuggest from '@/components/molecule/CustomerEmailSuggest';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDebounce } from '@/hooks/useDebounce';
 import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
-import { useCustomerAssign } from '@/hooks/useCustomerAssign';
+import { useCustomerAssign } from '@/hooks/useCustomer';
 import { getCustomerEmails } from '@/api/customers';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
 import { inputClassname } from './VehicleForm/VehicleForm.data';

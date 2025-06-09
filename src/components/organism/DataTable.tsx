@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 import {
-  type ColumnDef,
   type ColumnFiltersState,
   type SortingState,
   type VisibilityState,
@@ -23,10 +22,19 @@ import {
   PaginationNext,
   PaginationEllipsis,
 } from '@/components/molecule/Pagination';
-import type { Customers } from '@/types/Customers';
+import type { Customers } from '@/types/Customer';
+import type { User } from '@/types/User';
 import TableColumns from '../molecule/TableColumns';
+import NothingToShow from '@/components/molecule/NothingToShow';
 
 import { usePaginationRange } from '@/hooks/usePaginationRange';
+import { nothingToShowOptions } from '@/utils/constants';
+
+type TableData = User | Customers;
+
+const isCustomer = (item: TableData): item is Customers => {
+  return 'vehicles' in item;
+};
 
 interface PaginationProps {
   page: number;
@@ -36,31 +44,40 @@ interface PaginationProps {
   onPageChange: (page: number) => void;
 }
 
-interface DataTableProps {
+interface DataTableProps<T extends TableData> {
   type: 'users' | 'customers';
-  data: Customers[];
+  data: T[];
   pagination: PaginationProps;
   isLoading: boolean;
 }
 
 type ExpandedState = true | Record<string, boolean>;
 
-
-export const DataTableDemo: React.FC<DataTableProps> = ({ type, data, pagination }) => {
+export const DataTableDemo = <T extends TableData>({ type, data, pagination }: DataTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [expanded, setExpanded] = useState<ExpandedState>({});
 
-  const columns = TableColumns({ type });
+  const columns = TableColumns<T>({ type });
   const table = useReactTable({
     data,
-    columns: columns as ColumnDef<Customers>[],
+    columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
-    getSubRows: row => row.vehicles as unknown as Customers[],
-    getRowCanExpand: row => row.original.vehicles?.length > 1,
+    getSubRows: row => {
+      if (type === 'customers' && isCustomer(row)) {
+        return row.vehicles.slice(1) as unknown as T[];
+      }
+      return undefined;
+    },
+    getRowCanExpand: row => {
+      if (type === 'customers' && isCustomer(row.original)) {
+        return (row.original.vehicles?.length || 0) > 0;
+      }
+      return false;
+    },
     getRowId: (row, index, parent) => {
       if (parent) {
         return `${parent.id}_sub_${index}`;
@@ -87,6 +104,8 @@ export const DataTableDemo: React.FC<DataTableProps> = ({ type, data, pagination
   });
 
   const paginationRange = usePaginationRange(pagination.page, pagination.totalPages);
+  const hasData = table.getRowModel().rows?.length > 0;
+  const showPagination = hasData && pagination.totalPages > 1;
 
   const handlePreviousPage = () => {
     if (pagination.page > 1) {
@@ -105,7 +124,7 @@ export const DataTableDemo: React.FC<DataTableProps> = ({ type, data, pagination
 
   return (
     <div className="w-full">
-      <div className="rounded-md p-[1.5rem] overflow-hidden bg-white">
+      <div className={`w-full max-h-[${showPagination ? 'calc(100%-71.97px)' : '100%'}] rounded-md p-[1.5rem] bg-white overflow-auto`}>
         <Table>
           <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12">
             {table.getHeaderGroups().map(headerGroup => (
@@ -120,7 +139,7 @@ export const DataTableDemo: React.FC<DataTableProps> = ({ type, data, pagination
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody>
+          <TableBody className='overflow-y-scroll'>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => {
                 const isMainRow = row.depth === 0;
@@ -148,52 +167,60 @@ export const DataTableDemo: React.FC<DataTableProps> = ({ type, data, pagination
                 );
               })
             ) : (
-              <TableRow>
-                <TableCell colSpan={columns.length} className="h-24 text-center">
-                  No results.
+              <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
+                <TableCell colSpan={columns.length} className="p-0 h-full border-none">
+                  <div className="flex items-center justify-center w-full min-h-[350px]">
+                    <NothingToShow
+                      title={type === 'users' ? nothingToShowOptions.users.title : nothingToShowOptions.customers.title}
+                      subtitle={ type === 'users' ? nothingToShowOptions.users.subtitle : nothingToShowOptions.customers.subtitle}
+                      icon={ type === 'users' ? nothingToShowOptions.users.icon : nothingToShowOptions.customers.icon}
+                    />
+                  </div>
                 </TableCell>
               </TableRow>
             )}
           </TableBody>
         </Table>
       </div>
-      <Pagination className="justify-end">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={handlePreviousPage}
-              className={pagination.page <= 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
-            />
-          </PaginationItem>
-
-          {paginationRange.map((page, index) => (
-            <PaginationItem key={index}>
-              {page === 'dots' ? (
-                <PaginationEllipsis />
-              ) : (
-                <PaginationLink
-                  onClick={() => handlePageClick(page as number)}
-                  isActive={pagination.page === page}
-                  className={`text-xs w-[40px] h-[40px] p-[0.5rem] rounded-[0.5rem] flex items-center justify-center ${
-                    pagination.page === page
-                      ? 'bg-sidebar-accent text-primary-3 font-bold leading-[120%]'
-                      : 'font-medium hover:bg-sidebar-accent text-support-7 leading-[140%]'
-                  }`}
-                >
-                  {page}
-                </PaginationLink>
-              )}
+      {showPagination && (
+        <Pagination className="justify-end">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={handlePreviousPage}
+                className={pagination.page <= 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
+              />
             </PaginationItem>
-          ))}
-
-          <PaginationItem>
-            <PaginationNext
-              onClick={handleNextPage}
-              className={pagination.page >= pagination.totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            {paginationRange.map((page, index) => (
+              <PaginationItem key={index}>
+                {page === 'dots' ? (
+                  <PaginationEllipsis />
+                ) : (
+                  <PaginationLink
+                    onClick={() => handlePageClick(page as number)}
+                    isActive={pagination.page === page}
+                    className={`text-xs w-[40px] h-[40px] p-[0.5rem] rounded-[0.5rem] flex items-center justify-center ${
+                      pagination.page === page
+                        ? 'bg-sidebar-accent text-primary-3 font-bold leading-[120%]'
+                        : 'font-medium hover:bg-sidebar-accent text-support-7 leading-[140%]'
+                    }`}
+                  >
+                    {page}
+                  </PaginationLink>
+                )}
+              </PaginationItem>
+            ))}
+            <PaginationItem>
+              <PaginationNext
+                onClick={handleNextPage}
+                className={
+                  pagination.page >= pagination.totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'
+                }
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 };

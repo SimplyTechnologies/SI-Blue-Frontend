@@ -20,3 +20,11 @@ export type UpdateUserRequest = {
   phoneNumber?: string;
   password?: string;
 };
+
+export type UsersResponse = {
+  users: User[];
+  total: number;
+  page: number;
+  pageSize: number;
+  totalPages: number;
+}
