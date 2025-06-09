@@ -2,22 +2,24 @@ import { type Dispatch, type SetStateAction, type FC, useEffect, useState } from
 import { useForm } from 'react-hook-form';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'sonner';
-import Modal from '@/components/atom/Modal';
-import { Input } from '@/components/atom/Input';
-import CustomerEmailSuggest from '@/components/molecule/CustomerEmailSuggest';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDebounce } from '@/hooks/useDebounce';
 import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
 import { useCustomerAssign } from '@/hooks/useCustomer';
 import { getCustomerEmails } from '@/api/customers';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
+import type { VehicleType } from '@/types/Vehicle';
+
 import { inputClassname } from './VehicleForm/VehicleForm.data';
+import Modal from '@/components/atom/Modal';
+import { Input } from '@/components/atom/Input';
+import CustomerEmailSuggest from '@/components/molecule/CustomerEmailSuggest';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/atom/Form';
 
 const AssignToCustomer: FC<{
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
   vehicleId: number;
-  onSuccess: (customerId: number) => void;
+  onSuccess: (vehicle: VehicleType) => void;
 }> = ({ open, onOpenChange, vehicleId, onSuccess }) => {
   const form = useForm<AssignCustomerFormValues>({
     resolver: zodResolver(assignCustomerFormSchema),
@@ -74,8 +76,8 @@ const AssignToCustomer: FC<{
       { ...values, vehicleId },
       {
         onSuccess: data => {
-          if (data?.customer?.id) {
-            onSuccess(data.customer.id);
+          if (data?.vehicle) {
+            onSuccess(data.vehicle);
           }
         },
         onError: () => {
