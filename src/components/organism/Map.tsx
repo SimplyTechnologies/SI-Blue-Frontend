@@ -13,7 +13,7 @@ const Map: React.FC<MapProps> = ({ cords }) => {
     <GoogleMap
       mapId={mapID}
       style={{ width: '100%', height: '100%' }}
-      defaultCenter={{ lat: -33.8636005, lng: 151.2092542 }}
+      defaultCenter={{ lat: -25.2744, lng: 133.7751 }} // Australia
       defaultZoom={4}
       minZoom={4}
       // restriction={latLngBounds = {}}
