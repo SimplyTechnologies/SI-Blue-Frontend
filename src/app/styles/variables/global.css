@@ -19,12 +19,16 @@
   --fw-semibold: 600;
   --fw-bold: 700;
 
-  --xs-text: 0.875rem; /* 14px */
+  --xs-text: 0.875rem;
+  /* 14px */
   --sm-text: 1rem;
-  --base-text: 1.25rem; /* 20px */
-  --md-text: 1.5rem; /* 24px */
+  --base-text: 1.25rem;
+  /* 20px */
+  --md-text: 1.5rem;
+  /* 24px */
   --lg-text: 2rem;
-  --xl-text: 2.25rem; /* 36px */
+  --xl-text: 2.25rem;
+  /* 36px */
 
   --color-primary-1: #423a8e;
   --color-primary-2: #00cccd;
@@ -164,17 +168,22 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-#root {
-  font-family: var(--font-dm);
-  background-color: #f8f9f9;
+*[data-slot='table-container']::-webkit-scrollbar {
+  height: 0.25rem;
 }
 
-.app {
-  min-height: 100vh;
+*[data-slot='table-container']::-webkit-scrollbar-track {
+  background: transparent;
+  height: 1px;
 }
 
+*[data-slot='table-container']::-webkit-scrollbar-thumb {
+  background-color: var(--color-support-8);
+  border-radius: 0.25rem;
+}
