@@ -1,12 +1,14 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
-import type { Poi } from '@/types/Poi';
-import carMarker from '@/assets/carMarker.svg';
 import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer';
+import type { Poi } from '@/types/Poi';
+import { getMapData } from '@/utils/general';
+import carMarker from '@/assets/carMarker.svg';
 
 const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
   const map = useMap();
-  const markersRef = useRef<{ [key: string]: Marker }>({});
+  const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
+
   const clusterer = useRef<MarkerClusterer | null>(null);
 
   // Initialize clusterer
@@ -18,58 +20,55 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
 
   // When pois change, clear and rebuild markers
   useEffect(() => {
+    if (!map) return;
     if (!clusterer.current) return;
 
-    const currentMarkers = Object.values(markersRef.current);
-    clusterer.current.clearMarkers();
-    clusterer.current.addMarkers(currentMarkers);
+    clusterer.current = new MarkerClusterer({ map });
+  }, [map]);
 
-    // Fit map to markers
-    const updateClustersAndZoom = () => {
-      const currentMarkers = Object.values(markersRef.current);
+  useEffect(() => {
+    clusterer.current?.clearMarkers();
+    const marker = Object.values(markers);
+    clusterer.current?.addMarkers(marker);
+  }, [markers]);
 
-      // Update cluster markers
-      clusterer.current!.clearMarkers();
-      clusterer.current!.addMarkers(currentMarkers);
+  useEffect(() => {
+    if (!map) return;
+    if (!pois?.length || pois.length !== 1) {
+      map.setCenter({ lat: -25.2744, lng: 133.7751 });
+      map.setZoom(4);
+      return;
+    }
 
-      // Fit map to markers
-      // if (currentMarkers.length > 0) {
-      //   const bounds = new google.maps.LatLngBounds();
-      //   currentMarkers.forEach(marker => {
-      //     const position = (marker as google.maps.marker.AdvancedMarkerElement).position;
-      //     if (position) bounds.extend(position);
-      //   });
-      //   map?.fitBounds(bounds);
-      // }
-    };
+    const poi = pois[0];
 
-    // Wait a tick to ensure markers are rendered and refs are set
-    const timeout = setTimeout(updateClustersAndZoom, 1000);
+    // Wait one frame or short delay to ensure marker is in the DOM
+    const timeout = setTimeout(() => {
+      map.setZoom(16);
+      map.setCenter({ lat: parseFloat(poi.lat), lng: parseFloat(poi.lng) });
+    }, 100);
 
     return () => clearTimeout(timeout);
-  }, [pois, map, markersRef, clusterer]);
+  }, [map, pois]);
 
   const setMarkerRef = (marker: Marker | null, key: string) => {
-    const current = markersRef.current;
+    if (marker && markers[key]) return;
+    if (!marker && !markers[key]) return;
 
-    if (marker) {
-      current[key] = marker;
-    } else {
-      delete current[key];
-    }
+    setMarkers(prev => {
+      if (marker) {
+        return { ...prev, [key]: marker };
+      } else {
+        const newMarkers = { ...prev };
+        delete newMarkers[key];
+        return newMarkers;
+      }
+    });
   };
-
-  const parsedPois = pois
-    .filter(poi => poi.lat && poi.lng)
-    .map(poi => ({
-      ...poi,
-      lat: typeof poi.lat === 'string' ? parseFloat(poi.lat) : poi.lat,
-      lng: typeof poi.lng === 'string' ? parseFloat(poi.lng) : poi.lng,
-    }));
 
   return (
     <>
-      {parsedPois.map((poi: Poi) => (
+      {getMapData(pois).map(poi => (
         <AdvancedMarker
           key={poi.id}
           position={{ lat: poi.lat, lng: poi.lng }}

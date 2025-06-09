@@ -25,7 +25,7 @@ export const getVehicleById = async (id: string) => {
 
 export const getAllVehicleLocationsAndCounts = async () => {
   try {
-    const response = await api.get(`/vehicles/dashboard-data`);
+    const response = await api.get('/vehicles/dashboard-data');
     return response.data;
   } catch (error) {
     console.error('Error fetching vehicles:', error);

@@ -1,3 +1,5 @@
+import type { Poi } from '@/types/Poi';
+
 export const isObjectEmpty = (obj: Record<string, unknown>) => {
   return !Object.keys(obj).length;
 };
@@ -12,3 +14,16 @@ export const formatDate = (dateString: string) => {
 
   return `${dd}.${mm}.${yyyy}`;
 };
+
+export const getMapData = (mapData: Poi[]) => {
+  return mapData
+    .filter(item => item.id && item.lat && item.lng)
+    .map(item => {
+      return {
+        ...item,
+        lat: typeof item.lat === 'string' ? parseFloat(item.lat) : item.lat,
+        lng: typeof item.lng === 'string' ? parseFloat(item.lng) : item.lng,
+      };
+    });
+};
+
