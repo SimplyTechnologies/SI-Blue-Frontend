@@ -9,7 +9,7 @@ import AddNewVehicleButton from '@/components/molecule/AddNewVehicleButton';
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data } = useQuery(mapDataQuery(''));
+  const { data } = useQuery(mapDataQuery());
 
   return (
     <div className="w-full h-full pt-[1rem] px-[2rem] pb-[3rem] max-[480px]:px-[1rem] flex flex-col gap-[0.5rem] bg-bg-1">

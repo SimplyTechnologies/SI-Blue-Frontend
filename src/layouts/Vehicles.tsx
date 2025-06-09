@@ -1,18 +1,13 @@
 import { Outlet, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { mapDataQuery, vehicleDetailsQuery } from '@/queries/vehicles';
-import { useSearchStore } from '@/stores/useSearchStore';
-import { useDebounce } from '@/hooks/useDebounce';
 import Map from '@/components/organism/Map';
 
 const VehicleLayout: React.FC = () => {
   const { id } = useParams();
-  const { searchValue } = useSearchStore();
-
-  const { debounceValue } = useDebounce({ inputValue: searchValue, delay: 300 });
 
   const { data: singleVehicle } = useQuery(vehicleDetailsQuery(id));
-  const { data: vehiclesMapData } = useQuery(mapDataQuery(debounceValue));
+  const { data: vehiclesMapData } = useQuery(mapDataQuery());
 
   const getSingleVehicleMapData = () => {
     const mapData: { lat: string; lng: string; id: number }[] = [];

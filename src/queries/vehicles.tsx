@@ -21,11 +21,11 @@ export const vehicleDetailsLoader =
     return { vehicleId: params.vehicleId };
   };
 
-export const mapDataQuery = (search?: string) =>
+export const mapDataQuery = () =>
   queryOptions({
-    queryKey: ['map-data', search],
+    queryKey: ['map-data'],
     queryFn: async () => {
-      const mapData = await getAllVehicleLocationsAndCounts(search);
+      const mapData = await getAllVehicleLocationsAndCounts();
       return mapData;
     },
   });
