@@ -5,6 +5,7 @@ export const addNewUserFormSchema = z.object({
     .string({
       required_error: 'Email is required.',
     })
+    .min(1, 'Email is required.')
     .email('Enter a valid email address.'),
   firstName: z
     .string({
