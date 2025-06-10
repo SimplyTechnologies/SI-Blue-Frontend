@@ -99,7 +99,7 @@ export default function VehicleDetails() {
   };
 
   return (
-    <div className="flex flex-col gap-2 lg:h-full bg-white md:px-6 md:pt-6 px-2 py-2 lg:w-[600px] h-[50%]">
+    <div className="flex flex-col gap-2 lg:h-full bg-white md:px-6 md:pt-6 px-2 py-2 lg:w-[600px] h-[50%] min-h-[50%]">
       <div className="flex flex-col h-full">
         <div
           className={`flex justify-between items-start w-full gap-[6rem] lg:gap-0 transition-all duration-300 ease-in-out max-w-full`}
