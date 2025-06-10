@@ -1,10 +1,9 @@
 import { addUser } from "@/api/user";
 import type { AddNewUserFormValue } from "@/types/User";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
 import type { AxiosError } from "axios";
 
 export const useAddUser = () => {
-    const queryClient = useQueryClient()
   return useMutation<string, Error, AddNewUserFormValue>({
     
     mutationFn: async (data: AddNewUserFormValue) => {
@@ -17,10 +16,6 @@ export const useAddUser = () => {
         
         throw new Error(message);
       }
-    },
-    onSuccess: () => {
-        queryClient.invalidateQueries({ queryKey: ['usersList'] });
-        
-      },
+    }
   });
 };

@@ -30,8 +30,7 @@ const Users = () => {
       
       <AddNewUser 
         open={showAddUser} 
-        onOpenChange={setShowAddUser} 
-        
+        onOpenChange={setShowAddUser}        
       />
     </>
   );

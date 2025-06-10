@@ -8,14 +8,15 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { inputClassname } from './VehicleForm/VehicleForm.data';
 import { addNewUserFormSchema, type AddNewUserFormValue, type AddNewUserType } from '@/types/User';
 import { useAddUser } from '@/hooks/useAddUser';
+import { useQueryClient } from '@tanstack/react-query';
 
 const AddNewUser: FC<{
   open: boolean;
   onOpenChange: Dispatch<SetStateAction<boolean>>;
-  onSuccess?: (userData: AddNewUserType) => void;
-}> = ({ open, onOpenChange, onSuccess }) => {
+}> = ({ open, onOpenChange }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const queryClient = useQueryClient();
 
   const addUserMutation = useAddUser();
 
@@ -42,12 +43,7 @@ const AddNewUser: FC<{
     addUserMutation.mutate(values, {
       onSuccess: () => {
         toast.success('User added successfully!');
-
-        if (onSuccess) {
-          onSuccess(values as AddNewUserType);
-        }
-
-        form.reset();
+        queryClient.invalidateQueries({ queryKey: ['usersList'] });
         onOpenChange(false);
       },
       onError: error => {
