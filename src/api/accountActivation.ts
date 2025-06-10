@@ -15,14 +15,7 @@ export const getUserDataOnAccountActivation = async (token: string) => {
 };
 
 export const activateUser = async (data: AccountActivationPayload) => {
-  try {
-    const response = await api.post('/auth/activate-account', data);
-    return response.data;
-  } catch (error) {
-    const axiosError = error as AxiosError<{ message: string }>;
-    const message = axiosError.response?.data?.message || axiosError.message || 'Something went wrong';
-
-    throw new Error(message);
-  }
+  const response = await api.post('/auth/activate-account', data);
+  return response.data;
 };
 
