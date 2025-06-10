@@ -5,6 +5,7 @@ import axios, { AxiosError } from 'axios';
 type LoginPayload = {
   email: string;
   password: string;
+  remember?: boolean;
 };
 
 type LoginResponse = {

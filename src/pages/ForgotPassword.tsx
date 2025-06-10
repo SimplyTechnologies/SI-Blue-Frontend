@@ -35,9 +35,8 @@ const ForgotPassword: React.FC = () => {
     forgotPasswordMutation.mutate(
       { email: data.email },
       {
-        onSuccess: response => {
-          console.log(response);
-
+        onSuccess: () => {
+      
           setEmail(data.email);
           setSuccess(true);
         },
@@ -83,7 +82,7 @@ const ForgotPassword: React.FC = () => {
               placeholder="m@example.com"
               {...register('email')}
               onBlur={() => trigger('email')}
-              className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
+              className="h-[56px] px-[22px]"
             />
 
             {error && (

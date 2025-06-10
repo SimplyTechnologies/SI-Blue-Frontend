@@ -3,6 +3,7 @@ import type { FieldValues, UseFormReturn, Path, ControllerRenderProps } from 're
 
 import { Input } from '@/components/atom/Input';
 import { FormField, FormItem, FormLabel, FormControl, FormMessage } from '@/components/atom/Form';
+import { inputClassname } from '../organism/VehicleForm/VehicleForm.data';
 
 interface InputFieldProps<T extends FieldValues> {
   form: UseFormReturn<T>;
@@ -16,11 +17,6 @@ interface InputFieldProps<T extends FieldValues> {
   maxLength?: number;
   onChange?: (e: ChangeEvent<HTMLInputElement>, field: ControllerRenderProps<T, Path<T>>) => void;
 }
-
-const inputClassname = `h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px]
-placeholder:text-support-7 placeholder:text-[length:var(--sm-text)]
-caret-support-8 focus:border-primary-4 focus:border-[2px]
-focus:placeholder:text-support-6 focus:caret-support-6 disabled:cursor-not-allowed disabled:opacity-50`;
 
 function InputField<T extends FieldValues>({
   form,

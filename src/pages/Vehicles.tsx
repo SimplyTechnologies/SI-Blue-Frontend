@@ -142,7 +142,7 @@ const Vehicles: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col gap-2 lg:h-full bg-white md:px-6 md:pt-6 px-2 py-2 lg:w-[600px] h-[50%]">
+    <div className="flex flex-col gap-2 lg:h-full bg-white md:px-6 md:pt-6 px-2 py-2 lg:w-[600px] h-[50%] min-h-[50%]">
       {!isFilterOpen && (
         <div className="flex justify-between gap-4 min-h-[56px] items-start">
           <div
@@ -168,7 +168,7 @@ const Vehicles: React.FC = () => {
       {isFilterOpen ? (
         <VehiclesFilter handleBack={() => setIsFilterOpen(false)} />
       ) : (
-        <div className="flex flex-col lg:h-full max-h-[calc(100%-80px)]">
+        <div className="flex flex-col h-full">
           <div
             className={`flex justify-between items-start w-full border-b border-support-8 gap-[6rem] transition-all duration-300 ease-in-out ${isSearchActive ? 'max-w-full' : 'max-w-[352px]'}`}
           >

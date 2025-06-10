@@ -69,7 +69,7 @@ export const PaginatedListWrapper = ({
           <Input
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
-            className=" max-w-[327px] h-[42px] rounded-[0.5rem] bg-white border-[1px] border-support-8 pl-[3.5rem] placeholder:text-support-7"
+            className="max-w-[327px] h-[42px] pl-[3.5rem]"
             placeholder="Search..."
           />
         </div>

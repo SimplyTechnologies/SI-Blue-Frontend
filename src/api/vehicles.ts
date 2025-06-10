@@ -38,14 +38,8 @@ export const createVehicle = async (body: CreateVehicleRequest) => {
 };
 
 export const editVehicle = async (body: CreateVehicleRequest, id: string) => {
-  try {
-    const response = await api.put(`/vehicles/vehicle/${id}`, body);
-    return response.data;
-  } catch (error) {
-    const axiosError = error as AxiosError<{ message: string }>;
-    const message = axiosError.response?.data?.message || axiosError.message || 'Something went wrong';
-    toast.error(message);
-  }
+  const response = await api.put(`/vehicles/vehicle/${id}`, body);
+  return response.data;
 };
 
 export const deleteVehicle = async (id: string) => {
