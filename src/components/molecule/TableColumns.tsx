@@ -33,6 +33,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
   const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
   const [isConfirmUnassignOpen, setIsConfirmUnassignOpen] = useState(false);
   const [unassignData, setUnassignData] = useState<{ customerId: number; unassignAll: boolean } | null>(null);
+  const [deletedId, setDeletedId] = useState<number | null>(null);
   const [showTooltipRow, setShowTooltipRow] = useState<{ [key: string]: boolean }>({});
 
   const deleteUser = useDeleteUser();
@@ -45,6 +46,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
         await deleteUser.mutate(id.toString());
         setIsConfirmDeleteOpen(false);
       } else {
+
         await deleteCustomer.mutate(id.toString());
         setIsConfirmDeleteOpen(false);
       }
@@ -94,6 +96,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
               (row.getCanExpand() ? (
                 <button
                   onClick={row.getToggleExpandedHandler()}
+                  aria-label="Expand/Collapse"
                   className="flex items-center justify-center w-6 h-6 hover:bg-gray-100 rounded cursor-pointer"
                 >
                   {row.getIsExpanded() ? (
@@ -104,7 +107,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                 </button>
               ) : (
                 <button className="w-6 h-6" disabled>
-                  <ChevronRight className="w-4 h-4 text-support-7" />
+                  {/* <ChevronRight className="w-4 h-4 text-support-7" /> */}
                 </button>
               ))}
 
@@ -206,6 +209,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
               }
 
               const assignedDates = row.getValue('assignedDate') as string[];
+
               if (!assignedDates || assignedDates.length === 0) {
                 return <div className="min-w-[148px]"></div>;
               }
@@ -361,6 +365,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                       setShowTooltipRow(prev => ({ ...prev, [rowId]: false }));
                     }, 2000);
                   } else {
+                    setDeletedId(row.original.id);
                     setIsConfirmDeleteOpen(true);
                   }
                 }}
@@ -373,7 +378,9 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                 setOpen={setIsConfirmDeleteOpen}
                 title={type === 'users' ? 'Delete User' : 'Delete Customer'}
                 description={`Are you sure that you would like to delete this ${type === 'users' ? 'user' : 'customer'}? This action cannot be undone.`}
-                handleConfirm={() => handleDelete(row.original.id, type)}
+                handleConfirm={() => {
+                  handleDelete(deletedId as number, type);
+                }}
                 variant="destructive"
                 actionBtnText={deleteUser.isPending ? 'Deleting...' : 'Delete'}
                 actionBtnDisabled={deleteUser.isPending}
@@ -388,8 +395,8 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                     handleUnassign(unassignData);
                   }
                 }}
-                actionBtnText={deleteUser.isPending ? 'Deleting...' : 'Delete'}
-                actionBtnDisabled={deleteUser.isPending}
+                actionBtnText={deleteUser.isPending ? 'Unassigning...' : 'Unassign'}
+                actionBtnDisabled={unassignData ? false : deleteUser.isPending}
               />
             </div>
           </div>

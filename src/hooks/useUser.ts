@@ -13,7 +13,7 @@ export const useDeleteUser = () => {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['users'] });
+      queryClient.invalidateQueries({ queryKey: ['usersList'] });
       toast.success('User deleted successfully');
     },
     onError: error => {
