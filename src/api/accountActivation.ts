@@ -1,15 +1,10 @@
 import type { AccountActivationPayload } from '@/hooks/useActivateAccount';
-import axios, { AxiosError } from 'axios';
-
-const apiUrl = import.meta.env.VITE_API_URL;
+import { AxiosError } from 'axios';
+import api from './axios';
 
 export const getUserDataOnAccountActivation = async (token: string) => {
   try {
-    const response = await axios.get(`${apiUrl}/users/user/${token}`, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.get(`/users/user/${token}`);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
@@ -21,11 +16,7 @@ export const getUserDataOnAccountActivation = async (token: string) => {
 
 export const activateUser = async (data: AccountActivationPayload) => {
   try {
-    const response = await axios.post(`${apiUrl}/auth/activate-account`, data, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    const response = await api.post('/auth/activate-account', data);
     return response.data;
   } catch (error) {
     const axiosError = error as AxiosError<{ message: string }>;
