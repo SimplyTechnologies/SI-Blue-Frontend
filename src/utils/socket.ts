@@ -4,9 +4,7 @@ let socket: Socket | null = null;
 
 export const connectSocket = (userId: number) => {
   if (!socket) {
-    socket = io(import.meta.env.VITE_SOCKET_URL, {
-      withCredentials: true,
-    });
+    socket = io(import.meta.env.VITE_SOCKET_URL);
     socket.on('connect', () => {
       socket?.emit('register', userId);
     });
