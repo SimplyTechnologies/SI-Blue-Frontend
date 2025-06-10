@@ -35,9 +35,8 @@ const ForgotPassword: React.FC = () => {
     forgotPasswordMutation.mutate(
       { email: data.email },
       {
-        onSuccess: response => {
-          console.log(response);
-
+        onSuccess: () => {
+      
           setEmail(data.email);
           setSuccess(true);
         },
