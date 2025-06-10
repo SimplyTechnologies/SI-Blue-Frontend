@@ -175,15 +175,21 @@
 }
 
 *[data-slot='table-container']::-webkit-scrollbar {
+  width: 0.25rem;
   height: 0.25rem;
 }
 
 *[data-slot='table-container']::-webkit-scrollbar-track {
   background: transparent;
+  width: 1px;
   height: 1px;
 }
 
 *[data-slot='table-container']::-webkit-scrollbar-thumb {
   background-color: var(--color-support-8);
   border-radius: 0.25rem;
+}
+
+input:focus::placeholder {
+  color: transparent;
 }
