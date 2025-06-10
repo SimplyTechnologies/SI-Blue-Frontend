@@ -1,3 +1,4 @@
+import type { AxiosError } from 'axios';
 import { useMutation } from '@tanstack/react-query';
 import type { User } from '@/types/User';
 import { activateUser } from '@/api/accountActivation';
@@ -20,7 +21,15 @@ type AccountActivationResponse = {
 export const useActivateAccount = () => {
   return useMutation<AccountActivationResponse, Error, AccountActivationPayload>({
     mutationFn: async (data: AccountActivationPayload) => {
-      return await activateUser(data);
+      try {
+        const response = await activateUser(data);
+        return response;
+      } catch (error) {
+        const axiosError = error as AxiosError<{ message: string }>;
+        const message = axiosError.response?.data?.message || axiosError.message || 'Something went wrong';
+
+        throw new Error(message);
+      }
     },
   });
 };
