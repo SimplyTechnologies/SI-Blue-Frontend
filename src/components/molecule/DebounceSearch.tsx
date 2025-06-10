@@ -69,7 +69,7 @@ const DebounceSearch = ({ setDebounceValue }: DebounceSearchType) => {
         >
           <SearchIcon className="text-support-3 absolute left-[1.5rem] top-1/2 -translate-y-1/2" />
           <Input
-            className="bg-white pr-10 w-full h-[42px] rounded-[0.5rem] border-[1px] border-support-8 pl-[3.5rem] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] placeholder:leading-[140%] placeholder:font-[var(--fw-regular)] caret-support-8 focus:border-[var(--color-primary-4)] focus:caret-support-6"
+            className="pr-10 w-full h-[42px] pl-[3.5rem]"
             placeholder="Search..."
             onChange={handleInputChange}
             value={inputValue}

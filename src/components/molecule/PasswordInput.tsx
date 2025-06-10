@@ -8,7 +8,7 @@ const PasswordInput = ({ className = '', ...props }) => {
 
   return (
     <div className="relative w-full">
-      <Input {...props} type={showPassword ? 'text' : 'password'} className={`w-full pr-12 ${className}`} />
+      <Input {...props} type={showPassword ? 'text' : 'password'} className={`w-full px-12 ${className}`} />
       <Button
         variant="text"
         type="button"
