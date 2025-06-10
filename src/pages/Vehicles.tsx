@@ -43,8 +43,8 @@ const Vehicles: React.FC = () => {
   };
 
   const resetPageAndScrollToTop = () => {
-    queryClient.removeQueries({
-      queryKey: ['vehicles'],
+    queryClient.invalidateQueries({
+      queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), active],
     });
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;

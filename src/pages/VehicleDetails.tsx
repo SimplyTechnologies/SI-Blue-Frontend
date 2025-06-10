@@ -65,9 +65,9 @@ export default function VehicleDetails() {
     }
   };
 
-  const onAssignSuccess = (customerId: number) => {
-    if (customerId && data.vehicle) {
-      queryClient.setQueryData(['vehicle', id], { vehicle: { ...data.vehicle, customerId } });
+  const onAssignSuccess = (vehicle: VehicleType) => {
+    if (vehicle) {
+      queryClient.setQueryData(['vehicle', id], { vehicle: vehicle });
       queryClient.invalidateQueries({
         queryKey: ['vehicles'],
       });
@@ -83,7 +83,7 @@ export default function VehicleDetails() {
   const getVehicleFormData = () => {
     if (!data?.vehicle) return null;
     return {
-      make: data.vehicle.model.make.id.toString(),
+      make: data.vehicle.make.id.toString(),
       model: data.vehicle.model.id.toString(),
       year: data.vehicle.year.toString(),
       vin: data.vehicle.vin,
@@ -132,7 +132,7 @@ export default function VehicleDetails() {
         >
           {data?.vehicle ? (
             <VehicleCardDetails
-              vehicle={{ ...data.vehicle, make: data.vehicle?.model?.make }}
+              vehicle={data.vehicle}
               onAssignSuccess={onAssignSuccess}
             />
           ) : null}

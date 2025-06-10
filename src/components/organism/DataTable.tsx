@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import {
   type ColumnFiltersState,
@@ -29,6 +29,7 @@ import NothingToShow from '@/components/molecule/NothingToShow';
 
 import { usePaginationRange } from '@/hooks/usePaginationRange';
 import { nothingToShowOptions } from '@/utils/constants';
+import { useDynamicPageSize } from '@/hooks/useDynamicRows';
 
 type TableData = User | Customers;
 
@@ -59,6 +60,29 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
   const [rowSelection, setRowSelection] = useState({});
   const [expanded, setExpanded] = useState<ExpandedState>({});
+  const containerRef = useRef<HTMLDivElement>(null);
+  const dynamicPageSize = useDynamicPageSize();
+  const [fixedHeight, setFixedHeight] = useState<string>('auto');
+  const [hasExpandedRows, setHasExpandedRows] = useState(false);
+
+  useEffect(() => {
+    const calculateFixedHeight = () => {
+      const headerHeight = 80;
+      const paddingHeight = 48;
+      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight;
+      setFixedHeight(`${calculatedHeight}px`);
+    };
+
+    calculateFixedHeight();
+    window.addEventListener('resize', calculateFixedHeight);
+    return () => window.removeEventListener('resize', calculateFixedHeight);
+  }, [dynamicPageSize]);
+
+  // Track if any rows are expanded
+  useEffect(() => {
+    const expandedCount = Object.values(expanded || {}).filter(Boolean).length;
+    setHasExpandedRows(expandedCount > 0);
+  }, [expanded]);
 
   const columns = TableColumns<T>({ type });
   const table = useReactTable({
@@ -124,8 +148,21 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
 
   return (
     <div className="w-full">
-      <div className={`w-full max-h-[${showPagination ? 'calc(100%-71.97px)' : '100%'}] rounded-md p-[1.5rem] bg-white overflow-auto`}>
-        <Table>
+      <div
+        ref={containerRef}
+        style={{
+          height: fixedHeight,
+          maxHeight: hasExpandedRows ? 'none' : fixedHeight,
+        }}
+        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} rounded-md p-[1.5rem] bg-white overflow-y-auto
+                    [&::-webkit-scrollbar]:w-[0.25rem]
+                    [&::-webkit-scrollbar-track]:bg-transparent
+                    [&::-webkit-scrollbar-track]:h-[1px]
+                    [&::-webkit-scrollbar-thumb]:bg-support-8
+                    [&::-webkit-scrollbar-thumb]:rounded-full
+        `}
+      >
+        <Table className="parent:bg-support-6">
           <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent focus:bg-transparent">
@@ -139,7 +176,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
               </TableRow>
             ))}
           </TableHeader>
-          <TableBody className='overflow-y-scroll'>
+          <TableBody>
             {table.getRowModel().rows?.length ? (
               table.getRowModel().rows.map(row => {
                 const isMainRow = row.depth === 0;
@@ -172,8 +209,10 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
                   <div className="flex items-center justify-center w-full min-h-[350px]">
                     <NothingToShow
                       title={type === 'users' ? nothingToShowOptions.users.title : nothingToShowOptions.customers.title}
-                      subtitle={ type === 'users' ? nothingToShowOptions.users.subtitle : nothingToShowOptions.customers.subtitle}
-                      icon={ type === 'users' ? nothingToShowOptions.users.icon : nothingToShowOptions.customers.icon}
+                      subtitle={
+                        type === 'users' ? nothingToShowOptions.users.subtitle : nothingToShowOptions.customers.subtitle
+                      }
+                      icon={type === 'users' ? nothingToShowOptions.users.icon : nothingToShowOptions.customers.icon}
                     />
                   </div>
                 </TableCell>
@@ -188,6 +227,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
             <PaginationItem>
               <PaginationPrevious
                 onClick={handlePreviousPage}
+                role="button"
+                aria-label="Previous"
                 className={pagination.page <= 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
               />
             </PaginationItem>
@@ -199,6 +240,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
                   <PaginationLink
                     onClick={() => handlePageClick(page as number)}
                     isActive={pagination.page === page}
+                    role="button"
+                    aria-label="Go to page"
                     className={`text-xs w-[40px] h-[40px] p-[0.5rem] rounded-[0.5rem] flex items-center justify-center ${
                       pagination.page === page
                         ? 'bg-sidebar-accent text-primary-3 font-bold leading-[120%]'
@@ -213,6 +256,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
             <PaginationItem>
               <PaginationNext
                 onClick={handleNextPage}
+                role="button"
+                aria-label="Next"
                 className={
                   pagination.page >= pagination.totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'
                 }

@@ -1,4 +1,4 @@
-import type { CustomerVehicle } from './Vehicle';
+import type { CustomerVehicle, VehicleType } from './Vehicle';
 import * as z from 'zod';
 
 export const assignCustomerFormSchema = z.object({
@@ -6,6 +6,7 @@ export const assignCustomerFormSchema = z.object({
     .string({
       required_error: 'Email is required.',
     })
+    .min(1, 'Email is required.')
     .email('Enter a valid email address.'),
   firstName: z
     .string({
@@ -42,7 +43,7 @@ export type CustomerType = {
 };
 
 export type AssignCustomerFormResponse = {
-  customer: CustomerType;
+  vehicle: VehicleType;
   message: string;
 }
 
