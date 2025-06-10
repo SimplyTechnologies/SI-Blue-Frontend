@@ -10,7 +10,7 @@ const PasswordValidator = ({ password = '', show = true }) => {
   if (!password || !show) return null;
 
   return (
-    <div className="absolute top-full left-0 mt-1 w-1/2 p-4 bg-white border rounded shadow-lg z-20">
+    <div className="absolute top-full left-0 mt-1 w-1/2 p-3 bg-white border rounded shadow-lg z-20">
       {validations.map((validation, index) => (
         <div key={index} className="flex items-center space-x-2 text-sm">
           <span
