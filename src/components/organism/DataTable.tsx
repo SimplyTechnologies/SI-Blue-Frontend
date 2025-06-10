@@ -65,19 +65,6 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
   const [fixedHeight, setFixedHeight] = useState<string>('auto');
   const [hasExpandedRows, setHasExpandedRows] = useState(false);
 
-  useEffect(() => {
-    const calculateFixedHeight = () => {
-      const headerHeight = 80;
-      const paddingHeight = 48;
-      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight;
-      setFixedHeight(`${calculatedHeight}px`);
-    };
-
-    calculateFixedHeight();
-    window.addEventListener('resize', calculateFixedHeight);
-    return () => window.removeEventListener('resize', calculateFixedHeight);
-  }, [dynamicPageSize]);
-
   // Track if any rows are expanded
   useEffect(() => {
     const expandedCount = Object.values(expanded || {}).filter(Boolean).length;
@@ -98,7 +85,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
     },
     getRowCanExpand: row => {
       if (type === 'customers' && isCustomer(row.original)) {
-        return (row.original.vehicles?.length || 0) > 0;
+        return (row.original.vehicles?.length || 0) > 1;
       }
       return false;
     },
@@ -131,6 +118,19 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
   const hasData = table.getRowModel().rows?.length > 0;
   const showPagination = hasData && pagination.totalPages > 1;
 
+  useEffect(() => {
+    const calculateFixedHeight = () => {
+      const headerHeight = 80;
+      const paddingHeight = 48;
+      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 50 : 0);
+      setFixedHeight(`${calculatedHeight}px`);
+    };
+
+    calculateFixedHeight();
+    window.addEventListener('resize', calculateFixedHeight);
+    return () => window.removeEventListener('resize', calculateFixedHeight);
+  }, [dynamicPageSize, showPagination]);
+
   const handlePreviousPage = () => {
     if (pagination.page > 1) {
       pagination.onPageChange(pagination.page - 1);
@@ -154,10 +154,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
           height: fixedHeight,
           maxHeight: hasExpandedRows ? 'none' : fixedHeight,
         }}
-        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} rounded-md p-[1.5rem] bg-white overflow-y-auto
-                    [&::-webkit-scrollbar]:w-[0.25rem]
+        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col justify-between rounded-md p-[1.5rem] bg-white overflow-y-auto border-b-[1px] border-support-12
                     [&::-webkit-scrollbar-track]:bg-transparent
-                    [&::-webkit-scrollbar-track]:h-[1px]
                     [&::-webkit-scrollbar-thumb]:bg-support-8
                     [&::-webkit-scrollbar-thumb]:rounded-full
         `}
@@ -193,8 +191,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
                         key={cell.id}
                         style={{ verticalAlign: 'middle' }}
                         className={`p-0 pr-[2rem] 
-                          ${isSubRow || cell.column.id === 'actions' ? 'h-[50px]' : isMainRow || cell.column.id === 'actions' ? 'h-[80px]' : ''}
-                          ${isMainRow && cell.column.id === 'actions' ? 'h-[80px] flex items-center justify-end p-[0]' : ''}
+                          ${isSubRow || cell.column.id === 'actions' ? 'h-[50px] p-0' : isMainRow || cell.column.id === 'actions' ? 'h-[80px]' : ''}
+                          ${isMainRow && cell.column.id === 'actions' ? ' h-[80px] flex items-center justify-end p-[0]' : ''}
                         `}
                       >
                         {flexRender(cell.column.columnDef.cell, cell.getContext())}
@@ -220,52 +218,52 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
             )}
           </TableBody>
         </Table>
-      </div>
-      {showPagination && (
-        <Pagination className="justify-end">
-          <PaginationContent>
-            <PaginationItem>
-              <PaginationPrevious
-                onClick={handlePreviousPage}
-                role="button"
-                aria-label="Previous"
-                className={pagination.page <= 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
-              />
-            </PaginationItem>
-            {paginationRange.map((page, index) => (
-              <PaginationItem key={index}>
-                {page === 'dots' ? (
-                  <PaginationEllipsis />
-                ) : (
-                  <PaginationLink
-                    onClick={() => handlePageClick(page as number)}
-                    isActive={pagination.page === page}
-                    role="button"
-                    aria-label="Go to page"
-                    className={`text-xs w-[40px] h-[40px] p-[0.5rem] rounded-[0.5rem] flex items-center justify-center ${
-                      pagination.page === page
-                        ? 'bg-sidebar-accent text-primary-3 font-bold leading-[120%]'
-                        : 'font-medium hover:bg-sidebar-accent text-support-7 leading-[140%]'
-                    }`}
-                  >
-                    {page}
-                  </PaginationLink>
-                )}
+        {showPagination && (
+          <Pagination className="h-[54px] py-[1rem] justify-end bg-white border-t-[1px] border-support-12">
+            <PaginationContent>
+              <PaginationItem className="h-[40px] flex justify-center items-center">
+                <PaginationPrevious
+                  onClick={handlePreviousPage}
+                  role="button"
+                  aria-label="Previous"
+                  className={pagination.page <= 1 ? 'opacity-50 pointer-events-none' : 'cursor-pointer'}
+                />
               </PaginationItem>
-            ))}
-            <PaginationItem>
-              <PaginationNext
-                onClick={handleNextPage}
-                role="button"
-                aria-label="Next"
-                className={
-                  pagination.page >= pagination.totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'
-                }
-              />
-            </PaginationItem>
-          </PaginationContent>
-        </Pagination>
-      )}
+              {paginationRange.map((page, index) => (
+                <PaginationItem key={index}>
+                  {page === 'dots' ? (
+                    <PaginationEllipsis />
+                  ) : (
+                    <PaginationLink
+                      onClick={() => handlePageClick(page as number)}
+                      isActive={pagination.page === page}
+                      role="button"
+                      aria-label="Go to page"
+                      className={`text-xs w-[40px] h-[40px] p-[0.5rem] rounded-[0.5rem] flex items-center justify-center ${
+                        pagination.page === page
+                          ? 'bg-sidebar-accent text-primary-3 font-bold leading-[120%]'
+                          : 'font-medium hover:bg-sidebar-accent text-support-7 leading-[140%]'
+                      }`}
+                    >
+                      {page}
+                    </PaginationLink>
+                  )}
+                </PaginationItem>
+              ))}
+              <PaginationItem className="h-[40px] flex justify-center items-center">
+                <PaginationNext
+                  onClick={handleNextPage}
+                  role="button"
+                  aria-label="Next"
+                  className={
+                    pagination.page >= pagination.totalPages ? 'opacity-50 pointer-events-none' : 'cursor-pointer'
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+        )}
+      </div>
     </div>
   );
 };
