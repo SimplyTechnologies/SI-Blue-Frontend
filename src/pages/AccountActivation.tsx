@@ -132,7 +132,7 @@ const AccountActivation: React.FC = () => {
               {...register('email')}
               onBlur={() => trigger('email')}
               disabled={true}
-              className="h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] caret-support-8 focus:border-primary-4 focus:border-[2px] focus:caret-support-6"
+              className="h-[56px] px-[22px]"
             />
             {errors.email && (
               <p className="text-support-2 text-[length:var(--xs-text)] font-normal leading-[140%]">
@@ -154,7 +154,7 @@ const AccountActivation: React.FC = () => {
               disabled={true}
               {...register('name')}
               onBlur={() => trigger('name')}
-              className="h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] caret-support-8 focus:border-primary-4 focus:border-[2px] focus:caret-support-6"
+              className="h-[56px] px-[22px]"
             />
             {errors.name && (
               <p className="text-support-2 text-[length:var(--xs-text)] font-normal leading-[140%]">
@@ -180,7 +180,7 @@ const AccountActivation: React.FC = () => {
                   })}
                   onFocus={() => setShowValidator(true)}
                   onBlur={() => trigger('password')}
-                  className="h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] caret-support-8 focus:border-primary-4 focus:border-[2px] focus:caret-support-6"
+                  className="h-[56px] pl-[22px] pr-[42px]"
                 />
                 <PasswordValidator password={password} show={showValidator} />
               </div>
@@ -199,7 +199,7 @@ const AccountActivation: React.FC = () => {
                 {...register('confirmPassword')}
                 onBlur={() => trigger('confirmPassword')}
                 onFocus={() => setShowValidator(false)}
-                className="h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px] placeholder:text-support-7 placeholder:text-[length:var(--sm-text)] caret-support-8 focus:border-primary-4 focus:border-[2px] focus:caret-support-6"
+                className="h-[56px] pl-[22px] pr-[42px]"
               />
               {errors.confirmPassword && (
                 <p className="text-support-2 text-[length:var(--xs-text)] font-normal leading-[140%]">

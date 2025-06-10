@@ -11,6 +11,7 @@ import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
 import useAuthStore from '@/stores/authStore';
 import { Loader2 } from 'lucide-react';
+import PasswordInput from '@/components/molecule/PasswordInput';
 
 const passwordSchema = z.string().min(1, 'Password is required');
 
@@ -83,7 +84,7 @@ const LoginPage = () => {
               placeholder="m@example.com"
               {...register('email')}
               onBlur={() => trigger('email')}
-              className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
+              className="h-[56px] px-[22px]"
             />
             {errors.email && (
               <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
@@ -98,13 +99,13 @@ const LoginPage = () => {
             >
               Password
             </Label>
-            <Input
+            <PasswordInput
               id="password"
               type="password"
               placeholder="Enter Password"
               {...register('password')}
               onBlur={() => trigger('password')}
-              className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
+              className="h-[56px] pl-[22px] pr-[42px]"
             />
             {errors.password && (
               <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
@@ -143,8 +144,15 @@ const LoginPage = () => {
             </a>
           </div>
         </div>
-        <Button type="submit" className="h-[56px] flex justify-center items-center" variant='default' disabled={loading}>
-          <div className='flex gap-2 items-center justify-center'>{loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Sign in</div>
+        <Button
+          type="submit"
+          className="h-[56px] flex justify-center items-center"
+          variant="default"
+          disabled={loading}
+        >
+          <div className="flex gap-2 items-center justify-center">
+            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Sign in
+          </div>
         </Button>
       </div>
     </form>
