@@ -1,5 +1,7 @@
 import { useEffect, useRef } from 'react';
 import type { ControllerRenderProps } from 'react-hook-form';
+import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
+import getColorFromName from '@/utils/getRandomColor';
 import type { CustomerType } from '@/types/Customer';
 import { Input } from '@/components/atom/Input';
 
@@ -93,7 +95,27 @@ export default function CustomerEmailSuggest({
             }}
             className="hover:text-primary hover:bg-accent focus:text-accent-foreground relative flex cursor-pointer items-center gap-2 rounded-sm px-2 py-1.5 text-sm select-none"
           >
-            {item.email}
+            <Avatar
+              className="w-[52px] h-[52px] rounded-[50%] flex justify-center items-center"
+              style={{ backgroundColor: getColorFromName(`${item.firstName} ${item.lastName}`).bg }}
+            >
+              <AvatarImage src="" />
+              <AvatarFallback
+                className="font-bold text-sm bg-primary-5 leading-[120%]"
+                style={{
+                  backgroundColor: 'transparent',
+                  color: getColorFromName(`${item.firstName} ${item.lastName}`).color,
+                }}
+              >
+                {(item.firstName[0] || '') + (item.lastName[0] || '')}
+              </AvatarFallback>
+            </Avatar>
+            <div>
+              <div className="capitalize font-bold text-sm text-support-6">
+                {item.firstName} {item.lastName}
+              </div>
+              <div className='text-sm text-support-5'>{item.email}</div>
+            </div>
           </div>
         ))}
       </div>
