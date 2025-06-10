@@ -15,7 +15,6 @@ const AddNewUser: FC<{
   onOpenChange: Dispatch<SetStateAction<boolean>>;
 }> = ({ open, onOpenChange }) => {
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState('');
   const queryClient = useQueryClient();
 
   const addUserMutation = useAddUser();
@@ -38,7 +37,6 @@ const AddNewUser: FC<{
   }, [open, form]);
 
   const onSubmit = (values: AddNewUserFormValue) => {
-    setError('');
     setIsLoading(true);
     addUserMutation.mutate(values, {
       onSuccess: () => {
@@ -46,8 +44,7 @@ const AddNewUser: FC<{
         queryClient.invalidateQueries({ queryKey: ['usersList'] });
         onOpenChange(false);
       },
-      onError: error => {
-        setError(error.message);
+      onError: () => {
         toast.error('User with this email exists.');
       },
       onSettled: () => {
@@ -70,12 +67,7 @@ const AddNewUser: FC<{
     >
       <Form {...form}>
         <form id="add-new-user-form" onSubmit={form.handleSubmit(onSubmit)} className="mt-3">
-          {error && (
-            <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
-              {error}
-            </p>
-          )}
-          <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px]">
+         <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px]">
             <div className="grid grid-cols-1 gap-x-[10px] gap-y-[10px] md:grid-cols-2">
               <FormField
                 control={form.control}
