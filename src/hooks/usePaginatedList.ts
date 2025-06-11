@@ -41,7 +41,7 @@ export const usePaginatedList = <T extends QueryKey>({
 
       try {
         const response = await api.get(endpoint, { params });
-        return response.data as PaginatedListResponse<T>;
+        return response.data.data as PaginatedListResponse<T>;
       } catch (error) {
         if (error instanceof AxiosError) {
           const message =
