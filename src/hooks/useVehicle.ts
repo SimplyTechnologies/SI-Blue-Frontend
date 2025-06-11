@@ -18,7 +18,7 @@ export const useUnassignVehicle = () => {
     return useMutation<UnassignVehicleResponse, Error, UnassignVehicleParams>({
         mutationFn: async (data: UnassignVehicleParams) => {
             const response = await api.post(`/vehicles/unassign`, data);
-            return response.data;
+            return response.data.data;
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['customersList'] });

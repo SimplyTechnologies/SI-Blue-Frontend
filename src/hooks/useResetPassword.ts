@@ -7,22 +7,32 @@ interface ResetPasswordPayload {
   token: string;
 }
 
-interface ResetPasswordResponse {
-  message: string;
+interface ForgotPasswordAxiosResponse {
+  data: {
+    data: {
+      message: string;
+    };
+    message: string;
+    success: boolean;
+  };
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const RESET_PASSWORD_ENDPOINT = '/auth/reset-password';
 
 export const useResetPassword = () => {
-  return useMutation<ResetPasswordResponse, Error, ResetPasswordPayload>({
-    mutationFn: async (payload: ResetPasswordPayload): Promise<ResetPasswordResponse> => {
+  return useMutation<ForgotPasswordAxiosResponse, Error, ResetPasswordPayload>({
+    mutationFn: async (payload: ResetPasswordPayload): Promise<ForgotPasswordAxiosResponse> => {
       try {
-        const response = await axios.put<ResetPasswordResponse>(`${API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`, payload, {
-          headers: {
-            'Content-Type': 'application/json',
+        const response = await axios.put<ForgotPasswordAxiosResponse>(
+          `${API_BASE_URL}${RESET_PASSWORD_ENDPOINT}`,
+          payload,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
           },
-        });
+        );
 
         return response.data;
       } catch (error) {

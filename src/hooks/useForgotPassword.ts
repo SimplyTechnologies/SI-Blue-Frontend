@@ -5,22 +5,28 @@ interface ForgotPasswordPayload {
   email: string;
 }
 
-interface ForgotPasswordResponse {
-  message: string;
+interface ForgotPasswordAxiosResponse {
+  data: {
+    data: {
+      message: string;
+    },
+    message: string;
+    success: boolean;
+  };
 }
 
 const API_BASE_URL = import.meta.env.VITE_API_URL;
 const FORGET_PASSWORD_ENDPOINT = '/auth/forgot-password';
 
 export const useForgotPassword = () => {
-  return useMutation<ForgotPasswordResponse, Error, ForgotPasswordPayload>({
-    mutationFn: async (payload: ForgotPasswordPayload): Promise<ForgotPasswordResponse> => {
+  return useMutation<ForgotPasswordAxiosResponse, Error, ForgotPasswordPayload>({
+    mutationFn: async (payload: ForgotPasswordPayload): Promise<ForgotPasswordAxiosResponse> => {
       if (!payload.email?.trim()) {
         throw new Error('Email is required');
       }
 
       try {
-        const response = await axios.post<ForgotPasswordResponse>(
+        const response = await axios.post<ForgotPasswordAxiosResponse>(
           `${API_BASE_URL}${FORGET_PASSWORD_ENDPOINT}`,
           payload,
           {
