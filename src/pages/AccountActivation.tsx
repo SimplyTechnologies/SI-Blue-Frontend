@@ -15,6 +15,8 @@ import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import PasswordInput from '@/components/molecule/PasswordInput';
 import PasswordValidator from '@/components/molecule/PasswordValidator';
+import AnimatedDotsLoader from '@/components/molecule/AnimatedDotsLoader';
+import { ActiveUserIcon } from '@/assets/svgIconComponents/ActiveUserIcon';
 
 const passwordSchema = z
   .string()
@@ -51,7 +53,7 @@ const AccountActivation: React.FC = () => {
   const [searchParams] = useSearchParams();
   const token = searchParams.get('token');
 
-  const { data } = useQuery({
+  const { data, isError, isPending } = useQuery({
     queryKey: ['userData', token],
     queryFn: () => token && getUserDataOnAccountActivation(token),
     enabled: !!token,
@@ -105,11 +107,50 @@ const AccountActivation: React.FC = () => {
   };
 
   useEffect(() => {
+    if (data?.user?.isActive) {
+      const timeout = setTimeout(() => navigate('/login'), 3000);
+      return () => clearTimeout(timeout);
+    }
+
     if (data?.user?.firstName && data?.user?.lastName && data?.user?.email) {
       setValue('email', data.user.email);
       setValue('name', data.user.firstName + ' ' + data.user.lastName);
     }
   }, [data]);
+
+  if (isError) {
+    return (
+      <div className="flex flex-col gap-[45px]">
+        <div className="text-primary text-4xl font-bold leading-[1.2]">Link Expired</div>
+        <p className="text-primary text-sm font-medium leading-[1.4]">
+          The link you followed has expired, or you might not have a permission.{' '}
+        </p>
+        <Button className="h-[56px]" variant="default" onClick={() => navigate('/login')}>
+          Continue to Dealer Deck
+        </Button>
+      </div>
+    );
+  }
+
+  if (data?.user?.isActive) {
+    return (
+      <div>
+        <div className="w-[100px] h-[100px] mb-[63px]">
+          <ActiveUserIcon />
+        </div>
+        <div className="text-primary text-4xl font-bold leading-[1.2] mb-[58px]">Account Already activated</div>
+        <div className="text-primary text-4xl leading-[1.4] mb-[29px]">Hold on!</div>
+        <div className="flex gap-[80px] items-center">
+          <p className="text-primary text-sm font-medium leading-[1.4]">You’re being redirected to another page</p>
+          <AnimatedDotsLoader />
+        </div>
+      </div>
+    );
+  }
+
+  if (isPending) {
+    return;
+  }
 
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
