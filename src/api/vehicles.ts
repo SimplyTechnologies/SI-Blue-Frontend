@@ -80,7 +80,7 @@ export const getCSV = async (params: FilterRequest) => {
     const response = await api.get(`/vehicles/export`, {
       params,
     });
-    return response.data.data;
+    return response.data;
   } catch (error) {
     console.error('Error exporting file:', error);
     toast.error('Failed to export. Please try again.');

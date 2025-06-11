@@ -52,6 +52,7 @@
   --color-support-10: #feeded;
   --color-support-11: #23a1e9;
   --color-support-12: #f5f5f7;
+  --color-support-13: #d9d9d9;
 
   --color-success-1: #e5faf5;
 
@@ -119,6 +120,7 @@
   --color-support-10: var(--color-support-10);
   --color-support-11: var(--color-support-11);
   --color-support-12: var(--color-support-12);
+  --color-support-13: var(--color-support-13);
 
   --color-success-1: var(--color-success-1);
 
@@ -172,6 +174,10 @@
   body {
     @apply bg-background text-foreground;
   }
+}
+
+*[data-slot='table-container'] {
+  height: 100%;
 }
 
 *[data-slot='table-container']::-webkit-scrollbar {
