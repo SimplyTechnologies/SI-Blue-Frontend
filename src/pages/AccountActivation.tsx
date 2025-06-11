@@ -7,7 +7,7 @@ import { useForm } from 'react-hook-form';
 import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { getUserDataOnAccountActivation } from '@/api/accountActivation';
-import useAuthStore from '@/stores/authStore';
+import useAuthStore from '@/stores/useAuthStore';
 import { useActivateAccount } from '@/hooks/useActivateAccount';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
