@@ -9,7 +9,7 @@ import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
 import { useLogin } from '@/hooks/useLogin';
-import useAuthStore from '@/stores/authStore';
+import useAuthStore from '@/stores/useAuthStore';
 import { Loader2 } from 'lucide-react';
 import PasswordInput from '@/components/molecule/PasswordInput';
 

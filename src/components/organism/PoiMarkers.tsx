@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router';
 import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer';
 import type { Poi } from '@/types/Poi';
-import { getMapData } from '@/utils/general';
+import getMapData from '@/utils/getMapData';
 import carMarker from '@/assets/carMarker.svg';
 
 const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {

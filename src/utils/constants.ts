@@ -1,14 +1,14 @@
+import type { VehicleTab } from '@/types/Vehicle';
 import { NothingToShowCarIcon } from '@/assets/svgIconComponents/NothingToShowCarIcon';
 import { NothingToShowCustomersIcon } from '@/assets/svgIconComponents/NothingToShowCustomers';
 import { NothingToShowFavoriteIcon } from '@/assets/svgIconComponents/NothingToShowFavoriteIcon';
 import { NothingToShowUsersIcon } from '@/assets/svgIconComponents/NothingToShowUsers';
-import type { VehicleTab } from '@/types/Vehicle';
 
 export const pathTitles: Record<string, string> = {
-  'dashboard': 'Dashboard',
-  'vehicles': 'Vehicles',
-  'users': 'Users',
-  'customers': 'Customers',
+  dashboard: 'Dashboard',
+  vehicles: 'Vehicles',
+  users: 'Users',
+  customers: 'Customers',
   'my-profile': 'Account',
 };
 
@@ -42,7 +42,7 @@ export const nothingToShowOptions = {
   },
 };
 
-export const avatarColors: Array<{ bg: string, color: string }> = [
+export const avatarColors: Array<{ bg: string; color: string }> = [
   {
     bg: '#FFE7D5',
     color: '#FF852D',
@@ -60,4 +60,3 @@ export const avatarColors: Array<{ bg: string, color: string }> = [
     color: '#0DCF89',
   },
 ];
-
