@@ -10,6 +10,7 @@ export const useDeleteUser = () => {
   return useMutation<void, Error, string>({
     mutationFn: async (id: string) => {
       const response = await api.delete(`/users/deactivate-user/${id}`);
+      
       return response.data;
     },
     onSuccess: () => {
