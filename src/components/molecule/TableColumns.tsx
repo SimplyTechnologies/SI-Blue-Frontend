@@ -14,7 +14,7 @@ import type { Customers } from '@/types/Customer';
 import type { User } from '@/types/User';
 
 import getColorFromName from '@/utils/getRandomColor';
-import formatDate from '@/utils/formatDate';
+import { formatDate } from '@/utils/formatDate';
 import { useDeleteUser } from '@/hooks/useUser';
 import { useDeleteCustomer } from '@/hooks/useCustomer';
 import { useUnassignVehicle } from '@/hooks/useVehicle';
