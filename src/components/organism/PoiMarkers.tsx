@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { AdvancedMarker, useMap } from '@vis.gl/react-google-maps';
 import { MarkerClusterer, type Marker } from '@googlemaps/markerclusterer';
 import type { Poi } from '@/types/Poi';
@@ -10,6 +11,7 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
   const [markers, setMarkers] = useState<{ [key: string]: Marker }>({});
 
   const clusterer = useRef<MarkerClusterer | null>(null);
+  const navigate = useNavigate();
 
   // Initialize clusterer
   useEffect(() => {
@@ -65,7 +67,6 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
       }
     });
   };
-
   return (
     <>
       {getMapData(pois).map(poi => (
@@ -73,6 +74,7 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
           key={poi.id}
           position={{ lat: poi.lat, lng: poi.lng }}
           ref={marker => setMarkerRef(marker, poi.id.toString())}
+          onClick={() => navigate(`/vehicles/${poi.id}`)}
         >
           <div className="w-[47.05px] h-[47px] flex items-center justify-center rounded-[40px] bg-[#403C89]/20">
             <div className="w-[31.87px] h-[31.84px] flex justify-center items-center rounded-[30px] bg-[var(--color-primary-3)]">
