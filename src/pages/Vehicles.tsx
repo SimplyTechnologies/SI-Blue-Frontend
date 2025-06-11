@@ -9,7 +9,7 @@ import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import { getVehicles } from '@/api/vehicles';
 import { nothingToShowOptions, vehicleTabs } from '@/utils/constants';
-import { isObjectEmpty } from '@/utils/general';
+import { isObjectEmpty } from '@/utils/helpers';
 import { Button } from '@/components/atom/Button';
 import VehicleCard from '@/components/molecule/VehicleCard';
 import VehiclesFilter from '@/components/organism/VehiclesFilter';
