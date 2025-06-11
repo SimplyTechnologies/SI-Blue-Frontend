@@ -25,7 +25,7 @@ export const useDeleteCustomer = () => {
   return useMutation<void, Error, string>({
     mutationFn: async (id: string) => {
       const response = await api.delete(`/customers/${id}`);
-      return response.data;
+      return response.data.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customersList'] });

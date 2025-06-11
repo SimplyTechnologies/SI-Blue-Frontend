@@ -27,7 +27,7 @@ export const useLogin = () => {
             'Content-Type': 'application/json',
           },
         });
-        return response.data;
+        return response.data.data;
       } catch (error) {
         const axiosError = error as AxiosError<{ message: string }>;
         const message = axiosError.response?.data?.message || axiosError.message || 'Login failed';
