@@ -268,8 +268,8 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
       header: () => <p className="font-bold text-sm text-support-7 leading-[140%] text-right">Actions</p>,
       cell: ({ row }) => {
         const isSubRow = row.depth > 0;
-        const isVehicles = (row.getValue('vehicles') as CustomerVehicle[])?.length > 0;
-        const vehicles = row.getValue('vehicles') as CustomerVehicle[];
+        const isVehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 0 : false;
+        const vehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[]) : [];
         if (isSubRow) {
           const vehicle = row.original as unknown as CustomerVehicle;
           const customerId = row.parentId?.split('_')[1];
@@ -359,13 +359,17 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                 onClick={() => {
                   if (isVehicles) {
                     const rowId = row.original.id;
-                    setShowTooltipRow(prev => ({ ...prev, [rowId]: true }));
-                    setTimeout(() => {
-                      setShowTooltipRow(prev => ({ ...prev, [rowId]: false }));
-                    }, 2000);
+                    if (!Object.values(showTooltipRow)[0]) {
+                      setShowTooltipRow(prev => ({ ...prev, [rowId]: true }));
+                      setTimeout(() => {
+                        setShowTooltipRow(prev => ({ ...prev, [rowId]: false }));
+                      }, 2000);
+                    }
                   } else {
                     setDeletedId(row.original.id);
-                    setIsConfirmDeleteOpen(row.original.id);
+                    if (!Object.values(showTooltipRow)[0]) {
+                      setIsConfirmDeleteOpen(row.original.id);
+                    }
                   }
                 }}
                 className="flex w-[1.5rem] h-[1.5rem] items-center justify-center cursor-pointer"
