@@ -7,7 +7,7 @@ import type { User, UsersResponse } from '@/types/User';
 import type { Customers, CustomersResponse } from '@/types/Customer';
 
 import { useDebounce } from '@/hooks/useDebounce';
-import { usePaginatedList } from '@/hooks/usePaginatedList';
+import { usePaginatedList } from '@/hooks/queries/usePaginatedList';
 import { useDynamicPageSize } from '@/hooks/useDynamicRows';
 
 interface PaginatedListWrapperProps  {  

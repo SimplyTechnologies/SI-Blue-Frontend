@@ -15,8 +15,8 @@ import type { User } from '@/types/User';
 
 import getColorFromName from '@/utils/getRandomColor';
 import { formatDate } from '@/utils/formatDate';
-import { useDeleteUser } from '@/hooks/useUser';
-import { useDeleteCustomer } from '@/hooks/useCustomer';
+import { useDeleteUser } from '@/hooks/mutations/useUser';
+import { useDeleteCustomer } from '@/hooks/mutations/useCustomer';
 import { useUnassignVehicle } from '@/hooks/useVehicle';
 
 type TableData = User | Customers;
