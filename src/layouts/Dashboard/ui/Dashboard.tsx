@@ -26,9 +26,14 @@ function DashboardLayout() {
     navigate('/my-profile');
   };
 
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
+
   const profileDropdownItems = [
     { label: 'My Profile', onClick: handleProfileNavigate, icon: <AccountIcon /> },
-    { label: 'Log Out', onClick: logout, icon: <LogOutIcon /> },
+    { label: 'Log Out', onClick: handleLogout, icon: <LogOutIcon /> },
   ];
 
   useEffect(() => {
@@ -41,7 +46,7 @@ function DashboardLayout() {
   return (
     <SidebarProvider>
       <AppSidebar />
-      <SidebarInset className='overflow-hidden'>
+      <SidebarInset className="overflow-hidden">
         <header className="flex justify-between bg-white p-[24px] h-[78px] border-b-1 border-sidebar-border">
           <div className="flex gap-2">
             <SidebarTriggerMobile />
@@ -67,4 +72,3 @@ function DashboardLayout() {
 }
 
 export default DashboardLayout;
-
