@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 
 import {
   type ColumnFiltersState,
+  type Row,
   type SortingState,
   type VisibilityState,
   flexRender,
@@ -54,7 +55,7 @@ interface DataTableProps<T extends TableData> {
 
 type ExpandedState = true | Record<string, boolean>;
 
-export const DataTableDemo = <T extends TableData>({ type, data, pagination }: DataTableProps<T>) => {
+export const DataTableDemo = <T extends TableData>({ type, data, pagination, isLoading }: DataTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -146,6 +147,16 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
     pagination.onPageChange(page);
   };
 
+  const isLastSubRowOfParent = (currentRow: Row<T>, allRows: Row<T>[]) => {
+    if (currentRow.depth === 0) return false;
+
+    const parentId = currentRow.parentId;
+    const siblingSubRows = allRows.filter(row => row.parentId === parentId && row.depth > 0);
+    const currentIndex = siblingSubRows.findIndex(row => row.id === currentRow.id);
+
+    return currentIndex === siblingSubRows.length - 1;
+  };
+
   return (
     <div className="w-full">
       <div
@@ -154,14 +165,14 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
           height: fixedHeight,
           maxHeight: hasExpandedRows ? 'none' : fixedHeight,
         }}
-        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col justify-between rounded-md p-[1.5rem] bg-white overflow-y-auto border-b-[1px] border-support-12
+        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col justify-between rounded-md p-[1.5rem] bg-white border-b-[1px] border-support-12
                     [&::-webkit-scrollbar-track]:bg-transparent
                     [&::-webkit-scrollbar-thumb]:bg-support-8
                     [&::-webkit-scrollbar-thumb]:rounded-full
         `}
       >
         <Table className="parent:bg-support-6">
-          <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12">
+          <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12 sticky top-0 z-10 bg-[#FFFFFF] ">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent focus:bg-transparent">
                 {headerGroup.headers.map(header => {
@@ -179,12 +190,17 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
               table.getRowModel().rows.map(row => {
                 const isMainRow = row.depth === 0;
                 const isSubRow = row.depth > 0;
+                const isLastSubRow = isLastSubRowOfParent(row, table.getRowModel().rows);
 
                 return (
                   <TableRow
                     key={row.id}
                     className={`${isSubRow ? 'h-[50px]' : 'h-[80px]'} last:mb-0
-                      ${isSubRow ? 'border-none bg-[#F5F5F5] hover:bg-[#F5F5F5]' : 'border-b border-support-12 hover:bg-transparent'} ${isMainRow && row.getIsExpanded() ? 'bg-[#F5F5F5] hover:bg-[#F5F5F5] shadow-[inset_2px_4px_16px_-0px_rgba(0,0,0,0.06)] ' : ''} `}
+                      ${
+                        isSubRow
+                          ? `border-b-transparent bg-[#F5F5F5] hover:bg-[#F5F5F5] ${isLastSubRow ? 'border-b border-support-13' : ''}`
+                          : 'border-b border-support-13 hover:bg-transparent'
+                      } ${isMainRow && row.getIsExpanded() ? 'border-support-12' : ''} `}
                   >
                     {row.getVisibleCells().map(cell => (
                       <TableCell
@@ -201,6 +217,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
                   </TableRow>
                 );
               })
+            ) : isLoading ? (
+              <TableRow />
             ) : (
               <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
                 <TableCell colSpan={columns.length} className="p-0 h-full border-none">
@@ -219,7 +237,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
           </TableBody>
         </Table>
         {showPagination && (
-          <Pagination className="h-[54px] py-[1rem] justify-end bg-white border-t-[1px] border-support-12">
+          <Pagination className="h-[54px] py-[1rem] justify-end bg-white">
             <PaginationContent>
               <PaginationItem className="h-[40px] flex justify-center items-center">
                 <PaginationPrevious

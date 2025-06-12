@@ -14,7 +14,7 @@ import type { Customers } from '@/types/Customer';
 import type { User } from '@/types/User';
 
 import getColorFromName from '@/utils/getRandomColor';
-import formatDate from '@/utils/formatDate';
+import { formatDate } from '@/utils/formatDate';
 import { useDeleteUser } from '@/hooks/useUser';
 import { useDeleteCustomer } from '@/hooks/useCustomer';
 import { useUnassignVehicle } from '@/hooks/useVehicle';
@@ -30,8 +30,8 @@ const isCustomer = (item: TableData): item is Customers => {
 };
 
 const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnDef<T>[] => {
-  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState(false);
-  const [isConfirmUnassignOpen, setIsConfirmUnassignOpen] = useState(false);
+  const [isConfirmDeleteOpen, setIsConfirmDeleteOpen] = useState<number | null>(null);
+  const [isConfirmUnassignOpen, setIsConfirmUnassignOpen] = useState<number | null>(null);
   const [unassignData, setUnassignData] = useState<{ customerId: number; unassignAll: boolean } | null>(null);
   const [deletedId, setDeletedId] = useState<number | null>(null);
   const [showTooltipRow, setShowTooltipRow] = useState<{ [key: string]: boolean }>({});
@@ -44,11 +44,10 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
     try {
       if (type === 'users') {
         await deleteUser.mutate(id.toString());
-        setIsConfirmDeleteOpen(false);
+        setIsConfirmDeleteOpen(null);
       } else {
-
         await deleteCustomer.mutate(id.toString());
-        setIsConfirmDeleteOpen(false);
+        setIsConfirmDeleteOpen(null);
       }
     } catch (error) {
       console.error('Error deleting user:', error);
@@ -66,7 +65,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
   }) => {
     try {
       await unassignVehicle.mutate({ customerId, vehicleId, unassignAll });
-      setIsConfirmUnassignOpen(false);
+      setIsConfirmUnassignOpen(null);
       setUnassignData(null);
     } catch (error) {
       console.error('Error unassigning vehicle:', error);
@@ -319,7 +318,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                         <Button
                           onClick={() => {
                             setUnassignData({ customerId: Number(row.original.id), unassignAll: true });
-                            setIsConfirmUnassignOpen(true);
+                            setIsConfirmUnassignOpen(row.original.id); // Set to specific row ID
                           }}
                           className="inline-flex items-center justify-start gap-[0.5rem] rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-3 py-2 group hover:bg-primary-5"
                           style={{ color: 'var(--color-support-6)' }}
@@ -366,7 +365,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                     }, 2000);
                   } else {
                     setDeletedId(row.original.id);
-                    setIsConfirmDeleteOpen(true);
+                    setIsConfirmDeleteOpen(row.original.id);
                   }
                 }}
                 className="flex w-[1.5rem] h-[1.5rem] items-center justify-center cursor-pointer"
@@ -374,25 +373,29 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                 <img src={trashIcon} alt="trash" className="w-[24px] h-[24px]" />
               </div>
               <CustomAlertDialog
-                open={isConfirmDeleteOpen}
-                setOpen={setIsConfirmDeleteOpen}
+                open={isConfirmDeleteOpen === row.original.id}
+                setOpen={open => setIsConfirmDeleteOpen(open ? row.original.id : null)}
                 title={type === 'users' ? 'Delete User' : 'Delete Customer'}
                 description={`Are you sure that you would like to delete this ${type === 'users' ? 'user' : 'customer'}? This action cannot be undone.`}
                 handleConfirm={() => {
                   handleDelete(deletedId as number, type);
+                  setIsConfirmDeleteOpen(null);
                 }}
                 variant="destructive"
                 actionBtnText={deleteUser.isPending ? 'Deleting...' : 'Delete'}
                 actionBtnDisabled={deleteUser.isPending}
               />
+
               <CustomAlertDialog
-                open={isConfirmUnassignOpen}
-                setOpen={setIsConfirmUnassignOpen}
+                open={isConfirmUnassignOpen === row.original.id}
+                setOpen={open => setIsConfirmUnassignOpen(open ? row.original.id : null)}
                 title="Unassign All Vehicles"
                 description={`Are you sure that you would like to unassign all vehicles for this customer? This action cannot be undone.`}
                 handleConfirm={() => {
                   if (unassignData) {
                     handleUnassign(unassignData);
+                    setIsConfirmUnassignOpen(null);
+                    setUnassignData(null);
                   }
                 }}
                 actionBtnText={deleteUser.isPending ? 'Unassigning...' : 'Unassign'}

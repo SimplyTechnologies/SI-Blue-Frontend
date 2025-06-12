@@ -6,7 +6,7 @@ import * as z from 'zod';
 
 import { updateUser } from '@/api/user';
 import { Form } from '@/components/atom/Form';
-import useAuthStore from '@/stores/authStore';
+import useAuthStore from '@/stores/useAuthStore';
 import { Button } from '@/components/atom/Button';
 import { zodResolver } from '@hookform/resolvers/zod';
 import InputField from '@/components/molecule/InputField';

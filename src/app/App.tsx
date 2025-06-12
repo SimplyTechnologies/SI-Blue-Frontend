@@ -4,7 +4,7 @@ import { APIProvider } from '@vis.gl/react-google-maps';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { connectSocket, disconnectSocket } from '@/utils/socket';
 import AppRoutes from '@/routes/Routes';
-import useAuthStore from '@/stores/authStore';
+import useAuthStore from '@/stores/useAuthStore';
 import './styles/index.css';
 
 const queryClient = new QueryClient({

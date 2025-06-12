@@ -4,7 +4,7 @@ import { SidebarInset, SidebarProvider, SidebarTriggerMobile } from '@/component
 import { Outlet, useLocation, useNavigate } from 'react-router';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/atom/Avatar';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
-import useAuthStore from '@/stores/authStore';
+import useAuthStore from '@/stores/useAuthStore';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { pathTitles } from '@/utils/constants';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
