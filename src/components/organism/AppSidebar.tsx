@@ -13,6 +13,7 @@ import { VehiclesIconActive } from '@/assets/svgIconComponents/VehiclesIconActiv
 import { UsersIconActive } from '@/assets/svgIconComponents/UsersIconActive';
 import { CustomersIconActive } from '@/assets/svgIconComponents/CustomersIconActive';
 import { DashboardIconActive } from '@/assets/svgIconComponents/DashboardIconActive';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 const data = {
   navMain: [
@@ -48,6 +49,7 @@ const data = {
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const isAdmin = useIsAdmin();
   const { state, isMobile } = useSidebar();
 
   return (
@@ -61,9 +63,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
+        <NavMain items={isAdmin ? data.navMain : data.navMain.filter(i => i.title !== 'Users')} />
       </SidebarContent>
     </Sidebar>
   );
 }
-
