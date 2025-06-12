@@ -7,7 +7,7 @@ export const vehicleDetailsQuery = (id?: string) =>
     queryKey: ['vehicle', id],
     queryFn: async () => {
       const vehicle = id && (await getVehicleById(id));
-      return vehicle || null;
+      return vehicle ? { vehicle } : null;
     },
   });
 
@@ -33,4 +33,3 @@ export const mapDataQuery = () =>
 export const mapDataLoader = (queryClient: QueryClient) => async () => {
   await queryClient.ensureQueryData(mapDataQuery());
 };
-
