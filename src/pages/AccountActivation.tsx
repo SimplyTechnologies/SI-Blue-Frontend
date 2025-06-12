@@ -13,6 +13,7 @@ import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
 import { Checkbox } from '@/components/atom/Checkbox';
+import LinkExpired from '@/components/molecule/LinkExpired';
 import PasswordInput from '@/components/molecule/PasswordInput';
 import PasswordValidator from '@/components/molecule/PasswordValidator';
 import AnimatedDotsLoader from '@/components/molecule/AnimatedDotsLoader';
@@ -119,17 +120,7 @@ const AccountActivation: React.FC = () => {
   }, [data]);
 
   if (isError) {
-    return (
-      <div className="flex flex-col gap-[45px]">
-        <div className="text-primary text-4xl font-bold leading-[1.2]">Link Expired</div>
-        <p className="text-primary text-sm font-medium leading-[1.4]">
-          The link you followed has expired, or you might not have a permission.{' '}
-        </p>
-        <Button className="h-[56px]" variant="default" onClick={() => navigate('/login')}>
-          Continue to Dealer Deck
-        </Button>
-      </div>
-    );
+    return <LinkExpired />;
   }
 
   if (data?.user?.isActive) {
@@ -281,4 +272,3 @@ const AccountActivation: React.FC = () => {
 };
 
 export default AccountActivation;
-

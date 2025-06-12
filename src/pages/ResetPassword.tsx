@@ -2,14 +2,16 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate, useSearchParams } from 'react-router';
 import { z } from 'zod';
+import { useQuery } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useResetPassword } from '@/hooks/useResetPassword';
 import { cn } from '@/utils/cn';
-import { Button } from '@/components/atom/Button';
+import { getUserDataOnAccountActivation } from '@/api/accountActivation';
 import { Label } from '@/components/atom/Label';
-
-import PasswordValidator from '@/components/molecule/PasswordValidator';
+import { Button } from '@/components/atom/Button';
+import LinkExpired from '@/components/molecule/LinkExpired';
 import PasswordInput from '@/components/molecule/PasswordInput';
+import PasswordValidator from '@/components/molecule/PasswordValidator';
 
 const passwordSchema = z
   .string()
@@ -31,7 +33,7 @@ const schema = z
 
 type FormData = z.infer<typeof schema>;
 
-const ResetPassword: React.FC = () => {
+const ResetPassword = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const resetPassword = useResetPassword();
@@ -39,6 +41,13 @@ const ResetPassword: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showValidator, setShowValidator] = useState(false);
   const token = searchParams.get('token') || '';
+
+  const { isError, isPending } = useQuery({
+    queryKey: [token],
+    queryFn: () => token && getUserDataOnAccountActivation(token),
+    enabled: !!token,
+    retry: false,
+  });
 
   const {
     register,
@@ -65,6 +74,14 @@ const ResetPassword: React.FC = () => {
       },
     );
   };
+
+  if (isPending) {
+    return;
+  }
+
+  if (isError) {
+    return <LinkExpired />;
+  }
 
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
