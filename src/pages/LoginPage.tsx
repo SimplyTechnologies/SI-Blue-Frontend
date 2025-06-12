@@ -136,8 +136,7 @@ const LoginPage = () => {
               </label>
             </div>
             <a
-              href="#"
-              className="font-[var(--fw-medium)] text-[var(--color-primary-3)] text-[length:var(--xs-text)] leading-[140%]"
+              className="font-[var(--fw-medium)] text-[var(--color-primary-3)] text-[length:var(--xs-text)] leading-[140%] cursor-pointer"
               onClick={() => navigate('/forgot-password')}
             >
               Forgot password
@@ -160,4 +159,3 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
-
