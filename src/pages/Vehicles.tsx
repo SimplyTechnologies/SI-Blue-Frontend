@@ -43,9 +43,6 @@ const Vehicles: React.FC = () => {
   };
 
   const resetPageAndScrollToTop = () => {
-    queryClient.invalidateQueries({
-      queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), active],
-    });
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollTop = 0;
     }
@@ -159,6 +156,9 @@ const Vehicles: React.FC = () => {
             className="w-[132px] h-[56px]"
             onSuccess={() => {
               toast.success('Vehicle added successfully!');
+              queryClient.invalidateQueries({
+                queryKey: ['vehicles', debounceValue, JSON.stringify(validatedFilters), active],
+              });
               resetPageAndScrollToTop();
             }}
           />
@@ -180,8 +180,9 @@ const Vehicles: React.FC = () => {
                       key={tab}
                       onClick={() => {
                         if (tab === active) return;
-                        resetPageAndScrollToTop();
                         setActive(tab);
+                        resetPageAndScrollToTop();
+                        queryClient.removeQueries({ queryKey: ['vehicles'] });
                       }}
                       className="relative w-[67px] h-[37px] pb-4 rounded-none"
                     >
@@ -246,3 +247,4 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
+
