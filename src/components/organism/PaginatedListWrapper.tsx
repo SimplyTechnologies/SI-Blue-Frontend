@@ -65,7 +65,7 @@ export const PaginatedListWrapper = ({
     const timer = setTimeout(() => {
       const data = getTableData();
       setTableData(data);
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [data]);
