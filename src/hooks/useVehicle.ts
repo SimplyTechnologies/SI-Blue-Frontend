@@ -3,11 +3,11 @@ import { toast } from "sonner";
 import type { AxiosError } from "axios";
 import api from "@/api/axios";
 
-type UnassignVehicleResponse = {
+interface UnassignVehicleResponse  {
     message: string;
 }
 
-type UnassignVehicleParams = {
+interface UnassignVehicleParams  {
     customerId: number;
     vehicleId?: number;
     unassignAll?: boolean;

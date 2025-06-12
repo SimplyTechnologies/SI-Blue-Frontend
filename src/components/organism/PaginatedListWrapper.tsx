@@ -10,7 +10,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { usePaginatedList } from '@/hooks/usePaginatedList';
 import { useDynamicPageSize } from '@/hooks/useDynamicRows';
 
-type PaginatedListWrapperProps = {
+interface PaginatedListWrapperProps  {  
   title?: string;
   showButton?: boolean;
   queryKey: 'usersList' | 'customersList';
@@ -30,7 +30,7 @@ export const PaginatedListWrapper = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const pageSize = useDynamicPageSize();
-  const { debounceValue: debounceSearch } = useDebounce({ inputValue: searchInput, delay: 10 });
+  const { debounceValue: debounceSearch } = useDebounce({ inputValue: searchInput, delay: 100 });
 
   const { data, isLoading } = usePaginatedList({
     endpoint,

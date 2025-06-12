@@ -5,7 +5,7 @@ import vehiclesSold from '@/assets/vehiclesSold.svg';
 
 type titleType = 'vehicle' | 'customers' | 'vehiclesSold';
 
-type AnalyticCardProps = {
+interface AnalyticCardProps  {
   title: titleType;
   count: number;
 };
