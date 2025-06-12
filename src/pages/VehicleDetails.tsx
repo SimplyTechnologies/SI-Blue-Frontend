@@ -4,8 +4,9 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { deleteVehicle } from '@/api/vehicles';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { vehicleDetailsQuery } from '@/queries/vehicles';
-import type { VehicleType } from '@/types/Vehicle';
+import type { VehicleType } from '@/types/vehicles';
 import { Button } from '@/components/atom/Button';
 import VehicleCardDetails from '@/components/molecule/VehicleCardDetails';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
@@ -14,6 +15,7 @@ import VehicleForm from '@/components/organism/VehicleForm';
 import { buildLocationForEdit } from '@/components/organism/VehicleForm/VehicleForm.data';
 
 export default function VehicleDetails() {
+  const isAdmin = useIsAdmin();
   const navigate = useNavigate();
   const location = useLocation();
   const { id } = useParams();
@@ -107,7 +109,7 @@ export default function VehicleDetails() {
           <Button variant="text" className="w-auto flex text-xs text-primary hover:opacity-80" onClick={handleBack}>
             <ChevronLeft color="#28303F" className="h-[24px] w-[24px]" />
           </Button>
-          {data?.vehicle && !data?.vehicle?.customerId ? (
+          {data?.vehicle && !data?.vehicle?.customerId && isAdmin ? (
             <CustomDropdown
               sideOffset={0}
               align="end"
@@ -130,12 +132,7 @@ export default function VehicleDetails() {
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
         >
-          {data?.vehicle ? (
-            <VehicleCardDetails
-              vehicle={data.vehicle}
-              onAssignSuccess={onAssignSuccess}
-            />
-          ) : null}
+          {data?.vehicle ? <VehicleCardDetails vehicle={data.vehicle} onAssignSuccess={onAssignSuccess} /> : null}
         </div>
       </div>{' '}
       <CustomAlertDialog

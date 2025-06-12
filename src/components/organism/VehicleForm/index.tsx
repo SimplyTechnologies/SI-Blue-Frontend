@@ -60,7 +60,8 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
     setVinLoading(true);
     (async () => {
       try {
-        const { data } = await decodeVehicleVin({ vin: vinValue });
+        const data = await decodeVehicleVin({ vin: vinValue });
+        
         if (!data) return;
         const { vehicleMake, vehicleModel, year } = data;
         if (!vehicleMake && !vehicleModel && !year) return;
@@ -372,4 +373,3 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
 };
 
 export default VehicleForm;
-

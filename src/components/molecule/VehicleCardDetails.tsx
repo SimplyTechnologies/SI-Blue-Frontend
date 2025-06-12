@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import type { VehicleType } from '@/types/Vehicle';
+import type { VehicleType } from '@/types/vehicles';
 import { formatDateShort } from '@/utils/formatDate';
 import { Button } from '@/components/atom/Button';
 import AssignToCustomer from '@/components/organism/AssignToCustomer';

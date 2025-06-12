@@ -1,5 +1,5 @@
 import type { Dispatch, SetStateAction } from 'react';
-import type { VehicleType } from '@/types/Vehicle';
+import type { VehicleType } from '@/types/vehicles';
 import type { CarFormValues } from './VehicleForm.data';
 
 export type AddVehicleProps = {

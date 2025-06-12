@@ -6,6 +6,7 @@ import Auth from '@/layouts/Auth';
 import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
 import VehicleLayout from '@/layouts/Vehicles';
 import NotFound from '@/pages/NotFound';
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { mapDataLoader, vehicleDetailsLoader } from '@/queries/vehicles';
 
 const Protected = lazy(() => import('@/layouts/Protected'));
@@ -27,6 +28,7 @@ interface AppRouterProps {
 }
 
 const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
+  const isAdmin = useIsAdmin();
   const queryClient = useQueryClient();
 
   return (
@@ -60,7 +62,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
                   loader={() => vehicleDetailsLoader(queryClient)}
                 />
               </Route>
-              <Route path="users" element={<Users />} />
+              {isAdmin && <Route path="users" element={<Users />} />}
               <Route path="customers" element={<Customers />} />
               <Route path="my-profile" element={<MyProfile />} />
             </Route>
@@ -74,4 +76,3 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
 };
 
 export default AppRoutes;
-

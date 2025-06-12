@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeftIcon } from 'lucide-react';
 import { getMakes, getModelsByMakeId } from '@/api/vehicles';
-import type { FilterState } from '@/types/Vehicle';
+import type { FilterState } from '@/types/vehicles';
 import { availabilityOptions } from '@/utils/constants';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';

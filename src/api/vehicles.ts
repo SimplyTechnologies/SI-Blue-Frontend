@@ -1,7 +1,7 @@
 import type { AxiosError } from 'axios';
 import { toast } from 'sonner';
 import api from './axios';
-import type { AddRemoveFavorite, CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/Vehicle';
+import type { AddRemoveFavorite, CreateVehicleRequest, FilterRequest, VehicleRequest } from '@/types/vehicles';
 
 export const getVehicles = async (params: VehicleRequest) => {
   try {

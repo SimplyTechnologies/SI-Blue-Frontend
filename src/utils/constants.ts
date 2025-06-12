@@ -1,4 +1,4 @@
-import type { VehicleTab } from '@/types/Vehicle';
+import type { VehicleTab } from '@/types/vehicles';
 import { NothingToShowCarIcon } from '@/assets/svgIconComponents/NothingToShowCarIcon';
 import { NothingToShowCustomersIcon } from '@/assets/svgIconComponents/NothingToShowCustomers';
 import { NothingToShowFavoriteIcon } from '@/assets/svgIconComponents/NothingToShowFavoriteIcon';
@@ -60,3 +60,4 @@ export const avatarColors: Array<{ bg: string; color: string }> = [
     color: '#0DCF89',
   },
 ];
+

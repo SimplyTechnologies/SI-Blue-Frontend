@@ -1,5 +1,5 @@
 import React from 'react';
-import type { VehicleType } from '@/types/Vehicle';
+import type { VehicleType } from '@/types/vehicles';
 import { Button } from '@/components/atom/Button';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
 import { FavoriteColor } from '@/assets/svgIconComponents/FavoriteIcon';
@@ -49,7 +49,9 @@ const VehicleCard = React.forwardRef<
           <div
             className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.customerId ? 'bg-support-11' : 'bg-support-9'}`}
           >
-            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.customerId ? 'Sold' : 'In Stock'}</p>
+            <p className="text-white text-[12px] font-regular leading-[140%]">
+              {vehicle.customerId ? 'Sold' : 'In Stock'}
+            </p>
           </div>
         </div>
         <CustomTooltip
