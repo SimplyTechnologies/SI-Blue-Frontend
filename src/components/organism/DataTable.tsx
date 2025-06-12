@@ -55,7 +55,7 @@ interface DataTableProps<T extends TableData> {
 
 type ExpandedState = true | Record<string, boolean>;
 
-export const DataTableDemo = <T extends TableData>({ type, data, pagination }: DataTableProps<T>) => {
+export const DataTableDemo = <T extends TableData>({ type, data, pagination, isLoading }: DataTableProps<T>) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -65,6 +65,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
   const dynamicPageSize = useDynamicPageSize();
   const [fixedHeight, setFixedHeight] = useState<string>('auto');
   const [hasExpandedRows, setHasExpandedRows] = useState(false);
+  const [showNothingToShow, setShowNothingToShow] = useState(false);
 
   // Track if any rows are expanded
   useEffect(() => {
@@ -120,10 +121,26 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
   const showPagination = hasData && pagination.totalPages > 1;
 
   useEffect(() => {
+    const shouldShowEmpty = !table.getRowModel().rows?.length && !isLoading;
+
+    if (shouldShowEmpty) {
+      const timer = setTimeout(() => {
+        if (!table.getRowModel().rows?.length && !isLoading) {
+          setShowNothingToShow(true);
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowNothingToShow(false);
+    }
+  }, [table.getRowModel().rows?.length, isLoading]);
+
+  useEffect(() => {
     const calculateFixedHeight = () => {
       const headerHeight = 80;
       const paddingHeight = 48;
-      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 50 : 0);
+      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 20 : 0);
       setFixedHeight(`${calculatedHeight}px`);
     };
 
@@ -165,14 +182,14 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
           height: fixedHeight,
           maxHeight: hasExpandedRows ? 'none' : fixedHeight,
         }}
-        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col justify-between rounded-md p-[1.5rem] bg-white overflow-y-auto border-b-[1px] border-support-12
+        className={`w-full ${hasExpandedRows ? 'overflow-y-auto' : 'overflow-hidden'} flex flex-col justify-between rounded-md p-[1.5rem] bg-white border-b-[1px] border-support-12
                     [&::-webkit-scrollbar-track]:bg-transparent
                     [&::-webkit-scrollbar-thumb]:bg-support-8
                     [&::-webkit-scrollbar-thumb]:rounded-full
         `}
       >
         <Table className="parent:bg-support-6">
-          <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12">
+          <TableHeader className="[&_tr]:border-none border-b-[1px] border-support-12 sticky top-0 z-10 bg-[#FFFFFF] ">
             {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id} className="hover:bg-transparent focus:bg-transparent">
                 {headerGroup.headers.map(header => {
@@ -217,7 +234,9 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
                   </TableRow>
                 );
               })
-            ) : (
+            ) : isLoading ? (
+              <TableRow className="h-full pointer-events-none border-none hover:bg-transparent" />
+            ) : showNothingToShow ? (
               <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
                 <TableCell colSpan={columns.length} className="p-0 h-full border-none">
                   <div className="flex items-center justify-center w-full min-h-[350px]">
@@ -231,7 +250,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination }: D
                   </div>
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
           </TableBody>
         </Table>
         {showPagination && (

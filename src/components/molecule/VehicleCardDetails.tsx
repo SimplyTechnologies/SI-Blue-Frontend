@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import type { VehicleType } from '@/types/Vehicle';
-import { formatDate } from '@/utils/general';
+import { formatDateShort } from '@/utils/formatDate';
 import { Button } from '@/components/atom/Button';
 import AssignToCustomer from '@/components/organism/AssignToCustomer';
 import carMarker from '@/assets/carMarkerPrimary.svg';
@@ -43,7 +43,7 @@ const VehicleCardDetails = React.forwardRef<
               </span>
             </p>
             <p className="text-[14px] text-support-5 text-xs font-regular leading-[140%]">
-              Date Created: <span className="text-support-6 font-medium">{formatDate(vehicle.createdAt)}</span>
+              Date Created: <span className="text-support-6 font-medium">{formatDateShort(vehicle.createdAt)}</span>
             </p>
           </div>
         </div>

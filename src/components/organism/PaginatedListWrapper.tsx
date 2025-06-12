@@ -30,7 +30,7 @@ export const PaginatedListWrapper = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
   const pageSize = useDynamicPageSize();
-  const { debounceValue: debounceSearch } = useDebounce({ inputValue: searchInput, delay: 300 });
+  const { debounceValue: debounceSearch } = useDebounce({ inputValue: searchInput, delay: 100 });
 
   const { data, isLoading } = usePaginatedList({
     endpoint,
@@ -59,7 +59,16 @@ export const PaginatedListWrapper = ({
       return (data as CustomersResponse).customers || [];
     }
   };
-  const tableData = getTableData();
+  const [tableData, setTableData] = useState<User[] | Customers[]>([]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      const data = getTableData();
+      setTableData(data);
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [data]);
 
   return (
     <div className="w-full h-full p-[1.5rem] max-[480px]:px-[1rem] flex flex-col gap-[0.5rem] bg-bg-1">
