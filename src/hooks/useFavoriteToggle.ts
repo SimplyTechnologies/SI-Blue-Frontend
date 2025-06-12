@@ -1,5 +1,5 @@
 import { addFavorite, removeFavorite } from '@/api/vehicles';
-import type { AddRemoveFavoriteResponse, AddRemoveFavoriteWithMethod } from '@/types/Vehicle';
+import type { AddRemoveFavoriteResponse, AddRemoveFavoriteWithMethod } from '@/types/vehicles';
 import { useMutation } from '@tanstack/react-query';
 import { AxiosError } from 'axios';
 

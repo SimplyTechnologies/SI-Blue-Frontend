@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 import { deleteVehicle } from '@/api/vehicles';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { vehicleDetailsQuery } from '@/queries/vehicles';
-import type { VehicleType } from '@/types/Vehicle';
+import type { VehicleType } from '@/types/vehicles';
 import { Button } from '@/components/atom/Button';
 import VehicleCardDetails from '@/components/molecule/VehicleCardDetails';
 import CustomDropdown from '@/components/molecule/CustomDropdown';
@@ -132,12 +132,7 @@ export default function VehicleDetails() {
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
         >
-          {data?.vehicle ? (
-            <VehicleCardDetails
-              vehicle={data.vehicle}
-              onAssignSuccess={onAssignSuccess}
-            />
-          ) : null}
+          {data?.vehicle ? <VehicleCardDetails vehicle={data.vehicle} onAssignSuccess={onAssignSuccess} /> : null}
         </div>
       </div>{' '}
       <CustomAlertDialog

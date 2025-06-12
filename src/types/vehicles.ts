@@ -81,7 +81,7 @@ export type CustomerVehicle = {
   make: string;
   model: string;
   assignedDate: string;
-}
+};
 
 export type VehicleTab = 'vehicles' | 'favorites';
 

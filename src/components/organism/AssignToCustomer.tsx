@@ -7,7 +7,7 @@ import { useDebounce } from '@/hooks/useDebounce';
 import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
 import { useCustomerAssign } from '@/hooks/useCustomer';
 import { getCustomerEmails } from '@/api/customers';
-import type { VehicleType } from '@/types/Vehicle';
+import type { VehicleType } from '@/types/vehicles';
 
 import { inputClassname } from './VehicleForm/VehicleForm.data';
 import Modal from '@/components/atom/Modal';

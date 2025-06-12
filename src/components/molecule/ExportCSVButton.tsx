@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/atom/Button';
 import CustomTooltip from '@/components/molecule/CustomTooltip';
 import { getCSV } from '@/api/vehicles';
-import type { FilterRequest } from '@/types/Vehicle';
+import type { FilterRequest } from '@/types/vehicles';
 import { fileDownload } from '@/utils/fileDownload';
 import { ExportIcon } from '@/assets/svgIconComponents/ExportIcon';
 import { useSearchStore } from '@/stores/useSearchStore';

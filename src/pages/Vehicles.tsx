@@ -3,7 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
-import { type VehicleTab, type VehicleType } from '@/types/Vehicle';
+import { type VehicleTab, type VehicleType } from '@/types/vehicles';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';

@@ -9,7 +9,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '../atom/Popover';
 import { Button } from '../atom/Button';
 import trashIcon from '@/assets/trash.svg';
 import rotation from '@/assets/rotation.svg';
-import type { CustomerVehicle } from '@/types/Vehicle';
+import type { CustomerVehicle } from '@/types/vehicles';
 import type { Customers } from '@/types/Customer';
 import type { User } from '@/types/User';
 
@@ -410,3 +410,4 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
 };
 
 export default TableColumns;
+
