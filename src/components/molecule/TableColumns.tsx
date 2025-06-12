@@ -269,6 +269,8 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
       cell: ({ row }) => {
         const isSubRow = row.depth > 0;
         const isVehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 0 : false;
+        const isMoreVehicles =
+          type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 1 : false;
         const vehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[]) : [];
         if (isSubRow) {
           const vehicle = row.original as unknown as CustomerVehicle;
@@ -295,7 +297,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
             <div
               className={`w-[92px] h-full px-[2px] py-[18px] flex justify-${isVehicles ? 'between' : 'end'} items-center`}
             >
-              {isVehicles && (
+              {isMoreVehicles ? (
                 <div className="relative">
                   <Popover>
                     <PopoverTrigger>
@@ -353,6 +355,21 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                       </div>
                     </div>
                   )}
+                </div>
+              ) : (
+                <div
+                  onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}
+                  className="w-full flex justify-end pr-[4px]"
+                >
+                  <CustomTooltip
+                    content="Unassign this vehicle"
+                    side="bottom"
+                    trigger={
+                      <div className="w-[44px] h-[44px] flex justify-center items-center rounded-[8px] p-[10px] bg-[#3D5BF6] hover:bg-[#3D5BF6]/80 cursor-pointer">
+                        <img src={rotation} alt="rotation" />
+                      </div>
+                    }
+                  />
                 </div>
               )}
               <div
