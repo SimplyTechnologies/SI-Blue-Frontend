@@ -10,7 +10,7 @@ import {
 } from '@/components/atom/AlertDialog';
 import { AlertDialogIcon } from '@/assets/svgIconComponents/AlertDialogIcon';
 
-type AlertDialog = {
+interface AlertDialog  {
   open: boolean;
   setOpen: (open: boolean) => void;
   title: string;

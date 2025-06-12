@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useDebounce } from '@/hooks/useDebounce';
 import { assignCustomerFormSchema, type AssignCustomerFormValues, type CustomerType } from '@/types/Customer';
-import { useCustomerAssign } from '@/hooks/useCustomer';
+import { useCustomerAssign } from '@/hooks/mutations/useCustomer';
 import { getCustomerEmails } from '@/api/customers';
 import type { VehicleType } from '@/types/vehicles';
 

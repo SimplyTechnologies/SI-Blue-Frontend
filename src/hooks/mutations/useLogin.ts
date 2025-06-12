@@ -2,13 +2,13 @@ import type { User } from '@/types/User';
 import { useMutation } from '@tanstack/react-query';
 import axios, { AxiosError } from 'axios';
 
-type LoginPayload = {
+interface LoginPayload  {
   email: string;
   password: string;
   remember?: boolean;
 };
 
-type LoginResponse = {
+interface LoginResponse  {
   user: User;
   tokens: {
     accessToken: string;
