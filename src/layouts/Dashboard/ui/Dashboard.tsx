@@ -7,6 +7,7 @@ import CustomDropdown from '@/components/molecule/CustomDropdown';
 import useAuthStore from '@/stores/useAuthStore';
 import { useSearchStore } from '@/stores/useSearchStore';
 import { pathTitles } from '@/utils/constants';
+import getColorFromName from '@/utils/getRandomColor';
 import { AccountIcon } from '@/assets/svgIconComponents/AccountIcon';
 import { LogOutIcon } from '@/assets/svgIconComponents/LogOutIcon';
 import './dashboard.css';
@@ -21,6 +22,8 @@ function DashboardLayout() {
   const activePath = location.pathname.split('/').filter(Boolean)[0];
   const pageTitle = pathTitles[activePath] || '';
   const userCredentials = (user?.firstName[0] || '') + (user?.lastName[0] || '');
+  const avatarFallbackTextColor = getColorFromName(`${user?.firstName} ${user?.lastName}`).color;
+  const avatarFallbackBg = getColorFromName(`${user?.firstName} ${user?.lastName}`).bg;
 
   const handleProfileNavigate = () => {
     navigate('/my-profile');
@@ -47,7 +50,7 @@ function DashboardLayout() {
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="overflow-hidden">
-        <header className="flex justify-between bg-white p-[24px] h-[78px] border-b-1 border-sidebar-border">
+        <header className="flex justify-between items-center bg-white px-[24px] py-[18px] h-[78px] min-h-[78px] border-b-1 border-sidebar-border">
           <div className="flex gap-2">
             <SidebarTriggerMobile />
             <h1 className="text-2xl font-bold text-primary">{pageTitle}</h1>
@@ -56,9 +59,14 @@ function DashboardLayout() {
             sideOffset={0}
             align="end"
             trigger={
-              <Avatar>
+              <Avatar style={{ backgroundColor: avatarFallbackBg }} className='w-[40px] h-[40px]'>
                 <AvatarImage src="" />
-                <AvatarFallback className="text-primary-3 font-medium bg-primary-5">{userCredentials}</AvatarFallback>
+                <AvatarFallback
+                  className="font-medium"
+                  style={{ backgroundColor: 'transparent', color: avatarFallbackTextColor }}
+                >
+                  {userCredentials}
+                </AvatarFallback>
               </Avatar>
             }
             items={profileDropdownItems}
@@ -72,3 +80,4 @@ function DashboardLayout() {
 }
 
 export default DashboardLayout;
+
