@@ -69,7 +69,7 @@ export const PaginatedListWrapper = ({
       if (isInitialLoad) {
         setIsInitialLoad(false);
       }
-    }, 200);
+    }, 400);
 
     return () => clearTimeout(timer);
   }, [data]);
