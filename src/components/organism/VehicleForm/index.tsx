@@ -22,7 +22,7 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
 
   const form = useForm<CarFormValues>({
     resolver: zodResolver(carFormSchema),
-    defaultValues: data || {
+    defaultValues: {
       make: undefined,
       model: undefined,
       year: undefined,
@@ -153,18 +153,7 @@ const VehicleForm = ({ open, onOpenChange, onSuccess, data, vehicleId }: AddVehi
 
   useEffect(() => {
     if (vehicleId && data) {
-      form.setValue('make', data.make);
-      form.setValue('model', data.model);
-      form.setValue('year', data.year);
-      form.setValue('vin', data.vin);
-      form.setValue('location', data.location);
-      form.setValue('street', data.street);
-      form.setValue('city', data.city);
-      form.setValue('state', data.state);
-      form.setValue('country', data.country);
-      form.setValue('zipcode', data.zipcode);
-      form.setValue('lat', data.lat);
-      form.setValue('lng', data.lng);
+      form.reset(data);
     }
   }, [data, vehicleId]);
 

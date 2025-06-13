@@ -128,8 +128,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination, isL
         if (!table.getRowModel().rows?.length && !isLoading) {
           setShowNothingToShow(true);
         }
-      }, 50);
-
+      }, 100);
       return () => clearTimeout(timer);
     } else {
       setShowNothingToShow(false);
