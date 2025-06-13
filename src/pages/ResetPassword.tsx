@@ -90,16 +90,16 @@ const ResetPassword = () => {
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <p className="text-[var(--color-support-6)] text-[length:var(--xl-text)] font-[var(--fw-bold)] leading-[120%]">
+        <p className="text-support-6 text-4xl font-bold leading-[120%]">
           Reset Password
         </p>
       </div>
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem]">
-          <div className="grid gap-[4px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="password"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)] mb-0.5"
+              className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
             >
               New Password
             </Label>
@@ -118,10 +118,10 @@ const ResetPassword = () => {
               <PasswordValidator password={password} show={showValidator} />
             </div>
           </div>
-          <div className="grid gap-[4px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="confirmPassword"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)] mb-0.5"
+              className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
             >
               Confirm New Password
             </Label>
@@ -135,7 +135,7 @@ const ResetPassword = () => {
               className="h-[56px] pl-[22px] pr-[42px]"
             />
             {errors.confirmPassword && (
-              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
+              <p className="text-support-2 text-sm font-normal leading-[140%]">
                 {errors.confirmPassword.message}
               </p>
             )}
@@ -147,7 +147,7 @@ const ResetPassword = () => {
           </div>
         </Button>
         {error && (
-          <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
+          <p className="text-support-2 text-sm font-normal leading-[140%]">
             {error}
           </p>
         )}
