@@ -143,7 +143,7 @@ const ResetPassword = () => {
         </div>
         <Button type="submit" className="h-[56px]" variant={'default'} disabled={loading}>
           <div className="flex gap-2 items-center justify-center">
-            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null}Reset Password
+            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Reset Password
           </div>
         </Button>
         {error && (
