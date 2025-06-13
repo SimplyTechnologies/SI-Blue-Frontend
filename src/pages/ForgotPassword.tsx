@@ -4,6 +4,7 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForgotPassword } from '@/hooks/useForgotPassword';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
@@ -20,6 +21,7 @@ type FormData = z.infer<typeof schema>;
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
   const forgotPasswordMutation = useForgotPassword();
+  const [loading, setLoading] = useState(false);
 
   const { register, handleSubmit, trigger } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -32,11 +34,11 @@ const ForgotPassword: React.FC = () => {
   const [error, setError] = useState<string>('');
 
   const onSubmit = (data: FormData) => {
+    setLoading(true);
     forgotPasswordMutation.mutate(
       { email: data.email },
       {
         onSuccess: () => {
-      
           setEmail(data.email);
           setSuccess(true);
         },
@@ -45,6 +47,7 @@ const ForgotPassword: React.FC = () => {
 
           console.error('Forgot password error', error.message);
         },
+        onSettled: () => setLoading(false),
       },
     );
   };
@@ -94,12 +97,14 @@ const ForgotPassword: React.FC = () => {
         </div>
         <Button
           type={success ? 'button' : 'submit'}
-          className="h-[56px]"
+          className="h-[56px] flex justify-center items-center"
           variant={'default'}
+          disabled={loading}
           onClick={() => {
             if (success) navigate('/login');
           }}
         >
+          {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
           {success ? 'Back to Sign In' : 'Send Reset Link'}
         </Button>
         <div className={`${success ? 'hidden' : 'relative text-center text-[length:var(--sm-text)] h-[22px]'}`}>
@@ -117,3 +122,4 @@ const ForgotPassword: React.FC = () => {
 };
 
 export default ForgotPassword;
+

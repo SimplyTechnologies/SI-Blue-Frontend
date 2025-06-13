@@ -18,6 +18,7 @@ import { formatDate } from '@/utils/formatDate';
 import { useDeleteUser } from '@/hooks/mutations/useUser';
 import { useDeleteCustomer } from '@/hooks/mutations/useCustomer';
 import { useUnassignVehicle } from '@/hooks/useVehicle';
+import { CustomerFallbackIcon } from '@/assets/svgIconComponents/CustomeFallbackIcon';
 
 type TableData = User | Customers;
 
@@ -119,7 +120,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                 className="font-bold text-sm bg-primary-5 leading-[120%]"
                 style={{ backgroundColor: 'transparent', color: kit.color }}
               >
-                {(firstName[0] || '') + (lastName[0] || '')}
+                {type === 'users' ? (firstName[0] || '') + (lastName[0] || '') : <CustomerFallbackIcon />}
               </AvatarFallback>
             </Avatar>
             <span className="capitalize font-bold text-xs leading-[120%] text-support-6">{fullName}</span>
@@ -269,6 +270,8 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
       cell: ({ row }) => {
         const isSubRow = row.depth > 0;
         const isVehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 0 : false;
+        const isMoreVehicles =
+          type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 1 : false;
         const vehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[]) : [];
         if (isSubRow) {
           const vehicle = row.original as unknown as CustomerVehicle;
@@ -295,7 +298,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
             <div
               className={`w-[92px] h-full px-[2px] py-[18px] flex justify-${isVehicles ? 'between' : 'end'} items-center`}
             >
-              {isVehicles && (
+              {isMoreVehicles ? (
                 <div className="relative">
                   <Popover>
                     <PopoverTrigger>
@@ -318,7 +321,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                         <Button
                           onClick={() => {
                             setUnassignData({ customerId: Number(row.original.id), unassignAll: true });
-                            setIsConfirmUnassignOpen(row.original.id); // Set to specific row ID
+                            setIsConfirmUnassignOpen(row.original.id);
                           }}
                           className="inline-flex items-center justify-start gap-[0.5rem] rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-3 py-2 group hover:bg-primary-5"
                           style={{ color: 'var(--color-support-6)' }}
@@ -354,7 +357,19 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                     </div>
                   )}
                 </div>
-              )}
+              ) : isVehicles ? (
+                <div onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}>
+                  <CustomTooltip
+                    content="Unassign this vehicle"
+                    side="bottom"
+                    trigger={
+                      <div className="w-[44px] h-[44px] flex justify-center items-center rounded-[8px] p-[10px] bg-[#3D5BF6] hover:bg-[#3D5BF6]/80 cursor-pointer">
+                        <img src={rotation} alt="rotation" />
+                      </div>
+                    }
+                  />
+                </div>
+              ) : null}
               <div
                 onClick={() => {
                   if (isVehicles) {
