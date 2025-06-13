@@ -146,14 +146,14 @@ const AccountActivation: React.FC = () => {
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <p className="text-support-6 text-[length:var(--xl-text)] font-bold leading-[120%]">Account Activation</p>
+        <p className="text-support-6 text-4xl font-bold leading-[120%]">Account Activation</p>
       </div>
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem] flex-grow overflow-y-auto scroll-smooth max-h-[calc(90vh_-_200px)] pr-2">
           <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="email"
-              className="text-support-5 text-[length:var(--xs-text)] font-medium leading-[140%] focus:text-support-6 mb-0.5"
+              className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
             >
               Email address
             </Label>
@@ -167,7 +167,7 @@ const AccountActivation: React.FC = () => {
               className="h-[56px] px-[22px]"
             />
             {errors.email && (
-              <p className="text-support-2 text-[length:var(--xs-text)] font-normal leading-[140%]">
+              <p className="text-support-2 text-sm font-normal leading-[140%]">
                 {errors.email.message}
               </p>
             )}
@@ -175,7 +175,7 @@ const AccountActivation: React.FC = () => {
           <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="name"
-              className="text-support-5 text-[length:var(--xs-text)] font-medium leading-[140%] focus:text-support-6 mb-0.5"
+              className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
             >
               Name
             </Label>
@@ -189,7 +189,7 @@ const AccountActivation: React.FC = () => {
               className="h-[56px] px-[22px]"
             />
             {errors.name && (
-              <p className="text-support-2 text-[length:var(--xs-text)] font-normal leading-[140%]">
+              <p className="text-support-2 text-sm font-normal leading-[140%]">
                 {errors.name.message}
               </p>
             )}
@@ -198,7 +198,7 @@ const AccountActivation: React.FC = () => {
             <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
               <Label
                 htmlFor="password"
-                className="text-support-5 text-[length:var(--xs-text)] font-medium leading-[140%] focus:text-support-6 mb-0.5"
+                className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
               >
                 Password
               </Label>
@@ -220,7 +220,7 @@ const AccountActivation: React.FC = () => {
             <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
               <Label
                 htmlFor="confirmPassword"
-                className="text-support-5 text-[length:var(--xs-text)] font-medium leading-[140%] focus:text-support-6 mb-0.5"
+                className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
               >
                 Confirm Password
               </Label>
@@ -234,7 +234,7 @@ const AccountActivation: React.FC = () => {
                 className="h-[56px] pl-[22px] pr-[42px]"
               />
               {errors.confirmPassword && (
-                <p className="text-support-2 text-[length:var(--xs-text)] font-normal leading-[140%]">
+                <p className="text-support-2 text-sm font-normal leading-[140%]">
                   {errors.confirmPassword.message}
                 </p>
               )}
@@ -242,7 +242,7 @@ const AccountActivation: React.FC = () => {
           </div>
 
           {serverError && (
-            <p className="text-support-2 text-[length:var(--xs-text)] font-medium leading-[140%]">{serverError}</p>
+            <p className="text-support-2 text-sm font-medium leading-[140%]">{serverError}</p>
           )}
           <div className="flex justify-between">
             <div className="flex items-center space-x-2">
@@ -254,7 +254,7 @@ const AccountActivation: React.FC = () => {
               />
               <label
                 htmlFor="remember"
-                className="font-medium text-primary-3 text-[length:var(--xs-text)] leading-[140%] cursor-pointer"
+                className="font-medium text-primary-3 text-sm leading-[140%] cursor-pointer"
               >
                 Remember me
               </label>

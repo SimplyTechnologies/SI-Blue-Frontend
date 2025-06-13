@@ -14,23 +14,6 @@
   --font-dm: 'DM Sans';
   --default-font-family: 'DM Sans';
 
-  --fw-regular: rgb(230, 233, 239);
-  --fw-medium: 500;
-  --fw-semibold: 600;
-  --fw-bold: 700;
-
-  --xs-text: 0.875rem;
-  /* 14px */
-  --sm-text: 1rem;
-  --base-text: 1.25rem;
-  /* 20px */
-  --md-text: 1.5rem;
-  /* 24px */
-  --lg-text: 2rem;
-  --xl-text: 2.25rem;
-  /* 36px */
-
-  --color-primary-1: #423a8e;
   --color-primary-2: #00cccd;
   --color-primary-3: #403c89;
   --color-primary-4: #3652e0;
@@ -100,18 +83,14 @@
 }
 
 @theme inline {
-  --color-primary-1: var(--color-primary-1);
-  --color-primary-2: var(--color-primary-2);
   --color-primary-3: var(--color-primary-3);
   --color-primary-4: var(--color-primary-4);
   --color-primary-5: var(--color-primary-5);
 
-  --color-secondary-1: var(--color-secondary-1);
-
   --color-support-1: var(--color-support-1);
   --color-support-2: var(--color-support-2);
   --color-support-3: var(--color-support-3);
-  --color-support-4: var(--color-support-4);
+  
   --color-support-5: var(--color-support-5);
   --color-support-6: var(--color-support-6);
   --color-support-7: var(--color-support-7);
@@ -130,7 +109,6 @@
 
   --color-white: var(--color-white);
 
-  --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
@@ -151,11 +129,6 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);

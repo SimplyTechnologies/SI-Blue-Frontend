@@ -55,14 +55,14 @@ const ForgotPassword: React.FC = () => {
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-[1rem]">
-        <p className="text-[var(--color-support-6)] text-[length:var(--xl-text)] font-[var(--fw-bold)] leading-[120%]">
+        <p className="text-support-6 text-4xl font-bold leading-[120%]">
           Forgot Password
         </p>
-        <p className="text-[var(--color-support-5)] text-[length:var(--sm-text)] font-[var(--fw-regular)] leading-[140%]">
+        <p className="text-support-5 text-base font-normal leading-[140%]">
           {success ? (
             <>
               We’ve just sent an email to{' '}
-              <span className="font-[var(--fw-medium)] text-[var(--color-support-9)]">{email}</span>. Please check your
+              <span className="font-medium text-support-9">{email}</span>. Please check your
               inbox and follow the instructions to reset your password. The link will expire in 10 minutes.
             </>
           ) : (
@@ -72,10 +72,10 @@ const ForgotPassword: React.FC = () => {
       </div>
       <div className="grid gap-[2.25rem]">
         <div className={`${success ? 'hidden' : 'grid gap-[1rem]'}`}>
-          <div className="grid gap-[4px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="email"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)] mb-0.5"
+              className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
             >
               Your Email
             </Label>
@@ -89,7 +89,7 @@ const ForgotPassword: React.FC = () => {
             />
 
             {error && (
-              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
+              <p className="text-support-2 text-sm font-normal leading-[140%]">
                 {error}
               </p>
             )}
@@ -107,9 +107,9 @@ const ForgotPassword: React.FC = () => {
           {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
           {success ? 'Back to Sign In' : 'Send Reset Link'}
         </Button>
-        <div className={`${success ? 'hidden' : 'relative text-center text-[length:var(--sm-text)] h-[22px]'}`}>
+        <div className={`${success ? 'hidden' : 'relative text-center text-base h-[22px]'}`}>
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />
-          <span className="relative z-10 inline-block bg-[var(--color-bg-1)] px-2 text-[var(--color-support-6)]">
+          <span className="relative z-10 inline-block bg-bg-1 px-2 text-support-6">
             Or
           </span>
         </div>

@@ -34,11 +34,11 @@ const AnalyticCard: React.FC<AnalyticCardProps> = ({ title, count }) => {
         <div className={cn('w-[32px] h-[32px] rounded-[50%] flex justify-center items-center', iconBg)}>
           <img src={icon} alt="Analytic Card Icon" />
         </div>
-        <p className="font-[var(--fw-regular)] text-[length:var(--sm-text)] text-support-6 leading-[140%]">
+        <p className="text-base text-support-6 leading-[140%]">
           {label}
         </p>
       </div>
-      <span className="font-[var(--fw-bold)] text-[length:var(--md-text)] text-support-6">{count}</span>
+      <span className="font-bold text-2xl text-support-6">{count}</span>
     </div>
   );
 };

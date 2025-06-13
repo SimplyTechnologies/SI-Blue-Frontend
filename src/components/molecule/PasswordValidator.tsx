@@ -16,8 +16,8 @@ const PasswordValidator = ({ password = '', show = true }) => {
           <span
             className={
               validation.valid
-                ? 'text-[var(--color-success,#28a745)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]'
-                : 'text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]'
+                ? 'text-[var(--color-success,#28a745)] text-sm font-medium leading-[140%]'
+                : 'text-[var(--color-support-2)] text-sm font-medium leading-[140%]'
             }
           >
             {validation.valid ? '✓' : '✗'}
@@ -25,8 +25,8 @@ const PasswordValidator = ({ password = '', show = true }) => {
           <span
             className={
               validation.valid
-                ? 'text-[var(--color-success,#28a745)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]'
-                : 'text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]'
+                ? 'text-[var(--color-success,#28a745)] text-sm font-medium leading-[140%]'
+                : 'text-[var(--color-support-2)] text-sm font-medium leading-[140%]'
             }
           >
             {validation.label}

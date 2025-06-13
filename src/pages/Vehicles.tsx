@@ -1,10 +1,11 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useLocation, useNavigate } from 'react-router';
+import { Link, useNavigate } from 'react-router';
 import { useInfiniteQuery, useQueryClient } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 import { toast } from 'sonner';
 import { type VehicleTab, type VehicleType } from '@/types/vehicles';
 import { useSearchStore } from '@/stores/useSearchStore';
+import { useActiveTabStore } from '@/stores/useActiveTab';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import { useFavoriteToggle } from '@/hooks/useFavoriteToggle';
 import { getVehicles } from '@/api/vehicles';
@@ -21,15 +22,15 @@ import VehicleCardSkeleton from '@/components/molecule/VehicleCardSkeleton';
 import NothingToShow from '@/components/molecule/NothingToShow';
 
 const Vehicles: React.FC = () => {
-  const location = useLocation();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { ref, inView } = useInView();
   const { isSearchActive } = useSearchStore();
+  const { activeTab, setActiveTab } = useActiveTabStore();
   const favoriteToggle = useFavoriteToggle();
   const validatedFilters = useValidatedFilters();
 
-  const [active, setActive] = useState<VehicleTab>(location?.state?.active || vehicleTabs[0]);
+  const [active, setActive] = useState<VehicleTab>(activeTab || vehicleTabs[0]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [favoriteLoadingId, setFavoriteLoadingId] = useState<number | null>(null);
   const [debounceValue, setDebounceValue] = useState('');
@@ -79,6 +80,7 @@ const Vehicles: React.FC = () => {
   useEffect(() => {
     if (isSearchActive) {
       setActive('vehicles');
+      setActiveTab('vehicles');
       resetPageAndScrollToTop();
       if (!isObjectEmpty(validatedFilters)) {
         navigate('/vehicles');
@@ -181,13 +183,14 @@ const Vehicles: React.FC = () => {
                       onClick={() => {
                         if (tab === active) return;
                         setActive(tab);
+                        setActiveTab(tab);
                         resetPageAndScrollToTop();
                         queryClient.removeQueries({ queryKey: ['vehicles'] });
                       }}
                       className="relative w-[67px] h-[37px] pb-4 rounded-none"
                     >
                       <p
-                        className={`font-bold text-[length:var(--sm-text)] leading-[140%] ${
+                        className={`font-bold text-base leading-[140%] ${
                           active === tab ? 'text-primary-3 font-bold' : 'text-support-7 font-medium'
                         }`}
                       >
@@ -221,7 +224,7 @@ const Vehicles: React.FC = () => {
               data?.pages.map(page => (
                 <React.Fragment key={page.nextId}>
                   {page.vehicles.map((vehicle, index) => (
-                    <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`} state={{ active }}>
+                    <Link to={`/vehicles/${vehicle.id}`} key={`${active}-${vehicle.id}`}>
                       <VehicleCard
                         vehicle={vehicle}
                         ref={index === page.vehicles.length - 2 ? ref : null}
