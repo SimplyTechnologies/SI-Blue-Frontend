@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useLocation, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
@@ -17,7 +17,6 @@ import { buildLocationForEdit } from '@/components/organism/VehicleForm/VehicleF
 export default function VehicleDetails() {
   const isAdmin = useIsAdmin();
   const navigate = useNavigate();
-  const location = useLocation();
   const { id } = useParams();
   const queryClient = useQueryClient();
 
@@ -27,7 +26,7 @@ export default function VehicleDetails() {
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
 
   const handleBack = () => {
-    navigate('/vehicles', { state: location?.state });
+    navigate(-1);
   };
 
   const showConfirm = () => {
@@ -47,8 +46,8 @@ export default function VehicleDetails() {
   };
 
   const handleDelete = async () => {
-    if (!data?.vehicle?.id) return;
     setIsConfirmOpen(false);
+    if (!data?.vehicle?.id) return;
     await deleteVehicle(data.vehicle.id);
     toast.success('Vehicle deleted successfully!');
     queryClient.invalidateQueries({
