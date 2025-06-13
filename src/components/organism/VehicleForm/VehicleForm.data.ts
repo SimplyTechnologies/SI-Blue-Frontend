@@ -1,10 +1,7 @@
 import * as z from 'zod';
 import { type UseFormReturn } from 'react-hook-form';
 
-export const inputClassname = `h-[56px] rounded-[0.5rem] border-[1px] border-support-8 pl-[22px]
-placeholder:text-support-7 placeholder:text-[length:var(--sm-text)]
-caret-support-8 focus:border-primary-4 focus:border-[2px]
-focus:placeholder:text-support-6 focus:caret-support-6`;
+export const inputClassname = 'h-[56px] px-[22px]';
 
 export const carFormSchema = z.object({
   make: z.string({
@@ -46,6 +43,21 @@ export const buildLocation = (fields: Partial<CarFormValues>, form: UseFormRetur
   const state = fields.state ?? form.getValues('state') ?? '';
   const zipcode = fields.zipcode ?? form.getValues('zipcode') ?? '';
   const country = fields.country ?? form.getValues('country') ?? '';
+  let location = '';
+  if (street || city || state || zipcode || country) {
+    location = `${street}, ${city}, ${state} ${zipcode}, ${country}`
+      .replace(/(, )+/g, ', ')
+      .replace(/^[, ]+|[, ]+$/g, '');
+  }
+  return location;
+};
+
+export const buildLocationForEdit = (fields: Partial<CarFormValues>) => {
+  const street = fields.street;
+  const city = fields.city;
+  const state = fields.state;
+  const zipcode = fields.zipcode;
+  const country = fields.country;
   let location = '';
   if (street || city || state || zipcode || country) {
     location = `${street}, ${city}, ${state} ${zipcode}, ${country}`

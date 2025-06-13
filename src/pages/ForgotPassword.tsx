@@ -1,8 +1,10 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { useForgotPassword } from '@/hooks/useForgotPassword';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
@@ -18,38 +20,50 @@ type FormData = z.infer<typeof schema>;
 
 const ForgotPassword: React.FC = () => {
   const navigate = useNavigate();
+  const forgotPasswordMutation = useForgotPassword();
+  const [loading, setLoading] = useState(false);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    trigger,
-  } = useForm<FormData>({
+  const { register, handleSubmit, trigger } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onBlur',
   });
 
   const [success, setSuccess] = useState(false);
-  const [ email, setEmail ] = useState('');
+  const [email, setEmail] = useState('');
+  const [error, setError] = useState<string>('');
 
   const onSubmit = (data: FormData) => {
-    setEmail(data.email);
-    setSuccess(true);
+    setLoading(true);
+    forgotPasswordMutation.mutate(
+      { email: data.email },
+      {
+        onSuccess: () => {
+          setEmail(data.email);
+          setSuccess(true);
+        },
+        onError: error => {
+          setError(error.message);
+
+          console.error('Forgot password error', error.message);
+        },
+        onSettled: () => setLoading(false),
+      },
+    );
   };
 
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-[1rem]">
-        <p className="text-[var(--color-support-6)] text-[length:var(--xl-text)] font-[var(--fw-bold)] leading-[120%]">
+        <p className="text-support-6 text-4xl font-bold leading-[120%]">
           Forgot Password
         </p>
-        <p className="text-[var(--color-support-5)] text-[length:var(--sm-text)] font-[var(--fw-regular)] leading-[140%]">
+        <p className="text-support-5 text-base font-normal leading-[140%]">
           {success ? (
             <>
               We’ve just sent an email to{' '}
-              <span className="font-[var(--fw-medium)] text-[var(--color-support-9)]">{email}</span>. If the email
-              doesn’t show up soon, check your spam folder.
+              <span className="font-medium text-support-9">{email}</span>. Please check your
+              inbox and follow the instructions to reset your password. The link will expire in 10 minutes.
             </>
           ) : (
             'Enter your email account to reset your password'
@@ -58,10 +72,10 @@ const ForgotPassword: React.FC = () => {
       </div>
       <div className="grid gap-[2.25rem]">
         <div className={`${success ? 'hidden' : 'grid gap-[1rem]'}`}>
-          <div className="grid gap-[6px] focus-within:[&>label]:text-[var(--color-support-6)]">
+          <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="email"
-              className="text-[var(--color-support-5)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%] focus:text-[var(--color-support-6)]"
+              className="text-support-5 text-sm font-medium leading-[140%] focus:text-support-6 mb-0.5"
             >
               Your Email
             </Label>
@@ -71,29 +85,33 @@ const ForgotPassword: React.FC = () => {
               placeholder="m@example.com"
               {...register('email')}
               onBlur={() => trigger('email')}
-              className="h-[56px] rounded-[0.5rem] border-[1px] border-[var(--color-support-8)] pl-[22px] placeholder:text-[var(--color-support-7)] placeholder:text-[length:var(--sm-text)] caret-[var(--color-support-8)] focus:border-[var(--color-primary-4)] focus:border-[2px] focus:placeholder:text-[var(--color-support-6)] focus:caret-[var(--color-support-6)]"
+              className="h-[56px] px-[22px]"
             />
 
-            {errors.email && (
-              <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-medium)] leading-[140%]">
-                {errors.email.message}
+            {error && (
+              <p className="text-support-2 text-sm font-normal leading-[140%]">
+                {error}
               </p>
             )}
           </div>
         </div>
         <Button
-          type="submit"
-          className="h-[56px]"
+          type={success ? 'button' : 'submit'}
+          className="h-[56px] flex justify-center items-center"
           variant={'default'}
+          disabled={loading}
           onClick={() => {
             if (success) navigate('/login');
           }}
         >
+          {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
           {success ? 'Back to Sign In' : 'Send Reset Link'}
         </Button>
-        <div className={`${success ? 'hidden' : 'relative text-center text-[length:var(--sm-text)] h-[22px]'}`}>
+        <div className={`${success ? 'hidden' : 'relative text-center text-base h-[22px]'}`}>
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />
-          <span className="relative z-10 inline-block bg-bg-1 px-2 text-support-6">Or</span> 
+          <span className="relative z-10 inline-block bg-bg-1 px-2 text-support-6">
+            Or
+          </span>
         </div>
         <Button className={`${success ? 'hidden' : 'h-[56px]'}`} variant={'outline'} onClick={() => navigate('/login')}>
           Back to Sign In
@@ -104,3 +122,4 @@ const ForgotPassword: React.FC = () => {
 };
 
 export default ForgotPassword;
+

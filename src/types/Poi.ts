@@ -1,5 +1,5 @@
 export type Poi = {
   id: number;
-  lat: number;
-  lng: number;
+  lat: string;
+  lng: string;
 };

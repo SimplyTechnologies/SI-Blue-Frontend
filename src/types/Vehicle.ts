@@ -7,9 +7,9 @@ export type VehicleType = {
   vin: string;
   favorite: boolean;
   location: TAddress;
-  sold: boolean;
   userId: number;
   createdAt: string;
+  customerId: number;
   model: {
     id: number;
     name: string;
@@ -73,6 +73,15 @@ export type AddRemoveFavoriteWithMethod = AddRemoveFavorite & {
 export type AddRemoveFavoriteResponse = {
   vehicle: VehicleType;
 };
+
+export type CustomerVehicle = {
+  id: number;
+  vin: string;
+  year: number;
+  make: string;
+  model: string;
+  assignedDate: string;
+}
 
 export type VehicleTab = 'vehicles' | 'favorites';
 

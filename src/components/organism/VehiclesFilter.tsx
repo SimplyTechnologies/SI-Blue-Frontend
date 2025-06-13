@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
 import { ChevronLeftIcon } from 'lucide-react';
 import { getMakes, getModelsByMakeId } from '@/api/vehicles';
-import type { FilterState, OptionType } from '@/types/Vehicle';
+import type { FilterState } from '@/types/Vehicle';
 import { availabilityOptions } from '@/utils/constants';
 import { useValidatedFilters } from '@/hooks/useValidatedFilters';
 import CustomMultiSelect from '@/components/molecule/CustomMultiSelect';
@@ -18,41 +18,23 @@ type VehiclesFilterTypes = {
 const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   const [, setSearchParams] = useSearchParams();
 
-  const [makeOptions, setMakeOptions] = useState<OptionType[] | []>([]);
-  const [modelOptions, setModelOptions] = useState<OptionType[] | []>();
   const validatedFilters = useValidatedFilters();
 
   const [filters, setFilters] = useState<FilterState>(validatedFilters);
 
-  const { isLoading: makeLoading, data: makeData } = useQuery({
+  const { isLoading: makeLoading, data: makeOptions } = useQuery({
     queryKey: ['makes'],
     queryFn: getMakes,
-    staleTime: 3600000,
+    refetchOnMount: false,
   });
 
-  const { isLoading: modelLoading, data: modelsData } = useQuery({
+  const { isLoading: modelLoading, data: modelOptions } = useQuery({
     queryKey: ['models', filters.makeId],
     queryFn: () => filters.makeId && getModelsByMakeId(filters.makeId),
     enabled: !!filters.makeId,
   });
 
   const filtersCount = [filters.makeId, filters.availability, ...(filters.modelIds || [])].filter(Boolean).length;
-
-  useEffect(() => {
-    if (makeData) {
-      setMakeOptions(makeData);
-    } else {
-      setMakeOptions([]);
-    }
-  }, [makeData]);
-
-  useEffect(() => {
-    if (modelsData) {
-      setModelOptions(modelsData);
-    } else {
-      setModelOptions([]);
-    }
-  }, [modelsData]);
 
   const handleMakeChange = (value: string) => {
     if (filters?.modelIds?.length) {
@@ -90,7 +72,7 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
   };
 
   return (
-    <div className="flex flex-col gap-[18px] w-full">
+    <div className="flex flex-col gap-[18px] w-full h-full">
       <div className="flex justify-between">
         <div className="flex gap-2 items-center">
           <div onClick={handleBack} className="cursor-pointer hover:opacity-80">
@@ -104,49 +86,51 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
           </Button>
         </div>
       </div>
-      <div>
-        <CustomSelect
-          label="Make"
-          value={filters?.makeId || ''}
-          items={makeOptions || []}
-          onChange={handleMakeChange}
-          placeholder="Select Make"
-          className="bg-white"
-          disabled={makeLoading}
-          addNoSelect
-          deselectEnabled
-        />
-      </div>
-      <div>
-        <CustomTooltip
-          trigger={
-            <CustomMultiSelect
-              options={modelOptions || []}
-              onValueChange={handleModelsChange}
-              value={filters.modelIds || []}
-              placeholder="Select Model"
-              variant="inverted"
-              maxCount={2}
-              label="Models"
-              disabled={!filters.makeId || modelLoading}
-            />
-          }
-          content="Select Make to enable Model"
-          side="bottom"
-          hidden={!!filters.makeId}
-        />
-      </div>
-      <div>
-        <CustomSelect
-          label="Availability"
-          value={filters.availability || ''}
-          items={availabilityOptions}
-          onChange={handleAvailabilityChange}
-          placeholder="Select Availability"
-          className="bg-white"
-          addNoSelect
-          deselectEnabled
-        />
+      <div className="overflow-auto max-h-[calc(100%-110px)] flex flex-col gap-3">
+        <div>
+          <CustomSelect
+            label="Make"
+            value={filters?.makeId || ''}
+            items={makeOptions || []}
+            onChange={handleMakeChange}
+            placeholder="Select Make"
+            className="bg-white"
+            disabled={makeLoading}
+            addNoSelect
+            deselectEnabled
+          />
+        </div>
+        <div>
+          <CustomTooltip
+            trigger={
+              <CustomMultiSelect
+                options={modelOptions || []}
+                onValueChange={handleModelsChange}
+                value={filters.modelIds || []}
+                placeholder="Select Model"
+                variant="inverted"
+                maxCount={2}
+                label="Models"
+                disabled={!filters.makeId || modelLoading}
+              />
+            }
+            content="Select Make to enable Model"
+            side="bottom"
+            hidden={!!filters.makeId}
+          />
+        </div>
+        <div>
+          <CustomSelect
+            label="Availability"
+            value={filters.availability || ''}
+            items={availabilityOptions}
+            onChange={handleAvailabilityChange}
+            placeholder="Select Availability"
+            className="bg-white"
+            addNoSelect
+            deselectEnabled
+          />
+        </div>
       </div>
       <div className="flex flex-col gap-2">
         <Button
@@ -163,3 +147,4 @@ const VehiclesFilter = ({ handleBack }: VehiclesFilterTypes) => {
 };
 
 export default VehiclesFilter;
+

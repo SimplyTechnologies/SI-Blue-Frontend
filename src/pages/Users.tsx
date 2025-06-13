@@ -1,17 +1,39 @@
-import NothingToShow from '@/components/molecule/NothingToShow';
-import { nothingToShowOptions } from '@/utils/constants';
+import { Button } from '@/components/atom/Button';
 
-function Users() {
+import { PaginatedListWrapper } from '@/components/organism/PaginatedListWrapper';
+import { useState } from 'react'; 
+import AddNewUser from '@/components/organism/AddNewUser';
+
+
+const Users = () => {
+  
+  const [showAddUser, setShowAddUser] = useState(false);
+  
+
   return (
-    <div className='w-full h-full flex justify-center items-center'>
-      <NothingToShow
-        title={nothingToShowOptions.users.title}
-        subtitle={nothingToShowOptions.users.subtitle}
-        icon={nothingToShowOptions.users.icon}
+    <>
+      <PaginatedListWrapper
+        queryKey="usersList"
+        endpoint="/users"
+        type="users"
+        showButton
+        renderAddButton={() => (
+          <Button
+            variant="default"
+            className="max-w-[143px] h-[40px] text-xs leading-[120%] flex gap-[0.5rem] justify-center items-center"
+            onClick={() => setShowAddUser(true)} 
+          >
+            <span>+</span> Add New User
+          </Button>
+        )}
       />
-    </div>
+      
+      <AddNewUser 
+        open={showAddUser} 
+        onOpenChange={setShowAddUser}        
+      />
+    </>
   );
-}
+};
 
 export default Users;
-

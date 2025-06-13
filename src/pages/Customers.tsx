@@ -1,17 +1,13 @@
-import NothingToShow from '@/components/molecule/NothingToShow';
-import { nothingToShowOptions } from '@/utils/constants';
+import { PaginatedListWrapper } from "@/components/organism/PaginatedListWrapper";
 
-function Customers() {
+const Customers = () => {
   return (
-    <div className="w-full h-full flex justify-center items-center">
-      <NothingToShow
-        title={nothingToShowOptions.customers.title}
-        subtitle={nothingToShowOptions.customers.subtitle}
-        icon={nothingToShowOptions.customers.icon}
-      />
-    </div>
+    <PaginatedListWrapper
+      queryKey="customersList"
+      endpoint="/customers/get-customers"
+      type="customers"
+    />
   );
-}
+};
 
 export default Customers;
-

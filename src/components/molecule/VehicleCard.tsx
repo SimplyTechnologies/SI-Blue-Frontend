@@ -17,17 +17,17 @@ const VehicleCard = React.forwardRef<
     <div className="w-full py-6 border-b border-support-12 flex" ref={ref}>
       {/* Marker Circle */}
       <div
-        className={`mr-3 w-12 h-12 flex justify-center items-center rounded-full bg-support-12 border-2 ${
-          vehicle.sold ? 'border-support-11' : 'border-support-9'
+        className={`mr-3 w-12 h-12 min-h-12 min-w-12 flex justify-center items-center rounded-full bg-support-12 border-2 ${
+          vehicle.customerId ? 'border-support-11' : 'border-support-9'
         }`}
       >
         <img src={carMarker} alt="Vehicle" className="w-6 h-6" />
       </div>
 
       {/* Vehicle Info */}
-      <div className="flex flex-col flex-1 w-full gap-2">
+      <div className="flex flex-col flex-1 w-full gap-2 max-w-full overflow-hidden">
         <div className="flex justify-between items-center">
-          <p className="text-[14px] text-support-6 text-xs font-bold leading-[120%] max-w-[100%] overflow-ellipsis">{vehicle.vin}</p>
+          <p className="text-[14px] text-support-6 text-xs font-bold leading-[120%] max-w-[100%]">{vehicle.vin}</p>
         </div>
 
         <div className="flex flex-col gap-1">
@@ -47,12 +47,11 @@ const VehicleCard = React.forwardRef<
       <div className="flex items-start gap-5 ml-4">
         <div className="w-[64px] flex justify-center">
           <div
-            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.sold ? 'bg-support-11' : 'bg-support-9'}`}
+            className={`px-2 py-0.5 rounded-md flex items-center justify-center ${vehicle.customerId ? 'bg-support-11' : 'bg-support-9'}`}
           >
-            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.sold ? 'Sold' : 'In Stock'}</p>
+            <p className="text-white text-[12px] font-regular leading-[140%]">{vehicle.customerId ? 'Sold' : 'In Stock'}</p>
           </div>
         </div>
-
         <CustomTooltip
           trigger={
             <Button

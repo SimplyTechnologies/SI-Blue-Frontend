@@ -12,26 +12,16 @@
 
 :root {
   --font-dm: 'DM Sans';
+  --default-font-family: 'DM Sans';
 
-  --fw-regular: rgb(230, 233, 239);
-  --fw-medium: 500;
-  --fw-semibold: 600;
-  --fw-bold: 700;
-
-  --xs-text: 0.875rem; /* 14px */
-  --sm-text: 1rem;
-  --base-text: 1.25rem; /* 20px */
-  --md-text: 1.5rem; /* 24px */
-  --lg-text: 2rem;
-  --xl-text: 2.25rem; /* 36px */
-
-  --color-primary-1: #423a8e;
   --color-primary-2: #00cccd;
   --color-primary-3: #403c89;
   --color-primary-4: #3652e0;
   --color-primary-5: #edf1fe;
 
   --color-secondary-1: #369afe;
+
+  --color-destructive: #FA5087;
 
   --color-support-1: #ffc107;
   --color-support-2: #dc3545;
@@ -45,6 +35,7 @@
   --color-support-10: #feeded;
   --color-support-11: #23a1e9;
   --color-support-12: #f5f5f7;
+  --color-support-13: #d9d9d9;
 
   --color-success-1: #e5faf5;
 
@@ -92,18 +83,14 @@
 }
 
 @theme inline {
-  --color-primary-1: var(--color-primary-1);
-  --color-primary-2: var(--color-primary-2);
   --color-primary-3: var(--color-primary-3);
   --color-primary-4: var(--color-primary-4);
   --color-primary-5: var(--color-primary-5);
 
-  --color-secondary-1: var(--color-secondary-1);
-
   --color-support-1: var(--color-support-1);
   --color-support-2: var(--color-support-2);
   --color-support-3: var(--color-support-3);
-  --color-support-4: var(--color-support-4);
+  
   --color-support-5: var(--color-support-5);
   --color-support-6: var(--color-support-6);
   --color-support-7: var(--color-support-7);
@@ -112,14 +99,16 @@
   --color-support-10: var(--color-support-10);
   --color-support-11: var(--color-support-11);
   --color-support-12: var(--color-support-12);
+  --color-support-13: var(--color-support-13);
 
   --color-success-1: var(--color-success-1);
+
+  --color-destructive: var(--color-destructive);
 
   --color-bg-1: var(--color-bg-1);
 
   --color-white: var(--color-white);
 
-  --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
@@ -137,15 +126,9 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-destructive: var(--destructive);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
-  --color-chart-1: var(--chart-1);
-  --color-chart-2: var(--chart-2);
-  --color-chart-3: var(--chart-3);
-  --color-chart-4: var(--chart-4);
-  --color-chart-5: var(--chart-5);
   --color-sidebar: var(--sidebar);
   --color-sidebar-foreground: var(--sidebar-foreground);
   --color-sidebar-primary: var(--sidebar-primary);
@@ -160,17 +143,32 @@
   * {
     @apply border-border outline-ring/50;
   }
+
   body {
     @apply bg-background text-foreground;
   }
 }
 
-#root {
-  font-family: var(--font-dm);
-  background-color: #f8f9f9;
+*[data-slot='table-container'] {
+  height: 100%;
 }
 
-.app {
-  min-height: 100vh;
+*[data-slot='table-container']::-webkit-scrollbar {
+  width: 0.25rem;
+  height: 0.25rem;
 }
 
+*[data-slot='table-container']::-webkit-scrollbar-track {
+  background: transparent;
+  width: 1px;
+  height: 1px;
+}
+
+*[data-slot='table-container']::-webkit-scrollbar-thumb {
+  background-color: var(--color-support-8);
+  border-radius: 0.25rem;
+}
+
+input:focus::placeholder {
+  color: transparent;
+}
