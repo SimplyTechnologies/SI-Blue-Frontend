@@ -187,7 +187,7 @@ const Vehicles: React.FC = () => {
                       className="relative w-[67px] h-[37px] pb-4 rounded-none"
                     >
                       <p
-                        className={`font-bold text-[length:var(--sm-text)] leading-[140%] ${
+                        className={`font-bold text-base leading-[140%] ${
                           active === tab ? 'text-primary-3 font-bold' : 'text-support-7 font-medium'
                         }`}
                       >
