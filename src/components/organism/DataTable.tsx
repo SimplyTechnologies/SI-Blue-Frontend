@@ -65,6 +65,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination, isL
   const dynamicPageSize = useDynamicPageSize();
   const [fixedHeight, setFixedHeight] = useState<string>('auto');
   const [hasExpandedRows, setHasExpandedRows] = useState(false);
+  const [showNothingToShow, setShowNothingToShow] = useState(false);
 
   // Track if any rows are expanded
   useEffect(() => {
@@ -120,10 +121,26 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination, isL
   const showPagination = hasData && pagination.totalPages > 1;
 
   useEffect(() => {
+    const shouldShowEmpty = !table.getRowModel().rows?.length && !isLoading;
+
+    if (shouldShowEmpty) {
+      const timer = setTimeout(() => {
+        if (!table.getRowModel().rows?.length && !isLoading) {
+          setShowNothingToShow(true);
+        }
+      }, 100);
+
+      return () => clearTimeout(timer);
+    } else {
+      setShowNothingToShow(false);
+    }
+  }, [table.getRowModel().rows?.length, isLoading]);
+
+  useEffect(() => {
     const calculateFixedHeight = () => {
       const headerHeight = 80;
       const paddingHeight = 48;
-      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 50 : 0);
+      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 20 : 0);
       setFixedHeight(`${calculatedHeight}px`);
     };
 
@@ -218,8 +235,8 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination, isL
                 );
               })
             ) : isLoading ? (
-              <TableRow />
-            ) : (
+              <TableRow className="h-full pointer-events-none border-none hover:bg-transparent" />
+            ) : showNothingToShow ? (
               <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
                 <TableCell colSpan={columns.length} className="p-0 h-full border-none">
                   <div className="flex items-center justify-center w-full min-h-[350px]">
@@ -233,7 +250,7 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination, isL
                   </div>
                 </TableCell>
               </TableRow>
-            )}
+            ) : null}
           </TableBody>
         </Table>
         {showPagination && (

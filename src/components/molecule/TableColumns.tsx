@@ -268,8 +268,10 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
       header: () => <p className="font-bold text-sm text-support-7 leading-[140%] text-right">Actions</p>,
       cell: ({ row }) => {
         const isSubRow = row.depth > 0;
-        const isVehicles = (row.getValue('vehicles') as CustomerVehicle[])?.length > 0;
-        const vehicles = row.getValue('vehicles') as CustomerVehicle[];
+        const isVehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 0 : false;
+        const isMoreVehicles =
+          type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[])?.length > 1 : false;
+        const vehicles = type === 'customers' ? (row.getValue('vehicles') as CustomerVehicle[]) : [];
         if (isSubRow) {
           const vehicle = row.original as unknown as CustomerVehicle;
           const customerId = row.parentId?.split('_')[1];
@@ -295,7 +297,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
             <div
               className={`w-[92px] h-full px-[2px] py-[18px] flex justify-${isVehicles ? 'between' : 'end'} items-center`}
             >
-              {isVehicles && (
+              {isMoreVehicles ? (
                 <div className="relative">
                   <Popover>
                     <PopoverTrigger>
@@ -354,18 +356,37 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                     </div>
                   )}
                 </div>
+              ) : (
+                <div
+                  onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}
+                  className="w-full flex justify-end pr-[4px]"
+                >
+                  <CustomTooltip
+                    content="Unassign this vehicle"
+                    side="bottom"
+                    trigger={
+                      <div className="w-[44px] h-[44px] flex justify-center items-center rounded-[8px] p-[10px] bg-[#3D5BF6] hover:bg-[#3D5BF6]/80 cursor-pointer">
+                        <img src={rotation} alt="rotation" />
+                      </div>
+                    }
+                  />
+                </div>
               )}
               <div
                 onClick={() => {
                   if (isVehicles) {
                     const rowId = row.original.id;
-                    setShowTooltipRow(prev => ({ ...prev, [rowId]: true }));
-                    setTimeout(() => {
-                      setShowTooltipRow(prev => ({ ...prev, [rowId]: false }));
-                    }, 2000);
+                    if (!Object.values(showTooltipRow)[0]) {
+                      setShowTooltipRow(prev => ({ ...prev, [rowId]: true }));
+                      setTimeout(() => {
+                        setShowTooltipRow(prev => ({ ...prev, [rowId]: false }));
+                      }, 2000);
+                    }
                   } else {
                     setDeletedId(row.original.id);
-                    setIsConfirmDeleteOpen(row.original.id);
+                    if (!Object.values(showTooltipRow)[0]) {
+                      setIsConfirmDeleteOpen(row.original.id);
+                    }
                   }
                 }}
                 className="flex w-[1.5rem] h-[1.5rem] items-center justify-center cursor-pointer"
