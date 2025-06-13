@@ -4,11 +4,11 @@ import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForgotPassword } from '@/hooks/useForgotPassword';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { Button } from '@/components/atom/Button';
 import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
-import { Loader2 } from 'lucide-react';
 
 const schema = z.object({
   email: z.string().email({
@@ -104,7 +104,8 @@ const ForgotPassword: React.FC = () => {
             if (success) navigate('/login');
           }}
         >
-          {loading ? <Loader2 className="animate-spin h-5 w-5" /> : success ? 'Back to Sign In' : 'Send Reset Link'}
+          {loading ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : null}
+          {success ? 'Back to Sign In' : 'Send Reset Link'}
         </Button>
         <div className={`${success ? 'hidden' : 'relative text-center text-[length:var(--sm-text)] h-[22px]'}`}>
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />

@@ -52,13 +52,11 @@ const LoginPage = () => {
 
     login.mutate(data, {
       onSuccess: response => {
-        console.log(response)
         const { user, tokens } = response;
         auth(user, tokens);
         navigate('/dashboard');
       },
       onError: error => {
-        console.log(error)
         setServerError(error.message);
       },
       onSettled: () => setLoading(false),
@@ -161,3 +159,4 @@ const LoginPage = () => {
 };
 
 export default LoginPage;
+
