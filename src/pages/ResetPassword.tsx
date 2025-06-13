@@ -142,8 +142,9 @@ const ResetPassword = () => {
           </div>
         </div>
         <Button type="submit" className="h-[56px]" variant={'default'} disabled={loading}>
-          {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null}
-          Reset Password
+          <div className="flex gap-2 items-center justify-center">
+            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null}Reset Password
+          </div>
         </Button>
         {error && (
           <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
