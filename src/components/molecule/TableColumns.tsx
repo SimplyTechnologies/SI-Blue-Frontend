@@ -18,6 +18,7 @@ import { formatDate } from '@/utils/formatDate';
 import { useDeleteUser } from '@/hooks/useUser';
 import { useDeleteCustomer } from '@/hooks/useCustomer';
 import { useUnassignVehicle } from '@/hooks/useVehicle';
+import { CustomerFallbackIcon } from '@/assets/svgIconComponents/CustomeFallbackIcon';
 
 type TableData = User | Customers;
 
@@ -119,7 +120,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                 className="font-bold text-sm bg-primary-5 leading-[120%]"
                 style={{ backgroundColor: 'transparent', color: kit.color }}
               >
-                {(firstName[0] || '') + (lastName[0] || '')}
+                {type === 'users' ? (firstName[0] || '') + (lastName[0] || '') : <CustomerFallbackIcon />}
               </AvatarFallback>
             </Avatar>
             <span className="capitalize font-bold text-xs leading-[120%] text-support-6">{fullName}</span>
@@ -320,7 +321,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                         <Button
                           onClick={() => {
                             setUnassignData({ customerId: Number(row.original.id), unassignAll: true });
-                            setIsConfirmUnassignOpen(row.original.id); // Set to specific row ID
+                            setIsConfirmUnassignOpen(row.original.id);
                           }}
                           className="inline-flex items-center justify-start gap-[0.5rem] rounded-lg text-sm font-medium transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 h-10 px-3 py-2 group hover:bg-primary-5"
                           style={{ color: 'var(--color-support-6)' }}
@@ -356,11 +357,8 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                     </div>
                   )}
                 </div>
-              ) : (
-                <div
-                  onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}
-                  className="w-full flex justify-end pr-[4px]"
-                >
+              ) : isVehicles ? (
+                <div onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}>
                   <CustomTooltip
                     content="Unassign this vehicle"
                     side="bottom"
@@ -371,7 +369,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                     }
                   />
                 </div>
-              )}
+              ) : null}
               <div
                 onClick={() => {
                   if (isVehicles) {
