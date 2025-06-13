@@ -29,6 +29,7 @@ export const PaginatedListWrapper = ({
 }: PaginatedListWrapperProps) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [searchInput, setSearchInput] = useState('');
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
   const pageSize = useDynamicPageSize();
   const { debounceValue: debounceSearch } = useDebounce({ inputValue: searchInput, delay: 100 });
 
@@ -59,12 +60,15 @@ export const PaginatedListWrapper = ({
       return (data as CustomersResponse).customers || [];
     }
   };
-  const [tableData, setTableData] = useState<User[] | Customers[]>([]);
+  const [tableData, setTableData] = useState<User[] | Customers[] | null>([]);
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      const data = getTableData();
-      setTableData(data);
+      const newData = getTableData();
+      setTableData(newData);
+      if (isInitialLoad) {
+        setIsInitialLoad(false);
+      }
     }, 200);
 
     return () => clearTimeout(timer);
@@ -97,7 +101,7 @@ export const PaginatedListWrapper = ({
             totalPages: data?.totalPages || 0,
             onPageChange: handlePageChange,
           }}
-          isLoading={isLoading}
+          isLoading={isLoading || isInitialLoad}
         />
       ) : (
         <DataTableDemo<Customers>
@@ -110,7 +114,7 @@ export const PaginatedListWrapper = ({
             totalPages: data?.totalPages || 0,
             onPageChange: handlePageChange,
           }}
-          isLoading={isLoading}
+          isLoading={isLoading || isInitialLoad}
         />
       )}
     </div>
