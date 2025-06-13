@@ -48,6 +48,11 @@ const MyProfile = () => {
     onSuccess: data => {
       setUser(data.user);
       setIsEdit(false);
+      form.reset({
+        firstName: data.user.firstName,
+        lastName: data.user.lastName,
+        phoneNumber: data.user.phoneNumber,
+      });
       toast.success('Profile has been successfully updated!');
     },
     onError: () => {
