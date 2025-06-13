@@ -16,7 +16,6 @@ const Map: React.FC<MapProps> = ({ cords }) => {
       defaultCenter={{ lat: -25.2744, lng: 133.7751 }} // Australia
       defaultZoom={4}
       minZoom={4}
-      // restriction={latLngBounds = {}}
       gestureHandling={'greedy'}
       disableDefaultUI={true}
     >

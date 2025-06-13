@@ -1,4 +1,4 @@
-import * as React from 'react';
+import { useRef, useState } from 'react';
 import { cva, type VariantProps } from 'class-variance-authority';
 import { CheckIcon, XCircle, XIcon, ChevronDownIcon } from 'lucide-react';
 
@@ -121,8 +121,8 @@ const CustomMultiSelect: React.FC<MultiSelectProps> = ({
   const updatedOptions = options.map(item => {
     return { ...item, id: item.id.toString() };
   });
-  const ref = React.useRef<HTMLButtonElement | null>(null);
-  const [isPopoverOpen, setIsPopoverOpen] = React.useState(false);
+  const ref = useRef<HTMLButtonElement | null>(null);
+  const [isPopoverOpen, setIsPopoverOpen] = useState(false);
 
   const handleInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === 'Enter') {

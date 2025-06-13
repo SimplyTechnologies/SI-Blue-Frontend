@@ -10,7 +10,7 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
   const navigate = useNavigate();
   const clusterer = useRef<MarkerClusterer | null>(null);
   const markersRef = useRef<{
-    [key: string]: InstanceType<typeof window.google.maps.marker.AdvancedMarkerElement>;
+    [key: string]: InstanceType<typeof google.maps.marker.AdvancedMarkerElement>;
   }>({});
   const prevPoisRef = useRef<Poi[]>([]);
 
@@ -34,7 +34,7 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
 
     pois.forEach(poi => {
       if (poi.lat && poi.lng) {
-        const marker = new window.google.maps.marker.AdvancedMarkerElement({
+        const marker = new google.maps.marker.AdvancedMarkerElement({
           position: { lat: Number(poi.lat), lng: Number(poi.lng) },
           map,
           content: (() => {
@@ -54,16 +54,17 @@ const PoiMarkers: React.FC<{ pois: Poi[] }> = ({ pois }) => {
     });
 
     clusterer.current.clearMarkers();
-    clusterer.current.addMarkers(Object.values(markersRef.current) as unknown as google.maps.Marker[]);
+    clusterer.current.addMarkers(
+      Object.values(markersRef.current) as unknown as google.maps.marker.AdvancedMarkerElement[],
+    );
   }, [pois, map]);
 
   useEffect(() => {
     if (!map || !pois.length) return;
     const prevPois = prevPoisRef.current;
-    if (JSON.stringify(prevPois.map(p => p.id)) !== JSON.stringify(pois.map(p => p.id))) {
+    if (JSON.stringify(prevPois) !== JSON.stringify(pois)) {
       const first = pois[0];
       if (pois.length > 1) {
-        map.panTo({ lat: -25.2744, lng: 133.7751 });
         map.setZoom(4);
       } else if (first.lat && first.lng) {
         map.panTo({ lat: Number(first.lat), lng: Number(first.lng) });

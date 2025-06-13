@@ -23,7 +23,7 @@ const Dashboard: React.FC = () => {
           }}
         />
       </div>
-      <p className="text-support-6 text-[length:var(--sm-text)] font-[var(--fw-bold)] leading-[140%]">
+      <p className="text-support-6 text-base font-bold leading-[140%]">
         Total analytics
       </p>
       <div className="flex flex-wrap justify-evenly items-end gap-[1rem]">
