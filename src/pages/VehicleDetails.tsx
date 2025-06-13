@@ -51,8 +51,11 @@ export default function VehicleDetails() {
     setIsConfirmOpen(false);
     await deleteVehicle(data.vehicle.id);
     toast.success('Vehicle deleted successfully!');
-    queryClient.invalidateQueries({
-      queryKey: ['vehicles', { id }],
+    queryClient.removeQueries({
+      queryKey: ['map-data'],
+    });
+    queryClient.removeQueries({
+      queryKey: ['vehicles'],
     });
     navigate('/vehicles');
   };
@@ -60,8 +63,11 @@ export default function VehicleDetails() {
   const onEditSuccess = (updatedData?: VehicleType) => {
     if (updatedData) {
       queryClient.setQueryData(['vehicle', id], { vehicle: updatedData });
-      queryClient.invalidateQueries({
-        queryKey: ['vehicles', { id }],
+      queryClient.removeQueries({
+        queryKey: ['map-data'],
+      });
+      queryClient.removeQueries({
+        queryKey: ['vehicles'],
       });
       toast.success('Vehicle successfully edited');
     }
@@ -70,7 +76,7 @@ export default function VehicleDetails() {
   const onAssignSuccess = (vehicle: VehicleType) => {
     if (vehicle) {
       queryClient.setQueryData(['vehicle', id], { vehicle: vehicle });
-      queryClient.invalidateQueries({
+      queryClient.removeQueries({
         queryKey: ['vehicles'],
       });
       toast.success('Vehicle successfully assigned to the customer');
@@ -132,12 +138,7 @@ export default function VehicleDetails() {
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
         >
-          {data?.vehicle ? (
-            <VehicleCardDetails
-              vehicle={data.vehicle}
-              onAssignSuccess={onAssignSuccess}
-            />
-          ) : null}
+          {data?.vehicle ? <VehicleCardDetails vehicle={data.vehicle} onAssignSuccess={onAssignSuccess} /> : null}
         </div>
       </div>{' '}
       <CustomAlertDialog
@@ -159,4 +160,3 @@ export default function VehicleDetails() {
     </div>
   );
 }
-
