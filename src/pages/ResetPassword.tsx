@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { useQuery } from '@tanstack/react-query';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useResetPassword } from '@/hooks/useResetPassword';
+import { Loader2 } from 'lucide-react';
 import { cn } from '@/utils/cn';
 import { getUserDataOnAccountActivation } from '@/api/accountActivation';
 import { Label } from '@/components/atom/Label';
@@ -41,6 +42,7 @@ const ResetPassword = () => {
   const [password, setPassword] = useState('');
   const [showValidator, setShowValidator] = useState(false);
   const token = searchParams.get('token') || '';
+  const [loading, setLoading] = useState(false);
 
   const { isError, isPending } = useQuery({
     queryKey: [token],
@@ -61,6 +63,7 @@ const ResetPassword = () => {
   });
 
   const onSubmit = (data: FormData) => {
+    setLoading(true);
     setError('');
     resetPassword.mutate(
       { ...data, token },
@@ -71,6 +74,7 @@ const ResetPassword = () => {
         onError: error => {
           setError(error.message);
         },
+        onSettled: () => setLoading(false),
       },
     );
   };
@@ -137,8 +141,10 @@ const ResetPassword = () => {
             )}
           </div>
         </div>
-        <Button type="submit" className="h-[56px]" variant={'default'}>
-          Reset Password
+        <Button type="submit" className="h-[56px]" variant={'default'} disabled={loading}>
+          <div className="flex gap-2 items-center justify-center">
+            {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Reset Password
+          </div>
         </Button>
         {error && (
           <p className="text-[var(--color-support-2)] text-[length:var(--xs-text)] font-[var(--fw-normal)] leading-[140%]">
@@ -151,3 +157,4 @@ const ResetPassword = () => {
 };
 
 export default ResetPassword;
+
