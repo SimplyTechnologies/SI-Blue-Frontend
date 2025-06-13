@@ -18,7 +18,7 @@ import { formatDate } from '@/utils/formatDate';
 import { useDeleteUser } from '@/hooks/useUser';
 import { useDeleteCustomer } from '@/hooks/useCustomer';
 import { useUnassignVehicle } from '@/hooks/useVehicle';
-import { CustomerFallbackIcon } from '@/assets/svgIconComponents/CustomeFallbackIcon';
+import { CustomerFallbackIcon } from '@/assets/svgIconComponents/CustomerFallbackIcon';
 
 type TableData = User | Customers;
 
