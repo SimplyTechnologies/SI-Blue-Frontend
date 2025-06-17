@@ -55,11 +55,7 @@ const ResetPassword = () => {
     retry: false,
   });
 
-  const {
-    register,
-    handleSubmit,
-    trigger,
-  } = useForm<FormData>({
+  const { register, handleSubmit, trigger } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onBlur',
@@ -72,7 +68,6 @@ const ResetPassword = () => {
       { ...data, token },
       {
         onSuccess: () => {
-         
           toast.success('Your password has been reset successfully!');
 
           setTimeout(() => {
@@ -153,7 +148,7 @@ const ResetPassword = () => {
             {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Reset Password
           </div>
         </Button>
-    
+
         {error && <p className="text-support-2 text-sm font-normal leading-[140%]">{error}</p>}
       </div>
     </form>

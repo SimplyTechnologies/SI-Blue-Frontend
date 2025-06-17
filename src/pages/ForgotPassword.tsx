@@ -47,8 +47,6 @@ const ForgotPassword: React.FC = () => {
         },
         onError: error => {
           setApiError(error.message);
-
-          console.error('Forgot password error', error.message);
         },
         onSettled: () => setLoading(false),
       },
