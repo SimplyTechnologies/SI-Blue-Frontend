@@ -18,6 +18,5 @@ export const useDebounce = ({ inputValue, delay }: UseDebounceTypes) => {
     };
   }, [inputValue, delay]);
 
-  return {debounceValue};
+  return { debounceValue };
 };
-

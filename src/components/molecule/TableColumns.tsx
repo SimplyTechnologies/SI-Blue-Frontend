@@ -7,6 +7,7 @@ import { CustomAlertDialog } from './CustomAlertDialog';
 import CustomTooltip from './CustomTooltip';
 import { Popover, PopoverContent, PopoverTrigger } from '../atom/Popover';
 import { Button } from '../atom/Button';
+import DeleteWarning from '../atom/DeleteWarning';
 import trashIcon from '@/assets/trash.svg';
 import rotation from '@/assets/rotation.svg';
 import type { CustomerVehicle } from '@/types/Vehicle';
@@ -331,43 +332,24 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
                       </div>
                     </PopoverContent>
                   </Popover>
-
-                  {showTooltipRow[row.original.id] && (
-                    <div className="absolute top-full right-[-100%] mt-2 z-50 animate-in fade-in-0 zoom-in-95">
-                      <div className="flex items-center gap-3 px-4 py-3 bg-white rounded-lg shadow-lg border border-gray-200">
-                        <div className="w-[32px] h-[32px] flex justify-center items-center rounded-full bg-[#ffc107]/10">
-                          <svg
-                            className="w-[18px] h-[18px] text-[#ffc107]"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              strokeLinecap="round"
-                              strokeLinejoin="round"
-                              strokeWidth={2}
-                              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"
-                            />
-                          </svg>
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-medium text-[#192252]">Unassign All Vehicles</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+                  {showTooltipRow[row.original.id] && <DeleteWarning />}
                 </div>
               ) : isVehicles ? (
-                <div onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}>
-                  <CustomTooltip
-                    content="Unassign this vehicle"
-                    side="bottom"
-                    trigger={
-                      <div className="w-[44px] h-[44px] flex justify-center items-center rounded-[8px] p-[10px] bg-[#3D5BF6] hover:bg-[#3D5BF6]/80 cursor-pointer">
-                        <img src={rotation} alt="rotation" />
-                      </div>
-                    }
-                  />
+                <div className="relative">
+                  <div
+                    onClick={() => handleUnassign({ customerId: Number(row.original.id), vehicleId: vehicles[0].id })}
+                  >
+                    <CustomTooltip
+                      content="Unassign this vehicle"
+                      side="bottom"
+                      trigger={
+                        <div className="w-[44px] h-[44px] flex justify-center items-center rounded-[8px] p-[10px] bg-[#3D5BF6] hover:bg-[#3D5BF6]/80 cursor-pointer">
+                          <img src={rotation} alt="rotation" />
+                        </div>
+                      }
+                    />
+                  </div>
+                  {showTooltipRow[row.original.id] && <DeleteWarning />}
                 </div>
               ) : null}
               <div

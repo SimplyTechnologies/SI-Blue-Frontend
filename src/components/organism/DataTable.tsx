@@ -120,10 +120,16 @@ export const DataTableDemo = <T extends TableData>({ type, data, pagination, isL
   const showPagination = hasData && pagination.totalPages > 1;
 
   useEffect(() => {
+    if (pagination.page >= pagination.totalPages) {
+      pagination.onPageChange(pagination.totalPages);
+    }
+  }, [data, pagination.page, pagination.totalPages]);
+
+  useEffect(() => {
     const calculateFixedHeight = () => {
       const headerHeight = 80;
       const paddingHeight = 48;
-      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 20 : 0);
+      const calculatedHeight = headerHeight + dynamicPageSize * 80 + paddingHeight + (showPagination ? 21 : 0);
       setFixedHeight(`${calculatedHeight}px`);
     };
 

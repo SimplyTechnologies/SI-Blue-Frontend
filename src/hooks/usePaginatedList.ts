@@ -1,6 +1,6 @@
 import api from '@/api/axios';
 import { AxiosError } from 'axios';
-import { useQuery, type UseQueryResult } from '@tanstack/react-query';
+import { keepPreviousData, useQuery, type UseQueryResult } from '@tanstack/react-query';
 import type { CustomersResponse } from '@/types/Customer';
 import type { UsersResponse } from '@/types/User';
 
@@ -52,5 +52,6 @@ export const usePaginatedList = <T extends QueryKey>({
         throw error instanceof Error ? error : new Error('An unexpected error occurred');
       }
     },
+    placeholderData: keepPreviousData
   });
 };
