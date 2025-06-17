@@ -11,9 +11,7 @@ import { Input } from '@/components/atom/Input';
 import { Label } from '@/components/atom/Label';
 
 const schema = z.object({
-  email: z.string().email({
-    message: 'Invalid email address.',
-  }),
+  email: z.string().min(1, 'Email is required.').email({ message: 'Invalid email address.' }),
 });
 
 type FormData = z.infer<typeof schema>;
@@ -23,7 +21,12 @@ const ForgotPassword: React.FC = () => {
   const forgotPasswordMutation = useForgotPassword();
   const [loading, setLoading] = useState(false);
 
-  const { register, handleSubmit, trigger } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onBlur',
@@ -31,7 +34,7 @@ const ForgotPassword: React.FC = () => {
 
   const [success, setSuccess] = useState(false);
   const [email, setEmail] = useState('');
-  const [error, setError] = useState<string>('');
+  const [apiError, setApiError] = useState<string>('');
 
   const onSubmit = (data: FormData) => {
     setLoading(true);
@@ -43,7 +46,7 @@ const ForgotPassword: React.FC = () => {
           setSuccess(true);
         },
         onError: error => {
-          setError(error.message);
+          setApiError(error.message);
 
           console.error('Forgot password error', error.message);
         },
@@ -55,14 +58,11 @@ const ForgotPassword: React.FC = () => {
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div className="flex flex-col gap-[1rem]">
-        <p className="text-support-6 text-4xl font-bold leading-[120%]">
-          Forgot Password
-        </p>
+        <p className="text-support-6 text-4xl font-bold leading-[120%]">Forgot Password</p>
         <p className="text-support-5 text-base font-normal leading-[140%]">
           {success ? (
             <>
-              We’ve just sent an email to{' '}
-              <span className="font-medium text-support-9">{email}</span>. Please check your
+              We’ve just sent an email to <span className="font-medium text-support-9">{email}</span>. Please check your
               inbox and follow the instructions to reset your password. The link will expire in 10 minutes.
             </>
           ) : (
@@ -88,11 +88,11 @@ const ForgotPassword: React.FC = () => {
               className="h-[56px] px-[22px]"
             />
 
-            {error && (
-              <p className="text-support-2 text-sm font-normal leading-[140%]">
-                {error}
-              </p>
-            )}
+            {errors.email ? (
+              <p className="text-support-2 text-sm font-normal leading-[140%]">{errors.email.message}</p>
+            ) : apiError ? (
+              <p className="text-support-2 text-sm font-normal leading-[140%]">{apiError}</p>
+            ) : null}
           </div>
         </div>
         <Button
@@ -109,9 +109,7 @@ const ForgotPassword: React.FC = () => {
         </Button>
         <div className={`${success ? 'hidden' : 'relative text-center text-base h-[22px]'}`}>
           <div className="absolute inset-0 top-1/2 z-0 border-t border-[#EAEAEA] w-full" />
-          <span className="relative z-10 inline-block bg-bg-1 px-2 text-support-6">
-            Or
-          </span>
+          <span className="relative z-10 inline-block bg-bg-1 px-2 text-support-6">Or</span>
         </div>
         <Button className={`${success ? 'hidden' : 'h-[56px]'}`} variant={'outline'} onClick={() => navigate('/login')}>
           Back to Sign In
