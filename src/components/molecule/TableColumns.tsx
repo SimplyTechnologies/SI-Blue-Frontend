@@ -89,6 +89,7 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
         const fullName = row.getValue('fullName') as string;
         const firstName = row.original?.firstName || '';
         const lastName = row.original?.lastName || '';
+        const avatarUrl = type === 'users' && 'avatarUrl' in row.original ? row.original.avatarUrl : null;
         const kit = getColorFromName(fullName);
 
         return (
@@ -116,7 +117,10 @@ const TableColumns = <T extends TableData>({ type }: TableColumnsProps): ColumnD
               className="w-[52px] h-[52px] rounded-[50%] flex justify-center items-center"
               style={{ backgroundColor: kit.bg }}
             >
-              <AvatarImage src="" />
+              <AvatarImage
+                className="object-cover rounded-[50%] w-full h-full"
+                src={avatarUrl || undefined}
+              />
               <AvatarFallback
                 className="font-bold text-sm bg-primary-5 leading-[120%]"
                 style={{ backgroundColor: 'transparent', color: kit.color }}

@@ -1,4 +1,4 @@
-import z from 'zod'
+import z from 'zod';
 
 export const addNewUserFormSchema = z.object({
   email: z
@@ -32,18 +32,18 @@ export const addNewUserFormSchema = z.object({
 });
 export type AddNewUserFormValue = z.infer<typeof addNewUserFormSchema>;
 
-
 export type User = {
-    id: number;
-    firstName: string;
-    lastName: string;
-    email: string;
-    phoneNumber: string;
-    role: string;
-    isActive: boolean;
-    createdAt: string;
-    updatedAt: string;
-}
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phoneNumber: string;
+  role: string;
+  avatarUrl: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+};
 
 export type UserInput = User & {
   password: string;
@@ -62,10 +62,20 @@ export type UsersResponse = {
   page: number;
   pageSize: number;
   totalPages: number;
-}
+};
+
 export type AddNewUserType = {
   firstName: string;
   lastName: string;
   phoneNumber: string;
   email: string;
-}
+};
+
+export type UpdateAvatarRequest = {
+  id: number;
+  body: FormData;
+};
+
+export type UpdateAvatarResponse = {
+  avatarUrl: string;
+};
