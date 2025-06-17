@@ -13,6 +13,7 @@ import { Button } from '@/components/atom/Button';
 import LinkExpired from '@/components/molecule/LinkExpired';
 import PasswordInput from '@/components/molecule/PasswordInput';
 import PasswordValidator from '@/components/molecule/PasswordValidator';
+import { toast } from 'sonner';
 
 const passwordSchema = z
   .string()
@@ -40,7 +41,6 @@ const ResetPassword = () => {
   const navigate = useNavigate();
   const resetPassword = useResetPassword();
   const [error, setError] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
   const [password, setPassword] = useState('');
   const [showValidator, setShowValidator] = useState(false);
   const [isPasswordFocused, setIsPasswordFocused] = useState(false);
@@ -58,7 +58,6 @@ const ResetPassword = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
     trigger,
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -73,7 +72,8 @@ const ResetPassword = () => {
       { ...data, token },
       {
         onSuccess: () => {
-          setSuccessMessage('Your password has been reset successfully!');
+         
+          toast.success('Your password has been reset successfully!');
 
           setTimeout(() => {
             navigate('/login');
@@ -127,9 +127,6 @@ const ResetPassword = () => {
                 }}
                 className="h-[56px] pl-[22px] pr-[42px]"
               />
-              {errors.password && (
-                <p className="text-support-2 text-sm font-normal leading-[140%]">{errors.password.message}</p>
-              )}
 
               <PasswordValidator password={password} show={showValidator} isPasswordFocused={isPasswordFocused} />
             </div>
@@ -149,9 +146,6 @@ const ResetPassword = () => {
               onBlur={() => trigger('confirmPassword')}
               className="h-[56px] pl-[22px] pr-[42px]"
             />
-            {errors.confirmPassword && (
-              <p className="text-support-2 text-sm font-normal leading-[140%]">{errors.confirmPassword.message}</p>
-            )}
           </div>
         </div>
         <Button type="submit" className="h-[56px]" variant={'default'} disabled={loading}>
@@ -159,7 +153,7 @@ const ResetPassword = () => {
             {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Reset Password
           </div>
         </Button>
-        {successMessage && <p className="font-medium text-support-9">{successMessage}</p>}
+    
         {error && <p className="text-support-2 text-sm font-normal leading-[140%]">{error}</p>}
       </div>
     </form>

@@ -19,7 +19,7 @@ const PasswordValidator = ({ password = '', show = true, isPasswordFocused = fal
           <div
             className={`w-[6px] h-[6px] flex justify-center items-center text-[8px] font-medium leading-[140%] ${validation.valid ? 'text-[#256A23]' : 'text-support-2'}`}
           >
-            {validation.valid ? <PasswordValidationMark /> : <PasswordValidationFailIcon color={!isPasswordFocused && !validation.valid ? '#C9372C'  : 'white'}/>}
+            {validation.valid ? <PasswordValidationMark color='#256A23'/> : <PasswordValidationFailIcon color={!isPasswordFocused && !validation.valid ? '#C9372C'  : 'white'}/>}
           </div>
           <div
             className={`${!isPasswordFocused && !validation.valid ? 'text-[#C9372C]' : 'text-[#FFFFFF]'} text-sm font-medium leading-[140%]`}
