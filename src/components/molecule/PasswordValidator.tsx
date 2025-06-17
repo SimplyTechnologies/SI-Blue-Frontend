@@ -1,4 +1,7 @@
-const PasswordValidator = ({ password = '', show = true }) => {
+import { PasswordValidationFailIcon } from '@/assets/svgIconComponents/PasswordValidationFailIcon';
+import { PasswordValidationMark } from '@/assets/svgIconComponents/PasswordValidationMark';
+
+const PasswordValidator = ({ password = '', show = true, isPasswordFocused = false }) => {
   const validations = [
     { label: 'At least 8 characters', valid: password.length >= 8 },
     { label: 'Lowercase letter', valid: /[a-z]/.test(password) },
@@ -10,27 +13,23 @@ const PasswordValidator = ({ password = '', show = true }) => {
   if (!password || !show) return null;
 
   return (
-    <div className="absolute top-full left-0 mt-1 w-1/2 p-3 bg-white border rounded shadow-lg z-20">
+    <div className="absolute bottom-full mb-1 left-full -translate-x-full lg:bottom-0 lg:mb-0 lg:-translate-x-0 lg:h-[120px] lg:top-0 lg:ml-1 w-1/2 p-3 bg-[#363150] rounded shadow-lg z-20">
       {validations.map((validation, index) => (
-        <div key={index} className="flex items-center space-x-2 text-sm">
-          <span
-            className={
-              validation.valid
-                ? 'text-[var(--color-success,#28a745)] text-sm font-medium leading-[140%]'
-                : 'text-[var(--color-support-2)] text-sm font-medium leading-[140%]'
-            }
+        <div key={index} className="grid grid-cols-[26px_1fr] items-center space-x-2 text-sm">
+          <div
+            className={`w-[6px] h-[6px] flex justify-center items-center text-[8px] font-medium leading-[140%] ${validation.valid ? 'text-[#256A23]' : 'text-support-2'}`}
           >
-            {validation.valid ? '✓' : '✗'}
-          </span>
-          <span
-            className={
-              validation.valid
-                ? 'text-[var(--color-success,#28a745)] text-sm font-medium leading-[140%]'
-                : 'text-[var(--color-support-2)] text-sm font-medium leading-[140%]'
-            }
+            {validation.valid ? (
+              <PasswordValidationMark color="#256A23" />
+            ) : (
+              <PasswordValidationFailIcon color={!isPasswordFocused && !validation.valid ? '#C9372C' : 'white'} />
+            )}
+          </div>
+          <div
+            className={`${validation.valid ? 'text-[#256A23]' : !isPasswordFocused && !validation.valid ? 'text-[#C9372C]' : 'text-[#FFFFFF]'} text-sm font-medium leading-[140%]`}
           >
             {validation.label}
-          </span>
+          </div>
         </div>
       ))}
     </div>
@@ -38,3 +37,4 @@ const PasswordValidator = ({ password = '', show = true }) => {
 };
 
 export default PasswordValidator;
+
