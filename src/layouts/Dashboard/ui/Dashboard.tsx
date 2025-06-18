@@ -59,8 +59,11 @@ function DashboardLayout() {
             sideOffset={0}
             align="end"
             trigger={
-              <Avatar style={{ backgroundColor: avatarFallbackBg }} className='w-[40px] h-[40px]'>
-                <AvatarImage src="" />
+              <Avatar style={{ backgroundColor: avatarFallbackBg }} className="w-[40px] h-[40px]">
+                <AvatarImage
+                  className="object-cover"
+                  src={user?.avatarUrl || undefined}
+                />
                 <AvatarFallback
                   className="font-medium"
                   style={{ backgroundColor: 'transparent', color: avatarFallbackTextColor }}
@@ -80,4 +83,3 @@ function DashboardLayout() {
 }
 
 export default DashboardLayout;
-

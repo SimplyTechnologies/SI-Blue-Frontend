@@ -13,9 +13,11 @@ import { Button } from '@/components/atom/Button';
 import LinkExpired from '@/components/molecule/LinkExpired';
 import PasswordInput from '@/components/molecule/PasswordInput';
 import PasswordValidator from '@/components/molecule/PasswordValidator';
+import { toast } from 'sonner';
 
 const passwordSchema = z
   .string()
+  .min(1, 'Password is required')
   .min(8, 'Password must be at least 8 characters long')
   .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
   .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')
@@ -41,6 +43,8 @@ const ResetPassword = () => {
   const [error, setError] = useState('');
   const [password, setPassword] = useState('');
   const [showValidator, setShowValidator] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
+
   const token = searchParams.get('token') || '';
   const [loading, setLoading] = useState(false);
 
@@ -51,12 +55,7 @@ const ResetPassword = () => {
     retry: false,
   });
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-    trigger,
-  } = useForm<FormData>({
+  const { register, handleSubmit, trigger } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onBlur',
@@ -69,7 +68,11 @@ const ResetPassword = () => {
       { ...data, token },
       {
         onSuccess: () => {
-          navigate('/login');
+          toast.success('Your password has been reset successfully!');
+
+          setTimeout(() => {
+            navigate('/login');
+          }, 1000);
         },
         onError: error => {
           setError(error.message);
@@ -90,9 +93,7 @@ const ResetPassword = () => {
   return (
     <form className={cn('flex flex-col gap-[3.25rem]')} onSubmit={handleSubmit(onSubmit)}>
       <div>
-        <p className="text-support-6 text-4xl font-bold leading-[120%]">
-          Reset Password
-        </p>
+        <p className="text-support-6 text-4xl font-bold leading-[120%]">Reset Password</p>
       </div>
       <div className="grid gap-[2.25rem]">
         <div className="grid gap-[1rem]">
@@ -111,11 +112,18 @@ const ResetPassword = () => {
                 {...register('password', {
                   onChange: e => setPassword(e.target.value),
                 })}
-                onFocus={() => setShowValidator(true)}
-                onBlur={() => trigger('password')}
+                onFocus={() => {
+                  setIsPasswordFocused(true);
+                  setShowValidator(true);
+                }}
+                onBlur={() => {
+                  setIsPasswordFocused(false);
+                  trigger('password');
+                }}
                 className="h-[56px] pl-[22px] pr-[42px]"
               />
-              <PasswordValidator password={password} show={showValidator} />
+
+              <PasswordValidator password={password} show={showValidator} isPasswordFocused={isPasswordFocused} />
             </div>
           </div>
           <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
@@ -131,14 +139,8 @@ const ResetPassword = () => {
               placeholder="Confirm Password"
               {...register('confirmPassword')}
               onBlur={() => trigger('confirmPassword')}
-              onFocus={() => setShowValidator(false)}
               className="h-[56px] pl-[22px] pr-[42px]"
             />
-            {errors.confirmPassword && (
-              <p className="text-support-2 text-sm font-normal leading-[140%]">
-                {errors.confirmPassword.message}
-              </p>
-            )}
           </div>
         </div>
         <Button type="submit" className="h-[56px]" variant={'default'} disabled={loading}>
@@ -146,11 +148,8 @@ const ResetPassword = () => {
             {loading ? <Loader2 className="animate-spin h-5 w-5" /> : null} Reset Password
           </div>
         </Button>
-        {error && (
-          <p className="text-support-2 text-sm font-normal leading-[140%]">
-            {error}
-          </p>
-        )}
+
+        {error && <p className="text-support-2 text-sm font-normal leading-[140%]">{error}</p>}
       </div>
     </form>
   );

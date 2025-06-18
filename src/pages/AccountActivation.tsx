@@ -77,6 +77,7 @@ const AccountActivation: React.FC = () => {
 
   const [loading, setLoading] = useState(false);
   const [showValidator, setShowValidator] = useState(false);
+  const [isPasswordFocused, setIsPasswordFocused] = useState(false);
   const [serverError, setServerError] = useState('');
   const [password, setPassword] = useState('');
 
@@ -210,11 +211,11 @@ const AccountActivation: React.FC = () => {
                   {...register('password', {
                     onChange: e => setPassword(e.target.value),
                   })}
-                  onFocus={() => setShowValidator(true)}
-                  onBlur={() => trigger('password')}
+                  onFocus={() => {setIsPasswordFocused(true); setShowValidator(true)}}
+                  onBlur={() => {setIsPasswordFocused(false); trigger('password')}}
                   className="h-[56px] pl-[22px] pr-[42px]"
                 />
-                <PasswordValidator password={password} show={showValidator} />
+                <PasswordValidator password={password} show={showValidator} isPasswordFocused={isPasswordFocused} />
               </div>
             </div>
             <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
@@ -230,7 +231,6 @@ const AccountActivation: React.FC = () => {
                 placeholder="Confirm Password"
                 {...register('confirmPassword')}
                 onBlur={() => trigger('confirmPassword')}
-                onFocus={() => setShowValidator(false)}
                 className="h-[56px] pl-[22px] pr-[42px]"
               />
               {errors.confirmPassword && (

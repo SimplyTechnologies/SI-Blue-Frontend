@@ -11,3 +11,13 @@ export const addUser = async (user: AddNewUserType) => {
   const response = await api.post(`/users/add-user`, user)
   return response.data.data
 }
+
+export const updateUserAvatar = async (id: number, body: FormData) => {
+  const response = await api.post(`/users/upload-avatar/${id}`, body);
+  return response.data.data;
+};
+
+export const deleteUserAvatar = async (id: number) => {
+    const response = await api.delete(`/users/delete-avatar/${id}`);
+    return response.data.data;
+};
