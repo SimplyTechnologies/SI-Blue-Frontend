@@ -34,6 +34,7 @@ const MyProfile = () => {
   const { user, setUser, logout } = useAuthStore();
   const [isEdit, setIsEdit] = useState(false);
   const [isConfirmResetOpen, setIsConfirmResetOpen] = useState(false);
+  const [isSizeLimitError, setIsSizeLimitError] = useState(false);
   const { mutateAsync, isPending: isResetPasswordPending } = useForgotPassword();
   const userCredentials = (user?.firstName[0] || '') + (user?.lastName[0] || '');
   const avatarFallback = getColorFromName(`${user?.firstName} ${user?.lastName}`);
@@ -43,8 +44,14 @@ const MyProfile = () => {
   const handleImageUpload = (file: File) => {
     if (!user?.id) return;
 
+    if (file && file.size > 2 * 1024 * 1024) { // 2MB size limit
+      setIsSizeLimitError(true);
+      return;
+    }
+
     const formData = new FormData();
     formData.append('avatar', file);
+    setIsSizeLimitError(false);
     uploadAvatar.mutate(
       { id: user.id, body: formData },
       {
@@ -58,6 +65,7 @@ const MyProfile = () => {
   const handleImageDelete = () => {
     if (!user?.id) return;
 
+    setIsSizeLimitError(false);
     deleteAvatar.mutate(user.id, {
       onSuccess: () => {
         setUser({ ...user, avatarUrl: null });
@@ -114,7 +122,7 @@ const MyProfile = () => {
         <h1 className="text-2xl font-bold text-primary mb-1">My Profile</h1>
         <p className="text-support-5">This information can be edited from your profile page.</p>
       </div>
-      <div className="mb-9">
+      <div className="mb-5">
         <AvatarUpload
           src={user?.avatarUrl || undefined}
           fallback={userCredentials}
@@ -124,6 +132,13 @@ const MyProfile = () => {
           fallbackBackground={avatarFallback.bg}
           loading={uploadAvatar.isPending}
         />
+        <div className="h-5">
+          {isSizeLimitError && (
+            <p className="text-support-2 text-sm font-normal leading-[140%]">
+              File size exceeds 2MB limit. Please choose a smaller file.
+            </p>
+          )}
+        </div>
       </div>
       <div>
         <h2 className="text-lg font-bold text-primary mb-0.5">
