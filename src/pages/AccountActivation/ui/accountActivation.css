@@ -1,0 +1,16 @@
+@media screen and (max-height: 725px) and (min-width: 1024px) {
+  .account-activation {
+    flex-grow: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    max-height: calc(90vh - 200px);
+    padding-right: 0.5rem;
+    .password-validation {
+      bottom: 100%;
+      margin-bottom: 1px;
+      transform: translate(-100%, -106%);
+      left: 100%;
+      margin-top: 0.25rem;
+    }
+  }
+}

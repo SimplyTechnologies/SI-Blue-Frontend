@@ -15,7 +15,7 @@ const Public = lazy(() => import('@/layouts/Public'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
-const AccountActivation = lazy(() => import('@/pages/AccountActivation'));
+const AccountActivation = lazy(() => import('@/pages/AccountActivation/ui/AccountActivation'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Vehicles = lazy(() => import('@/pages/Vehicles'));
 const VehicleDetails = lazy(() => import('@/pages/VehicleDetails'));
