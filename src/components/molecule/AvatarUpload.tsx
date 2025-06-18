@@ -1,5 +1,4 @@
 import { type ChangeEvent, type MouseEvent, useState, useRef, useEffect } from 'react';
-import { toast } from 'sonner';
 import { X } from 'lucide-react';
 import { CameraIcon } from '@/assets/svgIconComponents/CameraIcon';
 import { Button } from '@/components/atom/Button';
@@ -32,10 +31,6 @@ export default function AvatarUpload({
 
   const handleFileSelect = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file && file.size > 2 * 1024 * 1024) { // 2MB limit
-      toast.error('File size exceeds 2MB limit. Please choose a smaller file.');
-      return;
-    }
     if (file) {
       onImageUpload?.(file);
     }
