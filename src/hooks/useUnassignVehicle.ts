@@ -22,6 +22,7 @@ export const useUnassignVehicle = () => {
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['customersList'] });
+      queryClient.removeQueries({ queryKey: ['vehicles'] });
       toast.success('Vehicle unassigned successfully');
     },
     onError: error => {
