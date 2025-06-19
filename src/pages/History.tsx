@@ -12,10 +12,12 @@ import {
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/atom/Table';
 import { SearchIcon } from 'lucide-react';
 
-import { Input } from '@/components/atom/Input';
-import HistoryColumns from '@/components/molecule/HistoryColumns';
 import { useHistory } from '@/hooks/useHistory';
 import { useDynamicPageSize } from '@/hooks/useDynamicRows';
+import { nothingToShowOptions } from '@/utils/constants';
+import { Input } from '@/components/atom/Input';
+import HistoryColumns from '@/components/molecule/HistoryColumns';
+import NothingToShow from '@/components/molecule/NothingToShow';
 
 const History = () => {
   const [fixedHeight, setFixedHeight] = useState<string>('auto');
@@ -123,21 +125,15 @@ const History = () => {
                 <TableRow className="h-full pointer-events-none border-none hover:bg-transparent" />
               ) : (
                 <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
-                  {/* <TableCell colSpan={columns.length} className="p-0 h-full border-none">
+                  <TableCell colSpan={columns.length} className="p-0 h-full border-none">
                     <div className="flex items-center justify-center w-full min-h-[350px]">
                       <NothingToShow
-                        title={
-                          type === 'users' ? nothingToShowOptions.users.title : nothingToShowOptions.customers.title
-                        }
-                        subtitle={
-                          type === 'users'
-                            ? nothingToShowOptions.users.subtitle
-                            : nothingToShowOptions.customers.subtitle
-                        }
-                        icon={type === 'users' ? nothingToShowOptions.users.icon : nothingToShowOptions.customers.icon}
+                        title={nothingToShowOptions.userActivity.title}
+                        subtitle={nothingToShowOptions.userActivity.subtitle}
+                        icon={nothingToShowOptions.userActivity.icon}
                       />
                     </div>
-                  </TableCell> */}
+                  </TableCell>
                 </TableRow>
               )}
             </TableBody>
@@ -149,3 +145,4 @@ const History = () => {
 };
 
 export default History;
+

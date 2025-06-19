@@ -3,6 +3,7 @@ import { NothingToShowCarIcon } from '@/assets/svgIconComponents/NothingToShowCa
 import { NothingToShowCustomersIcon } from '@/assets/svgIconComponents/NothingToShowCustomers';
 import { NothingToShowFavoriteIcon } from '@/assets/svgIconComponents/NothingToShowFavoriteIcon';
 import { NothingToShowUsersIcon } from '@/assets/svgIconComponents/NothingToShowUsers';
+import { NothingToShowUserActivityIcon } from '@/assets/svgIconComponents/NothingToShowUserActivity';
 
 export const pathTitles: Record<string, string> = {
   dashboard: 'Dashboard',
@@ -10,6 +11,7 @@ export const pathTitles: Record<string, string> = {
   users: 'Users',
   customers: 'Customers',
   'my-profile': 'Account',
+  history: 'User Activity',
 };
 
 export const availabilityOptions = [
@@ -40,6 +42,11 @@ export const nothingToShowOptions = {
     subtitle: 'All customers will be displayed here.',
     icon: NothingToShowCustomersIcon,
   },
+  userActivity: {
+    title: 'There are no user activities to display',
+    subtitle: 'All activities will appear here once available.',
+    icon: NothingToShowUserActivityIcon,
+  },
 };
 
 export const avatarColors: Array<{ bg: string; color: string }> = [
@@ -60,3 +67,4 @@ export const avatarColors: Array<{ bg: string; color: string }> = [
     color: '#0DCF89',
   },
 ];
+

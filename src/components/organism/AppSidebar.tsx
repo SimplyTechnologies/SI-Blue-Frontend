@@ -1,5 +1,6 @@
 import { Link } from 'react-router';
 
+import { useIsAdmin } from '@/hooks/useIsAdmin';
 import { NavMain } from '@/components/molecule/NavMain';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarTrigger, useSidebar } from '@/components/atom/Sidebar';
 import logo from '@/assets/favicon.svg';
@@ -11,8 +12,9 @@ import { UsersIcon } from '@/assets/svgIconComponents/UsersIcon';
 import { VehiclesIconActive } from '@/assets/svgIconComponents/VehiclesIconActive';
 import { UsersIconActive } from '@/assets/svgIconComponents/UsersIconActive';
 import { CustomersIconActive } from '@/assets/svgIconComponents/CustomersIconActive';
+import { UserActivityIconActive } from '@/assets/svgIconComponents/UserActivityIconActive';
+import { UserActivityIcon } from '@/assets/svgIconComponents/UserActivityIcon';
 import { DashboardIconActive } from '@/assets/svgIconComponents/DashboardIconActive';
-import { useIsAdmin } from '@/hooks/useIsAdmin';
 
 const data = {
   navMain: [
@@ -42,6 +44,13 @@ const data = {
       url: '/customers',
       icon: <CustomersIcon />,
       iconActive: <CustomersIconActive />,
+      isActive: true,
+    },
+    {
+      title: 'User Activity',
+      url: '/history',
+      icon: <UserActivityIcon />,
+      iconActive: <UserActivityIconActive />,
       isActive: true,
     },
   ],
