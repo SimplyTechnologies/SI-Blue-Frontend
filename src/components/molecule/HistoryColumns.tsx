@@ -71,36 +71,37 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
           const vehicleId = vehicle?.id;
 
           const info = (
-            <div className="flex flex-col">
+            <div className="flex gap-[4px]">
               <span className="font-[600] text-sm text-[#848C98] italic">{title}</span>
-              <span className="font-[600] text-sm text-[#848C98] italic">{vin}</span>
+              <span className="font-[600] text-sm text-[#848C98] italic">({vin})</span>
             </div>
           );
 
           if (actionType === 'CREATE') {
             display = (
-              <>
-                <span className="font-normal text-sm text-[#848C98] italic">Added vehicle</span>
+              <div className="flex gap-[4px]">
+                <span className="font-normal text-sm text-[#848C98] italic">added vehicle</span>
                 {info}
-              </>
+              </div>
             );
           } else if (actionType === 'DELETE') {
             display = (
-              <>
-                <span className="font-normal text-sm text-[#848C98] italic">Deleted vehicle</span>
+              <div className="flex gap-[4px]">
+                <span className="font-normal text-sm text-[#848C98] italic">deleted vehicle</span>
                 {info}
-              </>
+              </div>
             );
           } else if (actionType === 'UPDATE') {
             const customerPrevId = previous?.customerId;
             const customerCurrId = current?.customerId;
             display = (
-              <>
+              <div className='flex gap-[4px]'>
                 <span className="font-normal text-sm text-[#848C98] italic">
-                  {
-                    customerPrevId && customerCurrId ? 
-                    'Updated vehicle' : !customerPrevId && customerCurrId ? 'Assigned vehicle' : 'Unassigned vehicle'
-                  }
+                  {customerPrevId && customerCurrId
+                    ? 'updated vehicle'
+                    : !customerPrevId && customerCurrId
+                      ? 'assigned vehicle'
+                      : 'unassigned vehicle'}
                 </span>
                 {vehicleId ? (
                   <a
@@ -112,7 +113,7 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
                 ) : (
                   info
                 )}
-              </>
+              </div>
             );
           }
         } else if (isCustomer) {
@@ -120,9 +121,10 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
           const name = `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim();
           if (actionType === 'DELETE') {
             display = (
-              <span className="font-medium text-sm text-support-5">
-                Deleted customer <strong>{name}</strong>
-              </span>
+              <div className="flex gap-[4px]">
+                <span className="font-normal text-sm text-[#848C98] italic">deleted customer</span>
+                <span className="font-[600] text-sm text-[#848C98] italic">{name}</span>
+              </div>
             );
           }
         }
