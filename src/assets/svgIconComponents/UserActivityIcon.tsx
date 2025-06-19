@@ -27,9 +27,9 @@ export const UserActivityIcon = () => (
     <path
       d="M9.5 17.5L8 16.25V14"
       stroke="#403C89"
-      stroke-width="1.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
       className="sidebar-icon-light-stroke"
     />
   </svg>
