@@ -1,4 +1,5 @@
 import z from 'zod';
+import type { DateRange } from 'react-day-picker';
 
 export const addNewUserFormSchema = z.object({
   email: z
@@ -78,4 +79,8 @@ export type UpdateAvatarRequest = {
 
 export type UpdateAvatarResponse = {
   avatarUrl: string;
+};
+
+export type HistoryFilterState = {
+  date?: DateRange;
 };

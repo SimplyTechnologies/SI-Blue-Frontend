@@ -18,7 +18,7 @@ const DateRangePicker = ({ value, onChange, className }: DateRangeProps) => {
   const handleClear = (e: MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     e.preventDefault();
-    onChange(undefined);
+    onChange({ from: undefined, to: undefined });
   };
 
   const hasSelection = value?.from;
@@ -30,7 +30,8 @@ const DateRangePicker = ({ value, onChange, className }: DateRangeProps) => {
           <Button
             id="date"
             className={cn(
-              'flex justify-between w-full py-2 px-3 rounded-md border-input bg-white border min-h-10.5 shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50  h-auto items-center [&_svg]:pointer-events-auto text-sm text-muted-foreground font-normal focus:border-primary-4 focus:border-[2px]',
+              'flex justify-between w-full py-2 px-3 rounded-md border-input bg-white border min-h-10.5 shadow-xs transition-[color,box-shadow] outline-none disabled:cursor-not-allowed disabled:opacity-50  h-auto items-center [&_svg]:pointer-events-auto text-sm font-normal focus:border-primary-4 focus:border-[2px]',
+              `${!value?.from ? 'text-muted-foreground' : ''}`,
               className,
             )}
           >

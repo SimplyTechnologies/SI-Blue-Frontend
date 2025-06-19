@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import type { DateRange } from 'react-day-picker';
 import { useInView } from 'react-intersection-observer';
 
 import {
@@ -13,9 +14,11 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { SearchIcon } from 'lucide-react';
 
 import { useHistory } from '@/hooks/useHistory';
+import type { HistoryFilterState } from '@/types/User';
 import { useDynamicPageSize } from '@/hooks/useDynamicRows';
 import { nothingToShowOptions } from '@/utils/constants';
 import { Input } from '@/components/atom/Input';
+import DateRangePicker from '@/components/atom/DateRangePicker';
 import HistoryColumns from '@/components/molecule/HistoryColumns';
 import NothingToShow from '@/components/molecule/NothingToShow';
 import { useDebounce } from '@/hooks/useDebounce';
@@ -27,11 +30,16 @@ const History = () => {
   const dynamicPageSize = useDynamicPageSize();
   const [searchInput, setSearchInput] = useState('');
   const { debounceValue } = useDebounce({ inputValue: searchInput, delay: 300 });
+  const [filters, setFilters] = useState<HistoryFilterState>({
+    date: { from: undefined, to: undefined },
+  });
 
-  const { data, isLoading, isPending, isFetching, fetchNextPage, hasNextPage } = useHistory({
+  const { data, isLoading, fetchNextPage, hasNextPage } = useHistory({
     page: 1,
     offset: dynamicPageSize,
     search: debounceValue,
+    from: filters.date?.to ? filters.date?.from : undefined,
+    to: filters.date?.from ? filters.date?.to : undefined,
   });
   const flatData = data?.pages?.flatMap(page => page.userActivity) ?? [];
   const columns = HistoryColumns();
@@ -44,6 +52,53 @@ const History = () => {
     getExpandedRowModel: getExpandedRowModel(),
     manualPagination: true,
   });
+
+  const handleDateChange = (newSelectedRange: DateRange | undefined) => {
+    const currentFrom = filters.date?.from;
+    const currentTo = filters.date?.to;
+
+    if (!newSelectedRange || (!newSelectedRange.from && !newSelectedRange.to)) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        date: { from: undefined, to: undefined },
+      }));
+      return;
+    }
+
+    const { from: proposedFrom, to: proposedTo } = newSelectedRange;
+
+    if (
+      currentFrom &&
+      !currentTo &&
+      proposedFrom &&
+      proposedTo &&
+      proposedFrom.getTime() === currentFrom.getTime() &&
+      proposedTo.getTime() === currentFrom.getTime()
+    ) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        date: { from: undefined, to: undefined },
+      }));
+      return;
+    }
+
+    if (!currentFrom && proposedFrom && proposedTo && proposedFrom.getTime() === proposedTo.getTime()) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        date: { from: proposedFrom, to: undefined },
+      }));
+    } else if (currentFrom && !filters.date?.to && proposedFrom && !proposedTo) {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        date: { from: proposedFrom, to: undefined },
+      }));
+    } else {
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        date: { from: proposedFrom, to: proposedTo },
+      }));
+    }
+  };
 
   useEffect(() => {
     if (inView && hasNextPage) {
@@ -72,10 +127,11 @@ const History = () => {
           <Input
             value={searchInput}
             onChange={e => setSearchInput(e.target.value)}
-            className="max-w-[327px] h-[42px] pl-[3.5rem]"
+            className="max-w-[327px] h-[42px] pl-[3.5rem] max-[480px]:max-w-[90vw] max-[480px]:w-[90vw]"
             placeholder="Search..."
           />
         </div>
+        <DateRangePicker className="w-[280px] max-[480px]:w-[90vw]" value={filters.date} onChange={handleDateChange} />
       </div>
 
       <div className="w-full">

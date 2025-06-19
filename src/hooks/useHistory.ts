@@ -1,4 +1,5 @@
 import api from '@/api/axios';
+import { format } from 'date-fns';
 import { AxiosError } from 'axios';
 import { keepPreviousData, useInfiniteQuery } from '@tanstack/react-query';
 import type { UserActivity } from '@/types/History';
@@ -7,6 +8,8 @@ interface HistoryParams {
   page?: number;
   offset?: number;
   search?: string;
+  from?: Date;
+  to?: Date;
 }
 
 interface HistoryResponse {
@@ -18,9 +21,9 @@ interface HistoryResponse {
   total?: number;
 }
 
-export const useHistory = ({ page = 1, offset = 25, search = '' }: HistoryParams) => {
+export const useHistory = ({ page = 1, offset = 25, search = '', from, to }: HistoryParams) => {
   return useInfiniteQuery({
-    queryKey: ['history', page, offset, search.trim()],
+    queryKey: ['history', page, offset, search.trim(), from, to],
     queryFn: async ({ pageParam = page }): Promise<HistoryResponse> => {
       const params: Record<string, string | number> = {
         page: pageParam,
@@ -29,6 +32,11 @@ export const useHistory = ({ page = 1, offset = 25, search = '' }: HistoryParams
 
       if (search.trim()) {
         params.search = encodeURIComponent(search.trim());
+      }
+
+      if (from && to) {
+        params.from = format(new Date(from), 'yyyy-MM-dd');
+        params.to = format(new Date(to), 'yyyy-MM-dd');
       }
 
       try {
@@ -50,4 +58,3 @@ export const useHistory = ({ page = 1, offset = 25, search = '' }: HistoryParams
     placeholderData: keepPreviousData,
   });
 };
-
