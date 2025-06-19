@@ -21,6 +21,7 @@ const Vehicles = lazy(() => import('@/pages/Vehicles'));
 const VehicleDetails = lazy(() => import('@/pages/VehicleDetails'));
 const Users = lazy(() => import('@/pages/Users'));
 const Customers = lazy(() => import('@/pages/Customers'));
+const History = lazy(() => import('@/pages/History'));
 const MyProfile = lazy(() => import('@/pages/MyProfile'));
 
 interface AppRouterProps {
@@ -64,6 +65,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
               </Route>
               {isAdmin && <Route path="users" element={<Users />} />}
               <Route path="customers" element={<Customers />} />
+              <Route path="history" element={<History />} />
               <Route path="my-profile" element={<MyProfile />} />
             </Route>
           </Route>

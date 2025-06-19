@@ -37,7 +37,7 @@ export const PaginatedListWrapper = ({
     queryKey,
     page: currentPage,
     offset: pageSize,
-    search: debounceSearch,
+    search: encodeURIComponent(debounceSearch),
   });
 
   useEffect(() => {

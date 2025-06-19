@@ -60,7 +60,7 @@ const Vehicles: React.FC = () => {
     }> => {
       return getVehicles({
         ...validatedFiltersParams,
-        search: debounceValue || undefined,
+        search: encodeURIComponent(debounceValue) || undefined,
         page: pageParam,
         offset,
         favorite: active === 'favorites' ? 1 : undefined,
@@ -250,4 +250,3 @@ const Vehicles: React.FC = () => {
 };
 
 export default Vehicles;
-
