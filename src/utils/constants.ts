@@ -44,7 +44,7 @@ export const nothingToShowOptions = {
   },
   userActivity: {
     title: 'There are no user activities to display',
-    subtitle: 'All activities will be displayed here.',
+    subtitle: 'All activities will appear here once available.',
     icon: NothingToShowUserActivityIcon,
   },
 };

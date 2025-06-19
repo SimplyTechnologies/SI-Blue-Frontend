@@ -1,36 +1,9 @@
 export const UserActivityIcon = () => (
   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
     <path
-      d="M16 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V7L15 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V7"
-      stroke="#403C89"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="sidebar-icon-light-stroke"
-    />
-    <path
-      d="M14 2V6C14 6.53043 14.2107 7.03914 14.5858 7.41421C14.9609 7.78929 15.4696 8 16 8H20"
-      stroke="#403C89"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="sidebar-icon-light-stroke"
-    />
-    <path
-      d="M8 22C11.3137 22 14 19.3137 14 16C14 12.6863 11.3137 10 8 10C4.68629 10 2 12.6863 2 16C2 19.3137 4.68629 22 8 22Z"
-      stroke="#403C89"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="sidebar-icon-light-stroke"
-    />
-    <path
-      d="M9.5 17.5L8 16.25V14"
-      stroke="#403C89"
-      strokeWidth="1.5"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className="sidebar-icon-light-stroke"
+      d="M12.0137 1.99902C6.49087 1.99902 2.01367 6.47602 2.01367 11.999C2.01367 17.522 6.49077 21.999 12.0137 21.999C17.5365 21.999 22.0137 17.522 22.0137 11.999C22.0137 6.47602 17.5365 1.99902 12.0137 1.99902ZM12.0137 3.99902C16.432 3.99902 20.0137 7.58102 20.0137 11.999C20.0137 16.417 16.432 19.999 12.0137 19.999C7.59537 19.999 4.01367 16.417 4.01367 11.999C4.01367 7.58102 7.59537 3.99902 12.0137 3.99902ZM12.0137 5.99902C11.4614 5.99902 11.0137 6.44702 11.0137 6.99902V11.999C11.0137 12.264 11.1074 12.53 11.2949 12.718L14.2949 15.718C14.6855 16.108 15.3419 16.108 15.7325 15.718C16.123 15.327 16.123 14.671 15.7325 14.28L13.0137 11.561V6.99902C13.0137 6.44702 12.566 5.99902 12.0137 5.99902Z"
+      fill="#403C89"
+      className="sidebar-icon-light-fill"
     />
   </svg>
 );
