@@ -21,7 +21,7 @@
 
   --color-secondary-1: #369afe;
 
-  --color-destructive: #FA5087;
+  --color-destructive: #fa5087;
 
   --color-support-1: #ffc107;
   --color-support-2: #dc3545;
@@ -90,7 +90,7 @@
   --color-support-1: var(--color-support-1);
   --color-support-2: var(--color-support-2);
   --color-support-3: var(--color-support-3);
-  
+
   --color-support-5: var(--color-support-5);
   --color-support-6: var(--color-support-6);
   --color-support-7: var(--color-support-7);

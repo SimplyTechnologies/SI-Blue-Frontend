@@ -67,8 +67,8 @@ const Vehicles: React.FC = () => {
       });
     },
     initialPageParam: 1,
-    getPreviousPageParam: firstPage => firstPage.previousId,
-    getNextPageParam: lastPage => lastPage.nextId,
+    getPreviousPageParam: firstPage => firstPage?.previousId,
+    getNextPageParam: lastPage => lastPage?.nextId,
   });
 
   useEffect(() => {
