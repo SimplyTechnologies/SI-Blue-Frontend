@@ -15,7 +15,7 @@ const Public = lazy(() => import('@/layouts/Public'));
 const LoginPage = lazy(() => import('@/pages/LoginPage'));
 const ForgotPassword = lazy(() => import('@/pages/ForgotPassword'));
 const ResetPassword = lazy(() => import('@/pages/ResetPassword'));
-const AccountActivation = lazy(() => import('@/pages/AccountActivation'));
+const AccountActivation = lazy(() => import('@/pages/AccountActivation/ui/AccountActivation'));
 const Dashboard = lazy(() => import('@/pages/Dashboard'));
 const Vehicles = lazy(() => import('@/pages/Vehicles'));
 const VehicleDetails = lazy(() => import('@/pages/VehicleDetails'));
@@ -55,8 +55,8 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
             <Route element={<DashboardLayout />}>
               <Route path="/" index element={<Navigate to="/dashboard" replace />} />
               <Route path="dashboard" element={<Dashboard />} loader={() => mapDataLoader(queryClient)} />
-              <Route element={<VehicleLayout />} loader={() => mapDataLoader(queryClient)}>
-                <Route path="vehicles" element={<Vehicles />} />
+              <Route element={<VehicleLayout />}>
+                <Route path="vehicles" element={<Vehicles />} loader={() => mapDataLoader(queryClient)} />
                 <Route
                   path="vehicles/:id"
                   element={<VehicleDetails />}
@@ -78,3 +78,4 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
 };
 
 export default AppRoutes;
+

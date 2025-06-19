@@ -18,6 +18,7 @@ import PasswordInput from '@/components/molecule/PasswordInput';
 import PasswordValidator from '@/components/molecule/PasswordValidator';
 import AnimatedDotsLoader from '@/components/molecule/AnimatedDotsLoader';
 import { ActiveUserIcon } from '@/assets/svgIconComponents/ActiveUserIcon';
+import './accountActivation.css';
 
 const passwordSchema = z
   .string()
@@ -150,7 +151,7 @@ const AccountActivation: React.FC = () => {
         <p className="text-support-6 text-4xl font-bold leading-[120%]">Account Activation</p>
       </div>
       <div className="grid gap-[2.25rem]">
-        <div className="grid gap-[1rem] flex-grow overflow-y-auto scroll-smooth max-h-[calc(90vh_-_200px)] pr-2">
+        <div className="grid gap-[1rem] account-activation">
           <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">
             <Label
               htmlFor="email"
@@ -215,7 +216,7 @@ const AccountActivation: React.FC = () => {
                   onBlur={() => {setIsPasswordFocused(false); trigger('password')}}
                   className="h-[56px] pl-[22px] pr-[42px]"
                 />
-                <PasswordValidator password={password} show={showValidator} isPasswordFocused={isPasswordFocused} />
+                <PasswordValidator password={password} show={showValidator} isPasswordFocused={isPasswordFocused} className='password-validation' />
               </div>
             </div>
             <div className="grid gap-[4px] focus-within:[&>label]:text-support-6">

@@ -60,15 +60,15 @@ const Vehicles: React.FC = () => {
     }> => {
       return getVehicles({
         ...validatedFiltersParams,
-        search: debounceValue || undefined,
+        search: encodeURIComponent(debounceValue) || undefined,
         page: pageParam,
         offset,
         favorite: active === 'favorites' ? 1 : undefined,
       });
     },
     initialPageParam: 1,
-    getPreviousPageParam: firstPage => firstPage.previousId,
-    getNextPageParam: lastPage => lastPage.nextId,
+    getPreviousPageParam: firstPage => firstPage?.previousId,
+    getNextPageParam: lastPage => lastPage?.nextId,
   });
 
   useEffect(() => {
