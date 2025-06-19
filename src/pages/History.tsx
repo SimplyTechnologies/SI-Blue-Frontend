@@ -125,7 +125,7 @@ const History = () => {
                     </TableRow>
                   );
                 })
-              ) : isLoading || isPending || isFetching ? (
+              ) : isLoading ? (
                 <TableRow className="h-full pointer-events-none border-none hover:bg-transparent" />
               ) : (
                 <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
