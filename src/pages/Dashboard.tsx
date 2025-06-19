@@ -1,15 +1,14 @@
 import { toast } from 'sonner';
 import { useNavigate } from 'react-router';
-import { useQuery } from '@tanstack/react-query';
-import { mapDataQuery } from '@/queries/vehicles';
 import Map from '@/components/organism/Map';
 import AnalyticCard from '@/components/atom/AnalyticCard';
 import AddNewVehicleButton from '@/components/molecule/AddNewVehicleButton';
+import { useVehiclesMapDataQuery } from '@/hooks/useVehiclesMapDataQuery';
 
 const Dashboard: React.FC = () => {
   const navigate = useNavigate();
 
-  const { data } = useQuery(mapDataQuery());
+  const { data } = useVehiclesMapDataQuery();
 
   return (
     <div className="w-full h-full pt-[1rem] px-[2rem] pb-[3rem] max-[480px]:px-[1rem] flex flex-col gap-[0.5rem] bg-bg-1">

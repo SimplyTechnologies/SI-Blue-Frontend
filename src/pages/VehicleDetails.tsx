@@ -1,11 +1,10 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { ChevronLeft, EllipsisVertical, PencilIcon, TrashIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { deleteVehicle } from '@/api/vehicles';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
-import { vehicleDetailsQuery } from '@/queries/vehicles';
 import type { VehicleType } from '@/types/Vehicle';
 import { Button } from '@/components/atom/Button';
 import VehicleCardDetails from '@/components/molecule/VehicleCardDetails';
@@ -13,6 +12,7 @@ import CustomDropdown from '@/components/molecule/CustomDropdown';
 import { CustomAlertDialog } from '@/components/molecule/CustomAlertDialog';
 import VehicleForm from '@/components/organism/VehicleForm';
 import { buildLocationForEdit } from '@/components/organism/VehicleForm/VehicleForm.data';
+import { useVehicleData } from '@/hooks/useVehicleData';
 
 export default function VehicleDetails() {
   const isAdmin = useIsAdmin();
@@ -20,7 +20,7 @@ export default function VehicleDetails() {
   const { id } = useParams();
   const queryClient = useQueryClient();
 
-  const { data } = useQuery(vehicleDetailsQuery(id));
+  const { data } = useVehicleData(id);
 
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
   const [openAddVehicle, setOpenAddVehicle] = useState(false);
@@ -47,8 +47,8 @@ export default function VehicleDetails() {
 
   const handleDelete = async () => {
     setIsConfirmOpen(false);
-    if (!data?.vehicle?.id) return;
-    await deleteVehicle(data.vehicle.id);
+    if (!data?.id) return;
+    await deleteVehicle(data.id);
     toast.success('Vehicle deleted successfully!');
     queryClient.removeQueries({
       queryKey: ['map-data'],
@@ -61,7 +61,7 @@ export default function VehicleDetails() {
 
   const onEditSuccess = (updatedData?: VehicleType) => {
     if (updatedData) {
-      queryClient.setQueryData(['vehicle', id], { vehicle: updatedData });
+      queryClient.setQueryData(['vehicle', id], updatedData);
       queryClient.removeQueries({
         queryKey: ['map-data'],
       });
@@ -74,7 +74,7 @@ export default function VehicleDetails() {
 
   const onAssignSuccess = (vehicle: VehicleType) => {
     if (vehicle) {
-      queryClient.setQueryData(['vehicle', id], { vehicle: vehicle });
+      queryClient.setQueryData(['vehicle', id], vehicle);
       queryClient.removeQueries({
         queryKey: ['vehicles'],
       });
@@ -88,20 +88,23 @@ export default function VehicleDetails() {
   ];
 
   const getVehicleFormData = () => {
-    if (!data?.vehicle) return null;
+    if (!data?.id) return null;
+
+    const { make, model, year, vin, location } = data;
+
     return {
-      make: data.vehicle.make.id.toString(),
-      model: data.vehicle.model.id.toString(),
-      year: data.vehicle.year.toString(),
-      vin: data.vehicle.vin,
-      location: buildLocationForEdit(data.vehicle.location),
-      street: data.vehicle.location.street,
-      city: data.vehicle.location.city,
-      state: data.vehicle.location.state,
-      country: data.vehicle.location.country,
-      zipcode: data.vehicle.location.zipcode,
-      lat: data.vehicle.location.lat,
-      lng: data.vehicle.location.lng,
+      make: make.id.toString(),
+      model: model.id.toString(),
+      year: year.toString(),
+      vin: vin,
+      location: buildLocationForEdit(location),
+      street: location.street,
+      city: location.city,
+      state: location.state,
+      country: location.country,
+      zipcode: location.zipcode,
+      lat: location.lat,
+      lng: location.lng,
     };
   };
 
@@ -114,7 +117,7 @@ export default function VehicleDetails() {
           <Button variant="text" className="w-auto flex text-xs text-primary hover:opacity-80" onClick={handleBack}>
             <ChevronLeft color="#28303F" className="h-[24px] w-[24px]" />
           </Button>
-          {data?.vehicle && !data?.vehicle?.customerId && isAdmin ? (
+          {data && !data?.customerId && isAdmin ? (
             <CustomDropdown
               sideOffset={0}
               align="end"
@@ -137,7 +140,7 @@ export default function VehicleDetails() {
                 [&::-webkit-scrollbar-thumb]:rounded-full
               "
         >
-          {data?.vehicle ? <VehicleCardDetails vehicle={data.vehicle} onAssignSuccess={onAssignSuccess} /> : null}
+          {data ? <VehicleCardDetails vehicle={data} onAssignSuccess={onAssignSuccess} /> : null}
         </div>
       </div>{' '}
       <CustomAlertDialog
@@ -154,8 +157,9 @@ export default function VehicleDetails() {
         onOpenChange={handleEditOpenChange}
         onSuccess={onEditSuccess}
         data={getVehicleFormData()}
-        vehicleId={data?.vehicle?.id}
+        vehicleId={data?.id}
       />
     </div>
   );
 }
+

@@ -7,7 +7,7 @@ import DashboardLayout from '@/layouts/Dashboard/ui/Dashboard';
 import VehicleLayout from '@/layouts/Vehicles';
 import NotFound from '@/pages/NotFound';
 import { useIsAdmin } from '@/hooks/useIsAdmin';
-import { mapDataLoader, vehicleDetailsLoader } from '@/queries/vehicles';
+import { mapDataLoader, vehicleDataLoader } from './loaders';
 
 const Protected = lazy(() => import('@/layouts/Protected'));
 const Public = lazy(() => import('@/layouts/Public'));
@@ -60,7 +60,7 @@ const AppRoutes: React.FC<AppRouterProps> = ({ Router = BrowserRouter }) => {
                 <Route
                   path="vehicles/:id"
                   element={<VehicleDetails />}
-                  loader={() => vehicleDetailsLoader(queryClient)}
+                  loader={() => vehicleDataLoader(queryClient)}
                 />
               </Route>
               {isAdmin && <Route path="users" element={<Users />} />}
