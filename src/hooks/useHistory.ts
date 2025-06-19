@@ -28,7 +28,7 @@ export const useHistory = ({ page = 1, offset = 25, search = '' }: HistoryParams
       };
 
       if (search.trim()) {
-        params.search = search.trim();
+        params.search = encodeURIComponent(search.trim());
       }
 
       try {
