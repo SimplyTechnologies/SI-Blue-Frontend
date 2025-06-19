@@ -3,15 +3,8 @@ import { Avatar, AvatarFallback, AvatarImage } from '@radix-ui/react-avatar';
 
 import getColorFromName from '@/utils/getRandomColor';
 import { formatDate } from '@/utils/formatDate';
-import type { UserActivity } from '@/types/History';
+import type { CustomerValueType, UserActivity, VehicleValueType } from '@/types/History';
 
-const parseJsonSafe = (str: string | null | undefined) => {
-  try {
-    return str ? JSON.parse(str) : null;
-  } catch {
-    return null;
-  }
-};
 
 const HistoryColumns = (): ColumnDef<UserActivity>[] => {
   return [
@@ -54,17 +47,17 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
       cell: ({ row }) => {
         const actionType = row.original.actionType;
         const modelType = row.original.modelType;
-        const previous = parseJsonSafe(row.original.previousValue);
-        const current = parseJsonSafe(row.original.currentValue);
+        const previous = row.original.previousValue;
+        const current = row.original.currentValue;
         const isVehicle = modelType === 'vehicle';
         const isCustomer = modelType === 'customer';
 
         let display: React.ReactNode = null;
 
         if (isVehicle) {
-          const vehicle = actionType === 'UPDATE' ? previous : current;
+          const vehicle = (actionType === 'UPDATE' ? previous : current) as VehicleValueType | null;
 
-          const title = `${vehicle?.make.name || ''} ${vehicle?.model.name || ''} ${vehicle?.year || ''}`;
+          const title = `${vehicle?.make?.name || ''} ${vehicle?.model?.name || ''} ${vehicle?.year || ''}`;
           const vin = vehicle?.vin || '';
           const vehicleId = vehicle?.id;
 
@@ -90,8 +83,8 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
               </div>
             );
           } else if (actionType === 'UPDATE') {
-            const customerPrevId = previous?.customerId;
-            const customerCurrId = current?.customerId;
+            const customerPrevId = (previous as VehicleValueType | null)?.customerId;
+            const customerCurrId = (previous as VehicleValueType | null)?.customerId;
             display = (
               <div className='flex gap-[4px]'>
                 <span className="font-normal text-sm text-[#848C98] italic">
@@ -115,7 +108,7 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
             );
           }
         } else if (isCustomer) {
-          const customer = previous || current;
+          const customer = (previous || current) as CustomerValueType | null;
           const name = `${customer?.firstName || ''} ${customer?.lastName || ''}`.trim();
           if (actionType === 'DELETE') {
             display = (
