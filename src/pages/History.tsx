@@ -18,16 +18,20 @@ import { nothingToShowOptions } from '@/utils/constants';
 import { Input } from '@/components/atom/Input';
 import HistoryColumns from '@/components/molecule/HistoryColumns';
 import NothingToShow from '@/components/molecule/NothingToShow';
+import { useDebounce } from '@/hooks/useDebounce';
 
 const History = () => {
   const [fixedHeight, setFixedHeight] = useState<string>('auto');
   const { ref, inView } = useInView();
   const containerRef = useRef<HTMLDivElement>(null);
   const dynamicPageSize = useDynamicPageSize();
+  const [searchInput, setSearchInput] = useState('');
+  const { debounceValue } = useDebounce({ inputValue: searchInput, delay: 300 });
 
   const { data, isLoading, isPending, isFetching, fetchNextPage, hasNextPage } = useHistory({
     page: 1,
     offset: dynamicPageSize,
+    search: debounceValue,
   });
   const flatData = data?.pages?.flatMap(page => page.userActivity) ?? [];
   const columns = HistoryColumns();
@@ -62,12 +66,12 @@ const History = () => {
 
   return (
     <div className="w-full h-full p-[1.5rem] max-[480px]:px-[1rem] flex flex-col gap-[0.5rem] bg-bg-1">
-      <div className="flex items-center justify-between pb-[1rem] max-[480px]:flex-col max-[480px]:gap-[1rem] max-[480px]:items-start">
+      <div className="flex items-center gap-4 pb-[1rem] max-[480px]:flex-col max-[480px]:gap-[1rem] max-[480px]:items-start">
         <div className="relative">
           <SearchIcon className="absolute left-[1.5rem] top-1/2 -translate-y-1/2 text-support-3" />
           <Input
-            // value={searchInput}
-            // onChange={e => setSearchInput(e.target.value)}
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
             className="max-w-[327px] h-[42px] pl-[3.5rem]"
             placeholder="Search..."
           />
@@ -121,7 +125,7 @@ const History = () => {
                     </TableRow>
                   );
                 })
-              ) : isLoading || isPending || isFetching ? (
+              ) : isLoading ? (
                 <TableRow className="h-full pointer-events-none border-none hover:bg-transparent" />
               ) : (
                 <TableRow className="h-full pointer-events-none border-none hover:bg-transparent">
@@ -145,4 +149,3 @@ const History = () => {
 };
 
 export default History;
-

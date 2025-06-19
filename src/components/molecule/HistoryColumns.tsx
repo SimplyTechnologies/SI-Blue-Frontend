@@ -23,7 +23,7 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
         const fullName = row.getValue('fullName') as string;
         const firstName = row.original.user?.firstName || '';
         const lastName = row.original.user?.lastName || '';
-        const avatarUrl = row.original.user?.avatarPublicId || null;
+        const avatarUrl = row.original.user?.avatarUrl || null;
         const kit = getColorFromName(fullName);
 
         return (
@@ -56,8 +56,6 @@ const HistoryColumns = (): ColumnDef<UserActivity>[] => {
         const modelType = row.original.modelType;
         const previous = parseJsonSafe(row.original.previousValue);
         const current = parseJsonSafe(row.original.currentValue);
-        console.log(previous);
-        console.log(current);
         const isVehicle = modelType === 'vehicle';
         const isCustomer = modelType === 'customer';
 
