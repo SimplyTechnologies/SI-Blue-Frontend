@@ -12,6 +12,6 @@ export type UserActivity = {
     firstName: string;
     lastName: string;
     email: string;
-    avatarPublicId: string | null;
+    avatarUrl: string | null;
   };
 }
