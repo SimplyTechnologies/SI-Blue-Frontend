@@ -50,3 +50,4 @@ export const useHistory = ({ page = 1, offset = 25, search = '' }: HistoryParams
     placeholderData: keepPreviousData,
   });
 };
+

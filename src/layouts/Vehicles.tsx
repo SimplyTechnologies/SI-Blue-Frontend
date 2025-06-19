@@ -1,13 +1,14 @@
 import { Outlet, useParams } from 'react-router';
 import { useQuery } from '@tanstack/react-query';
-import { mapDataQuery, vehicleDetailsQuery } from '@/queries/vehicles';
 import Map from '@/components/organism/Map';
+import { vehiclesMapDataQueryOptions } from '@/hooks/useVehiclesMapDataQuery';
+import { vehicleQueryOptions } from '@/hooks/useVehicleData';
 
 const VehicleLayout: React.FC = () => {
   const { id } = useParams();
 
-  const { data: singleVehicle } = useQuery(vehicleDetailsQuery(id));
-  const { data: vehiclesMapData } = useQuery(mapDataQuery());
+  const { data: singleVehicle } = useQuery(vehicleQueryOptions(id));
+  const { data: vehiclesMapData } = useQuery(vehiclesMapDataQueryOptions(id));
 
   const getSingleVehicleMapData = () => {
     const mapData: { lat: string; lng: string; id: number }[] = [];

@@ -18,7 +18,7 @@ import getColorFromName from '@/utils/getRandomColor';
 import { formatDate } from '@/utils/formatDate';
 import { useDeleteUser } from '@/hooks/useUser';
 import { useDeleteCustomer } from '@/hooks/useCustomer';
-import { useUnassignVehicle } from '@/hooks/useVehicle';
+import { useUnassignVehicle } from '@/hooks/useUnassignVehicle';
 import { CustomerFallbackIcon } from '@/assets/svgIconComponents/CustomerFallbackIcon';
 
 type TableData = User | Customers;

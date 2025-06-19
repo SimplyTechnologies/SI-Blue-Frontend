@@ -9,7 +9,7 @@ interface ForgotPasswordAxiosResponse {
   data: {
     data: {
       message: string;
-    },
+    };
     message: string;
     success: boolean;
   };
@@ -45,3 +45,4 @@ export const useForgotPassword = () => {
     },
   });
 };
+
