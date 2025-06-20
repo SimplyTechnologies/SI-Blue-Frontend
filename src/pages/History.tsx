@@ -171,13 +171,13 @@ const History = () => {
                     <TableRow
                       key={row.id}
                       className={`h-[80px] last:mb-0 hover:bg-transparent ${isLast ? 'border-b-0' : 'border-b border-support-13'}`}
+                      ref={isNearEnd  ? ref : null}
                     >
                       {row.getVisibleCells().map(cell => (
                         <TableCell key={cell.id} style={{ verticalAlign: 'middle' }} className="p-0 pr-[2rem]">
                           {flexRender(cell.column.columnDef.cell, cell.getContext())}
                         </TableCell>
                       ))}
-                      {isNearEnd && <div ref={ref} className="absolute" />}
                     </TableRow>
                   );
                 })
