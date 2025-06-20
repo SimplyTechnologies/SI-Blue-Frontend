@@ -61,7 +61,7 @@ const AddNewUser: FC<{
       closeOnOutsideClick={false}
       footerButtonProps={{
         form: 'add-new-user-form',
-        text: 'Save',
+        text: 'Add User',
         loading: isLoading,
       }}
     >
