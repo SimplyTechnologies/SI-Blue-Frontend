@@ -13,11 +13,11 @@ const VehicleLayout: React.FC = () => {
   const getSingleVehicleMapData = () => {
     const mapData: { lat: string; lng: string; id: number }[] = [];
 
-    if (singleVehicle?.vehicle?.location?.lat && singleVehicle?.vehicle?.location?.lng) {
+    if (singleVehicle?.location?.lat && singleVehicle?.location?.lng) {
       mapData.push({
-        id: singleVehicle.vehicle.id,
-        lat: singleVehicle.vehicle.location.lat,
-        lng: singleVehicle.vehicle.location.lng,
+        id: singleVehicle.id,
+        lat: singleVehicle.location.lat,
+        lng: singleVehicle.location.lng,
       });
     }
 
