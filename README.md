@@ -1,54 +1,133 @@
-# React + TypeScript + Vite
+# 🚗 Vehicle Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A modern web application for tracking and managing vehicle data, users, and their assignments. It offers an interactive dashboard, real-time map integration, and full CRUD capabilities for Superadmins, with user-friendly UX and strong architectural structure.
 
-Currently, two official plugins are available:
+## 🌐 Live Demo
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+👉 [Visit the Application](https://si-blue-frontend.onrender.com/)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## ✨ Features
 
-```js
-export default tseslint.config({
-  extends: [
-    // Remove ...tseslint.configs.recommended and replace with this
-    ...tseslint.configs.recommendedTypeChecked,
-    // Alternatively, use this for stricter rules
-    ...tseslint.configs.strictTypeChecked,
-    // Optionally, add this for stylistic rules
-    ...tseslint.configs.stylisticTypeChecked,
-  ],
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-});
+- **📊 Interactive Dashboard**  
+  View total vehicles, customers, sold units, and a map view of active listings.
+
+- **🚘 Vehicle Management (CRUD)**  
+  - Add/edit/delete vehicles (Superadmin only)  
+  - Assign/unassign vehicles to customers  
+  - Search & filter functionality  
+  - View detailed listings in a tabular interface
+
+- **🗺️ Map Integration**  
+  - Visualize vehicles live on Google Maps  
+  - Clickable markers lead to detailed vehicle info  
+  - Instant updates on vehicle creation
+
+- **👥 Customer Management**  
+  - View customer list  
+  - Unassign vehicles and delete records
+
+- **🛡️ User Management (Superadmin-only)**  
+  - Add, deactivate, or remove users  
+  - Role-based access control
+
+- **🔔 Notifications**  
+  - Vehicle assign/unassign & user deactivation alerts for relevant users
+
+- **📜 User Activity Log**  
+  - Track actions like vehicle/customer CRUD, assignments, etc.
+
+- **🙍 User Profile Management**  
+  - Update personal information and upload avatar
+
+- **✅ Robust Form Handling**  
+  - Zod + React Hook Form for strict validation  
+  - Clean and accessible forms
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer            | Technology                                                                 |
+|------------------|-----------------------------------------------------------------------------|
+| 🖼️ Frontend      | [React 19](https://react.dev/), [TypeScript](https://www.typescriptlang.org/) |
+| ⚡ Build Tool     | [Vite](https://vitejs.dev/)                                                 |
+| 📦 State Mgmt     | [Zustand](https://zustand-demo.pmnd.rs/)                                    |
+| 🔁 Data Fetching | [@tanstack/react-query](https://tanstack.com/query/latest)                  |
+| 🎨 Styling        | [Tailwind CSS](https://tailwindcss.com/)                                   |
+| 🧱 UI Components | [Radix UI](https://www.radix-ui.com/primitives) + [Lucide Icons](https://lucide.dev/) |
+| 📝 Forms         | [React Hook Form](https://react-hook-form.com/), [Zod](https://zod.dev/)     |
+| 🗺 Maps          | [@vis.gl/react-google-maps](https://visgl.github.io/react-google-maps/)      |
+| 🧭 Routing       | [React Router](https://reactrouter.com/en/main)                             |
+| 🕓 Dates         | [date-fns](https://date-fns.org/), [react-day-picker](https://react-day-picker.js.org/) |
+
+---
+
+## 📁 Folder Structure
+
+```bash
+src/
+├── api/                    # API utility functions (e.g., fetch clients, Axios instances)
+├── app/
+│   ├── styles/             # Global styles (Tailwind configs, CSS)
+│   └── App.tsx            # Root application entry
+├── assets/                # Static assets (SVGs, PNGs, WebP, etc.)
+│   └── svgIconComponents/ # Icon components
+├── components/            # Reusable UI components
+│   ├── atom/              # Smallest, indivisible UI units (e.g., buttons, inputs) 
+│   ├── molecule/          # Groups of atoms (e.g., forms, dropdowns) 
+│   └── organism/          # Larger UI structures (e.g., tables, cards)
+├── hooks/                 # Custom React hooks (e.g., useVehicles, useAuth)
+├── layouts/               # Page layouts and route wrappers
+├── pages/                 # Route-based components (Dashboard, Vehicles, etc.)
+├── routes/                # React Router configs
+├── stores/                # Zustand stores for global state
+├── types/                 # Global TypeScript interfaces/types
+├── utils/                 # Utility functions (e.g., formatters, validators)
+├── main.tsx               # Main React DOM rendering
+└── vite-env.d.ts          # Vite-specific TypeScript definitions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+### 📦 Design Pattern: Atomic Design + Feature Segregation
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x';
-import reactDom from 'eslint-plugin-react-dom';
+- **Atomic Design**: `components/atom`, `molecule`, `organism` create a UI hierarchy.
+- **Feature-first**: Pages + hooks + stores follow business domain groupings.
+- **Zustand** used instead of Redux for simplicity and performance.
+- **Vite** ensures fast dev & HMR.
 
-export default tseslint.config({
-  plugins: {
-    // Add the react-x and react-dom plugins
-    'react-x': reactX,
-    'react-dom': reactDom,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended typescript rules
-    ...reactX.configs['recommended-typescript'].rules,
-    ...reactDom.configs.recommended.rules,
-  },
-});
+---
+
+## 🛠 Getting Started
+
+### ✅ Prerequisites
+
+- Node.js `v18+`
+- npm or Yarn
+
+### 📥 Installation
+
+```bash
+git clone https://github.com/SimplyTechnologies/SI-Blue-Frontend.git
+cd SI-Blue-Frontend
+npm install  # or yarn install
 ```
+
+### 🔐 Environment Setup
+
+Create a `.env` file at the root of the project:
+
+```env
+VITE_GOOGLE_API_KEY=your_google_maps_api_key
+VITE_MAP_ID=your_google_map_id
+VITE_API_URL=https://your-backend-api.com
+```
+
+---
+
+## 🙌 Acknowledgements
+
+Thanks to open source tools and libraries that power this project:  
+Zustand, React Hook Form, Zod, Tailwind, Lucide, TanStack Query, Google Maps, and more.
+
+Special thanks to **Simply Technologies** for organizing the internship and providing the opportunity to build this project.
