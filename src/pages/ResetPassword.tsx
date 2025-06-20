@@ -55,7 +55,12 @@ const ResetPassword = () => {
     retry: false,
   });
 
-  const { register, handleSubmit, trigger } = useForm<FormData>({
+  const {
+    register,
+    handleSubmit,
+    trigger,
+    formState: { errors },
+  } = useForm<FormData>({
     resolver: zodResolver(schema),
     mode: 'onChange',
     reValidateMode: 'onBlur',
@@ -141,6 +146,9 @@ const ResetPassword = () => {
               onBlur={() => trigger('confirmPassword')}
               className="h-[56px] pl-[22px] pr-[42px]"
             />
+            {errors.confirmPassword && (
+              <p className="text-support-2 text-sm font-normal leading-[140%]">{errors.confirmPassword.message}</p>
+            )}
           </div>
         </div>
         <Button type="submit" className="h-[56px]" variant={'default'} disabled={loading}>
